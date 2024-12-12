@@ -105,36 +105,33 @@ void task1_robot_paths()
 
 void initPyramid(float *pyramidData[5]) {
     for (int i = 0 ; i < 5 ; i++) {
-        for (int j = i ; j < i + 1 ; j++) {
+        for (int j = 0 ; j <= i ; j++) {
             pyramidData[i][j] = -1 ;
 		}
 	}
 }
 
-void getWeight() {
-    float level0[1], level1[2], level2[3], level3[4], level4[5] ;
-    float *pyramidData[5] = {level0, level1, level2, level3, level4} ;
-
+void getWeight(float *pyramidData[5]) {
     int fullPyramid = 0 ;
     while (!fullPyramid) {
         initPyramid(pyramidData) ;
         int input = 0 ;
-        int nextWeight = -1 ;
+        float nextWeight = -1.00 ;
 
         printf("Please enter the weights of the cheerleaders:\n") ;
 
         for (int i = 0; i < 5 ; i++) {
-            for (int j = i ; j < i + 1 ; j++)
+            for (int j = 0 ; j <= i ; j++)
             {
-                input = scanf(" %.2f", &nextWeight) ;
+                input = scanf(" %f", &nextWeight) ;
 
-                if (input == EOF) return NULL ;
+                if (input == EOF) return ;
 
                 if (input != 1 || nextWeight < 0)
                 {
                     scanf(" %*[^\n]") ;
                     scanf(" %*c");
-                    prinf("Negative weights are not supported.\n") ;
+                    printf("Negative weights are not supported.\n") ;
                     break ;
                 }
                 pyramidData[i][j] = nextWeight ;
@@ -148,7 +145,7 @@ void getWeight() {
 
         // validation
         for (int k = 0 ; k < 5 ; k++) {
-            for (int l = k ; l < k + 1 ; l++) {
+            for (int l = 0 ; l <= k ; l++) {
                 if (pyramidData[k][l] < 0) {
                     fullPyramid = 0 ;
                     break ;
@@ -165,14 +162,19 @@ void getWeight() {
 }
 
 
-
 void task2_human_pyramid()
 {
-    
-    getWeight() ;
-
-
+    float level0[1], level1[2], level2[3], level3[4], level4[5] ;
+    float *pyramidData[5] = {level0, level1, level2, level3, level4} ;
+    initPyramid(pyramidData) ;
+    getWeight(pyramidData) ;
+    for (int i = 0 ; i < 5 ; i++) {
+        for (int j = 0 ; j <= i ; j++) {
+            printf("%.2f\n", pyramidData[i][j]) ;  // placeholder
+		}
+	}
 }
+
 
 void task3_parenthesis_validator()
 {
