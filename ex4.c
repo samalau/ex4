@@ -196,30 +196,39 @@ void task2_human_pyramid()
                     weightOrigin = pyramidData[i][j] ,
                     weightUpLeft = 0.00 ,
                     weightUpRight = 0.00 ,
-                    weightLoad = weightOrigin + ((float)(weightUpLeft + weightUpRight) / 2) ;
-                
-                weightUpLeft = pyramidData[iUpLevel][jUpRight] ,
-                    weightUpRight = pyramidData[iUpLevel][jUpLeft] ,
-                    weightLoad = weightOrigin + ((float)(weightUpLeft + weightUpRight) / 2) ;
+                    weightLoad = 0.00 ;
                 
                 if (j == 0) {
-                    if (i == 0) {
-                        weightLoad = 
-                        
-                    }
-
+                    if (i == 0)
+                        { weightUpRight = pyramidData[iUpLevel][jUpLeft] ; }
+                    
+                    if (i != 0 && weightUpRight > 0)
+                        { weightLoad = weightOrigin + ((float)weightUpRight / 2) ; }
+                    else
+                        { weightLoad = weightOrigin ; }
                 }
+
+                if (j > 0 && j < i) {
                     iUpLevel = i_alt - 1 ,
                     jUpLeft = j_alt - 1 ,
                     jUpRight = j_alt ;
+                    weightUpLeft = pyramidData[iUpLevel][jUpRight] ;
+                    weightUpRight = pyramidData[iUpLevel][jUpLeft] ;
+                    weightLoad = weightOrigin + ((float)(weightUpLeft + weightUpRight) / 2) ;
+                }
+            
+                if (i > 0 && j == i) {
+                    iUpLevel = i_alt - 1 ,
+                    jUpLeft = j_alt - 1 ;
+                    if (i != 0 && weightUpLeft > 0)
+                        { weightLoad = weightOrigin + ((float)weightUpLeft / 2) ; }
+                    else
+                        { weightLoad = weightOrigin ; }
+                }
+                
+                if (i != 0 && j != 0) {
                     
                 }
-
-                int 
-                    iUpLevel = i_alt - 1 ,
-                    jUpRight = j_alt ,
-                    jUpLeft = j_alt - 1 ;
-                    
                 
                 printf("%.2f\n", weightLoad) ;  // placeholder
             }
