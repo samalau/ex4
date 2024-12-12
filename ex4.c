@@ -207,6 +207,7 @@ void task2_human_pyramid()
                     weightLoad = weightOrigin + ((float)(weightUpLeft + weightUpRight) / 2) ; }
 
                 else if (j == 0) {
+                    iUpLevel = i_alt - 1 ;
                     jUpRight = j_alt ;
                     weightUpRight = pyramidData[iUpLevel][jUpRight] ;
                     if (i == 0 || (i != 0 && weightUpRight == 0)) {
@@ -218,7 +219,10 @@ void task2_human_pyramid()
                 else if (i > 0 && j == i) {
                     iUpLevel = i_alt - 1 ;
                     jUpLeft = j_alt - 1 ;
-                    if (i != 0 && weightUpLeft > 0)
+                    weightUpLeft = pyramidData[iUpLevel][jUpLeft] ;
+                    if (weightUpLeft) {
+
+                    }
                         { weightLoad = weightOrigin + ((float)weightUpLeft / 2) ; }
                     else
                         { weightLoad = weightOrigin ; }
