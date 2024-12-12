@@ -62,6 +62,7 @@ int main()
     printf("Goodbye!\n");
 }
 
+
 int getDistinctPaths(int x, int y) {
     if (x == 0 || y == 0) {
         return 1 ;
@@ -110,16 +111,16 @@ void initPyramid(float *pyramidData[5]) {
 	}
 }
 
-
-int getWeight() {
+void getWeight() {
     float level0[1], level1[2], level2[3], level3[4], level4[5] ;
     float *pyramidData[5] = {level0, level1, level2, level3, level4} ;
-    initPyramid(pyramidData) ;
 
-    int input = 0 ;
-    int nextWeight = -1 ;
     int fullPyramid = 0 ;
     while (!fullPyramid) {
+        initPyramid(pyramidData) ;
+        int input = 0 ;
+        int nextWeight = -1 ;
+
         printf("Please enter the weights of the cheerleaders:\n") ;
 
         for (int i = 0; i < 5 ; i++) {
@@ -138,16 +139,34 @@ int getWeight() {
                 }
                 pyramidData[i][j] = nextWeight ;
             }
-            if (input != 1 || nextWeight < 0) break;
-            
+            if (input != 1 || nextWeight < 0) break ;
+        }
+        if (input != 1 || nextWeight < 0) continue ;
+
+        // assumption for validation
+        fullPyramid = 1 ;
+
+        // validation
+        for (int k = 0 ; k < 5 ; k++) {
+            for (int l = k ; l < k + 1 ; l++) {
+                if (pyramidData[k][l] < 0) {
+                    fullPyramid = 0 ;
+                    break ;
+                }
+            }
+            if (fullPyramid == 0) {
+                break ;
+            }
+        }
+        if (fullPyramid == 0) {
+            continue ;
         }
     }
 }
 
-
 void task2_human_pyramid()
 {
-     
+    
     getWeight() ;
 
 
