@@ -164,6 +164,8 @@ void getWeight() {
     }
 }
 
+
+
 void task2_human_pyramid()
 {
     
