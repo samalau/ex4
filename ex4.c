@@ -6,13 +6,13 @@ Assignment: 4
 #include <stdio.h>
 #include <string.h>
 
-void task1_robot_paths();
-void task2_human_pyramid();
-void task3_parenthesis_validator();
-void task4_queens_battle();
-void task5_crossword_generator();
+void task1_robot_paths() ;
+void task2_human_pyramid() ;
+void task3_parenthesis_validator() ;
+void task4_queens_battle() ;
+void task5_crossword_generator() ;
 
-int task = -1;
+int task = -1 ;
 
 int main()
 {   
@@ -24,7 +24,7 @@ int main()
                "3. Parenthesis Validation\n"
                "4. Queens Battle\n"
                "5. Crossword Generator\n"
-               "6. Exit\n");
+               "6. Exit\n") ;
 
         if (scanf(" %d", &task))
         {
@@ -33,19 +33,19 @@ int main()
             case 6:
                 break;
             case 1:
-                task1_robot_paths();
+                task1_robot_paths() ;
                 break;
             case 2:
-                task2_human_pyramid();
+                task2_human_pyramid() ;
                 break;
             case 3:
-                task3_parenthesis_validator();
+                task3_parenthesis_validator() ;
                 break;
             case 4:
-                task4_queens_battle();
+                task4_queens_battle() ;
                 break;
             case 5:
-                task5_crossword_generator();
+                task5_crossword_generator() ;
                 break;
             default:
                 printf("Please choose a task number from the list.\n");
@@ -54,7 +54,7 @@ int main()
         }
         else
         {
-            if (scanf(" %*[^\n] %*c") == EOF) task = 6 ;
+            if (scanf(" %*[^\n] %*c") == EOF) {task = 6 ; } ;
             // scanf("%*s");
         }
 
@@ -63,24 +63,26 @@ int main()
 }
 
 
-int getDistinctPaths(int x, int y) {
+int getDistinctPaths(int x , int y) {
     if (x == 0 || y == 0) {
         return 1 ;
     }
-    return getDistinctPaths(x - 1, y) + getDistinctPaths(x, y - 1) ;
+    return getDistinctPaths(x - 1 , y) + getDistinctPaths(x , y - 1) ;
 }
 
 void task1_robot_paths()
 {
-    int x, y;
-    int totalDistinctPathsHome = 0 ;
-    int validCoordinates = 0 ;
+    int
+        x = -1 ,
+        y = -1 ,
+        totalDistinctPathsHome = 0,
+        validCoordinates = 0 ;
 
     while (validCoordinates != 2) {
 
         printf("Please enter the coordinates of the robot (column, row):\n") ;
 
-        validCoordinates = scanf(" %d %d%*[^\n] %*c", &x, &y) ;
+        validCoordinates = scanf(" %d %d%*[^\n] %*c", &x , &y) ;
 
         if (validCoordinates == EOF) {
             task = 6 ;
@@ -95,7 +97,7 @@ void task1_robot_paths()
         if (x < 0 || y < 0) {
             totalDistinctPathsHome = 0 ;
         } else {
-            totalDistinctPathsHome = getDistinctPaths(x, y) ;
+            totalDistinctPathsHome = getDistinctPaths(x , y) ;
         }
     }
 
@@ -113,7 +115,7 @@ void initPyramid(float *pyramidData[5]) {
 
 void getWeight(float *pyramidData[5]) {
     int fullPyramid = 0 ;
-    while (!fullPyramid) {
+    while ( !fullPyramid ) {
         initPyramid(pyramidData) ;
         int input = 0 ;
         float nextWeight = -1.00 ;
@@ -152,11 +154,11 @@ void getWeight(float *pyramidData[5]) {
                     break ;
                 }
             }
-            if (!fullPyramid) {
+            if ( !fullPyramid ) {
                 break ;
             }
         }
-        if (!fullPyramid) {
+        if ( !fullPyramid ) {
             continue ;
         }
     }
@@ -165,17 +167,17 @@ void getWeight(float *pyramidData[5]) {
 
 void task2_human_pyramid()
 {
-    float level0[1],
-          level1[2],
-          level2[3],
-          level3[4],
-          level4[5],
-          
-          *pyramidData[5] = {level0,
-                             level1,
-                             level2,
-                             level3,
-                             level4} ;
+    float
+        level0[1] ,
+        level1[2] ,
+        level2[3] ,
+        level3[4] ,
+        level4[5] ,
+        *pyramidData[5] = { level0 ,
+                            level1 ,
+                            level2 ,
+                            level3 ,
+                            level4 } ;
     
     initPyramid(pyramidData) ;
     getWeight(pyramidData) ;
@@ -184,17 +186,41 @@ void task2_human_pyramid()
         for (int i = 0 ; i < 5 ; i++) {
             for (int j = 0 ; j <= i ; j++) {
 
-                int i_alt = i,
+                int 
+                    iUpLevel = 0 ,
+                    jUpLeft = 0 ,
+                    jUpRight = 0 ,
+                    i_alt = i ,
                     j_alt = j ;
-
-                float originWeight = pyramidData[i_alt][j_alt] ;
-
-                if (j_alt > 0) {
-                      float upLeftWeight =  pyramidData[i_alt - 1][j_alt],
-                            upRightWeight = pyramidData[i_alt - 1][j_alt - 1],
-                            weightLoad = originWeight + (float)( upLeftWeight + upRightWeight ) / 2 ;
+                float
+                    weightOrigin = pyramidData[i][j] ,
+                    weightUpLeft = 0.00 ,
+                    weightUpRight = 0.00 ,
+                    weightLoad = weightOrigin + ((float)(weightUpLeft + weightUpRight) / 2) ;
+                
+                weightUpLeft = pyramidData[iUpLevel][jUpRight] ,
+                    weightUpRight = pyramidData[iUpLevel][jUpLeft] ,
+                    weightLoad = weightOrigin + ((float)(weightUpLeft + weightUpRight) / 2) ;
+                
+                if (j == 0) {
+                    if (i == 0) {
+                        weightLoad = 
+                        
+                    }
 
                 }
+                    iUpLevel = i_alt - 1 ,
+                    jUpLeft = j_alt - 1 ,
+                    jUpRight = j_alt ;
+                    
+                }
+
+                int 
+                    iUpLevel = i_alt - 1 ,
+                    jUpRight = j_alt ,
+                    jUpLeft = j_alt - 1 ;
+                    
+                
                 printf("%.2f\n", weightLoad) ;  // placeholder
             }
 	    }
