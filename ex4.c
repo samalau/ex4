@@ -125,20 +125,21 @@ void getWeight(float *pyramidData[5]) {
             {
                 input = scanf(" %f", &nextWeight) ;
 
-                if (input == EOF) return ;
-
+                if (input == EOF) {
+                    task = 6 ;
+                    return ;
+                }
                 if (input != 1 || nextWeight < 0)
                 {
-                    scanf(" %*[^\n]") ;
-                    scanf(" %*c");
                     printf("Negative weights are not supported.\n") ;
                     break ;
+                } else {
+                    pyramidData[i][j] = nextWeight ;
                 }
-                pyramidData[i][j] = nextWeight ;
             }
             if (input != 1 || nextWeight < 0) break ;
         }
-        if (input != 1 || nextWeight < 0) continue ;
+        if (input != 1 || nextWeight < 0) return ;
 
         // assumption for validation
         fullPyramid = 1 ;
@@ -151,11 +152,11 @@ void getWeight(float *pyramidData[5]) {
                     break ;
                 }
             }
-            if (fullPyramid == 0) {
+            if (!fullPyramid) {
                 break ;
             }
         }
-        if (fullPyramid == 0) {
+        if (!fullPyramid) {
             continue ;
         }
     }
@@ -164,16 +165,42 @@ void getWeight(float *pyramidData[5]) {
 
 void task2_human_pyramid()
 {
-    float level0[1], level1[2], level2[3], level3[4], level4[5] ;
-    float *pyramidData[5] = {level0, level1, level2, level3, level4} ;
+    float level0[1],
+          level1[2],
+          level2[3],
+          level3[4],
+          level4[5],
+          
+          *pyramidData[5] = {level0,
+                             level1,
+                             level2,
+                             level3,
+                             level4} ;
+    
     initPyramid(pyramidData) ;
     getWeight(pyramidData) ;
-    for (int i = 0 ; i < 5 ; i++) {
-        for (int j = 0 ; j <= i ; j++) {
-            printf("%.2f\n", pyramidData[i][j]) ;  // placeholder
-		}
-	}
+
+    if (pyramidData[4][4] >= 0) {
+        for (int i = 0 ; i < 5 ; i++) {
+            for (int j = 0 ; j <= i ; j++) {
+
+                int i_alt = i,
+                    j_alt = j ;
+
+                float originWeight = pyramidData[i_alt][j_alt] ;
+
+                if (j_alt > 0) {
+                      float upLeftWeight =  pyramidData[i_alt - 1][j_alt],
+                            upRightWeight = pyramidData[i_alt - 1][j_alt - 1],
+                            weightLoad = originWeight + (float)( upLeftWeight + upRightWeight ) / 2 ;
+
+                }
+                printf("%.2f\n", weightLoad) ;  // placeholder
+            }
+	    }
+    }
 }
+
 
 
 void task3_parenthesis_validator()
