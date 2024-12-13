@@ -59,16 +59,18 @@ int main()
         }
 
     } while (task != 6);
+
     printf("Goodbye!\n");
 }
 
 
-int getDistinctPaths(int x , int y) {
-    if (x == 0 || y == 0) {
+int getDistinctPaths(int x , int y)
+{
+    if (x == 0 || y == 0)
         return 1 ;
-    }
     return getDistinctPaths(x - 1 , y) + getDistinctPaths(x , y - 1) ;
 }
+
 
 void task1_robot_paths()
 {
@@ -79,7 +81,6 @@ void task1_robot_paths()
         validCoordinates = 0 ;
 
     while (validCoordinates != 2) {
-
         printf("Please enter the coordinates of the robot (column, row):\n") ;
 
         validCoordinates = scanf(" %d %d%*[^\n] %*c", &x , &y) ;
@@ -94,18 +95,15 @@ void task1_robot_paths()
             continue ;
         }
 
-        if (x < 0 || y < 0) {
-            totalDistinctPathsHome = 0 ;
-        } else {
-            totalDistinctPathsHome = getDistinctPaths(x , y) ;
-        }
+        if (x < 0 || y < 0) { totalDistinctPathsHome = 0 ; }
+        else { totalDistinctPathsHome = getDistinctPaths(x , y) ; }
     }
-
     printf("The total number of paths the robot can take to reach home is: %d\n", totalDistinctPathsHome) ;
 }
 
 
-void initPyramid(float *pyramidData[5]) {
+void initPyramid(float *pyramidData[5])
+{
     for (int i = 0 ; i < 5 ; i++) {
         for (int j = 0 ; j <= i ; j++) {
             pyramidData[i][j] = -1 ;
@@ -113,7 +111,9 @@ void initPyramid(float *pyramidData[5]) {
 	}
 }
 
-void getWeight(float *pyramidData[5]) {
+
+void getWeight(float *pyramidData[5])
+{
     int fullPyramid = 0 ;
     while ( !fullPyramid ) {
         initPyramid(pyramidData) ;
@@ -131,13 +131,10 @@ void getWeight(float *pyramidData[5]) {
                     task = 6 ;
                     return ;
                 }
-                if (input != 1 || nextWeight < 0)
-                {
+                if (input != 1 || nextWeight < 0) {
                     printf("Negative weights are not supported.\n") ;
                     break ;
-                } else {
-                    pyramidData[i][j] = nextWeight ;
-                }
+                } else { pyramidData[i][j] = nextWeight ; }
             }
             if (input != 1 || nextWeight < 0) break ;
         }
@@ -154,13 +151,9 @@ void getWeight(float *pyramidData[5]) {
                     break ;
                 }
             }
-            if ( !fullPyramid ) {
-                break ;
-            }
+            if ( !fullPyramid ) { break ; }
         }
-        if ( !fullPyramid ) {
-            continue ;
-        }
+        if ( !fullPyramid ) { continue ; }
     }
 }
 
@@ -202,12 +195,12 @@ void task2_human_pyramid()
 
                     iUpLevel = i_alt - 1 ;
                     jUpRight = j_alt ;
+
                     weightUpRight = pyramidData[iUpLevel][jUpRight] ;
-                    if (i == 0 || (i != 0 && weightUpRight == 0)) {
-                        weightLoad = weightOrigin ;
-                    } else if (weightUpRight >= 0) {
-                        weightLoad = weightOrigin + ((float)weightUpRight / 2) ;
-                    } else return ;
+
+                    if (i == 0 || (i != 0 && weightUpRight == 0)) { weightLoad = weightOrigin ; }
+                    else if (weightUpRight >= 0) { weightLoad = weightOrigin + ((float)weightUpRight / 2) ; }
+                    else return ;
                 
                 } else if (j > 0 && j < i) {
 
@@ -218,42 +211,30 @@ void task2_human_pyramid()
                     weightUpLeft = pyramidData[iUpLevel][jUpLeft] ;
                     weightUpRight = pyramidData[iUpLevel][jUpRight] ;
 
-                    if (weightUpLeft) {
-
-                        if (weightUpRight) {
-                            weightLoad = weightOrigin + ((float)(weightUpLeft + weightUpRight) / 2) ;
-                        } else {
-                            weightLoad = weightOrigin + ((float)(weightUpLeft) / 2) ;
-                        }
-                    
+                    if (weightUpLeft >= 0) {
+                        if (weightUpRight >= 0) { weightLoad = weightOrigin + ((float)(weightUpLeft + weightUpRight) / 2) ; }
+                        else { weightLoad = weightOrigin + ((float)(weightUpLeft) / 2) ; }
                     } else {
-
-                        if (weightUpRight) {
-                            weightLoad = weightOrigin + ((float)(weightUpRight) / 2) ;
-                        } else {
-                            weightLoad = weightOrigin ;
-                        }
+                        if (weightUpRight >= 0) { weightLoad = weightOrigin + ((float)(weightUpRight) / 2) ; }
+                        else { weightLoad = weightOrigin ; }
                     }
+
                 } else if (i > 0 && j == i) {
+
                     iUpLevel = i_alt - 1 ;
                     jUpLeft = j_alt - 1 ;
+
                     weightUpLeft = pyramidData[iUpLevel][jUpLeft] ;
-                    if (weightUpLeft)
-                        { weightLoad = weightOrigin + ((float)weightUpLeft / 2) ; }
-                    else
-                        { weightLoad = weightOrigin ; }
+
+                    if (weightUpLeft >= 0) { weightLoad = weightOrigin + ((float)weightUpLeft / 2) ; }
+                    else { weightLoad = weightOrigin ; }
                 }
                 
-                if (i != 0 && j != 0) {
-                    
-                }
-                
-                printf("%.2f\n", weightLoad) ;  // placeholder
+                printf("%.2f\n", weightLoad) ;
             }
 	    }
     }
 }
-
 
 
 void task3_parenthesis_validator()
