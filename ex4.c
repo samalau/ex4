@@ -169,30 +169,31 @@ void task2_human_pyramid() {
     for (int i = 0 ; i < 5 ; i++) {
         for (int j = 0 ; j <= i ; j++) {
 
-            int i_alt = i,
+            int
+                i_alt = i,
                 j_alt = j,
                 iUpLevel = i_alt - 1,
                 jUpLeft = j_alt - 1,
                 jUpRight = j_alt ;
 
             float
-                weightOrigin = pyramidData[i][j],
-                weightUpLeft = 0.00,
-                weightUpRight = 0.00,
+                weightOrigin = pyramidData[i][j] ;
+            float
                 weightLoad = weightOrigin ;
 
-            if (j > 0)
-                { weightUpLeft = pyramidData[iUpLevel][jUpLeft] ; }
-            if (j < i)
-                { weightUpRight = pyramidData[iUpLevel][jUpRight] ; }
+            if (i > 0) {
+                float weightUpLeft = (j > 0) ? pyramidData[iUpLevel][jUpLeft] : 0 ;
+                float weightUpRight = (j < i) ? pyramidData[iUpLevel][jUpRight] : 0 ;
 
-            if (weightUpLeft == 0 && weightUpRight > 0)
-                { weightLoad += ((float)weightUpRight / 2) ; }
-            else if (weightUpLeft > 0 && weightUpRight == 0)
-                { weightLoad += ((float)weightUpLeft / 2) ; }
-            else if (weightUpLeft > 0 && weightUpRight > 0)
-                { weightLoad += ((float)weightUpLeft / 2) + ((float)weightUpRight / 2) ; }
-            
+                if (j == 0) {
+                    weightLoad += weightUpRight / 2 ;
+                } else if (j == i) {
+                    weightLoad += weightUpLeft / 2 ;
+                } else {
+                    weightLoad += (weightUpLeft + weightUpRight) / 2 ;
+                }
+            }
+
             printf("%.2f ", weightLoad) ;
         }
         printf("\n") ;
