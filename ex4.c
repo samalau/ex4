@@ -164,7 +164,6 @@ void task2_human_pyramid() {
     initPyramid(pyramidData) ;
     
     int fullData = getWeight(pyramidData) ;
-
     if (!fullData) return ;
 
     for (int i = 0 ; i < 5 ; i++) {
@@ -180,27 +179,23 @@ void task2_human_pyramid() {
                 weightOrigin = pyramidData[i][j],
                 weightUpLeft = 0.00,
                 weightUpRight = 0.00,
-                weightLoad = 0.00 ;
+                weightLoad = weightOrigin ;
 
-            if (i != 0)
-            {
-                if (j != 0)
-                    { weightUpLeft = pyramidData[iUpLevel][jUpLeft] ; }
-                else if (j != i)
-                    { weightUpRight = pyramidData[iUpLevel][jUpRight] ; }
-            }
+            if (j > 0)
+                { weightUpLeft = pyramidData[iUpLevel][jUpLeft] ; }
+            if (j < i)
+                { weightUpRight = pyramidData[iUpLevel][jUpRight] ; }
 
-            if (weightUpLeft == 0 && weightUpRight == 0)
-                { weightLoad = weightOrigin ; }
-            else if (weightUpLeft == 0 && weightUpRight > 0)
-                { weightLoad = weightOrigin + ((float)weightUpRight / 2) ; }
+            if (weightUpLeft == 0 && weightUpRight > 0)
+                { weightLoad += ((float)weightUpRight / 2) ; }
             else if (weightUpLeft > 0 && weightUpRight == 0)
-                { weightLoad = weightOrigin + ((float)weightUpLeft / 2) ; }
+                { weightLoad += ((float)weightUpLeft / 2) ; }
             else if (weightUpLeft > 0 && weightUpRight > 0)
-                { weightLoad = weightOrigin + ((float)(weightUpLeft + weightUpRight) / 2) ; }
+                { weightLoad += ((float)weightUpLeft / 2) + ((float)weightUpRight / 2) ; }
             
-            printf("%.2f\n", weightLoad) ;
+            printf("%.2f ", weightLoad) ;
         }
+        printf("\n") ;
     }
 }
 
