@@ -12,6 +12,15 @@ void task3_parenthesis_validator() ;
 void task4_queens_battle() ;
 void task5_crossword_generator() ;
 
+// empty pyramid levels
+float
+    level0[1] = {-1},
+    level1[2] = {-1, -1},
+    level2[3] = {-1, -1, -1},
+    level3[4] = {-1, -1, -1, -1},
+    level4[5] = {-1, -1, -1, -1, -1} ;
+
+// initialize task
 int task = -1 ;
 
 int main()
@@ -111,11 +120,12 @@ void task1_robot_paths()
 
 void initPyramid(float *pyramidData[5])
 {
-    for (int i = 0 ; i < 5 ; i++) {
-        for (int j = 0 ; j <= i ; j++) {
-            pyramidData[i][j] = -1 ;
-		}
-	}
+    float *pyramidData[5] = {
+            level0,
+                level1,
+                    level2,
+                        level3,
+                            level4 } ;
 }
 
 
@@ -158,28 +168,16 @@ void getWeight(float *pyramidData[5])
                     break ;
                 }
             }
-            if ( !fullPyramid ) { break ; }
+            if ( !fullPyramid ) break ;
         }
-        if ( !fullPyramid ) { continue ; }
+        if ( !fullPyramid ) continue ;
     }
 }
 
 
 void task2_human_pyramid()
 {
-    float
-        level0[1] ,
-        level1[2] ,
-        level2[3] ,
-        level3[4] ,
-        level4[5] ;
-    float
-        *pyramidData[5] = { level0 ,
-                            level1 ,
-                            level2 ,
-                            level3 ,
-                            level4 } ;
-    
+    float *pyramidData[5] ;
     initPyramid(pyramidData) ;
     getWeight(pyramidData) ;
 
@@ -188,16 +186,16 @@ void task2_human_pyramid()
             for (int j = 0 ; j <= i ; j++) {
 
                 int 
-                    iUpLevel = 0 ,
-                    jUpLeft = 0 ,
-                    jUpRight = 0 ,
-                    i_alt = i ,
+                    iUpLevel = 0,
+                    jUpLeft = 0,
+                    jUpRight = 0,
+                    i_alt = i,
                     j_alt = j ;
                 float
                     weightOrigin = pyramidData[i][j] ,
-                    weightUpLeft = 0.00 ,
-                    weightUpRight = 0.00 ,
-                    weightLoad = 0.00 ;
+                    weightUpLeft = 0.00,
+                    weightUpRight = 0.00,
+                    weightLoad = 0.00;
 
                 if (j == 0) {
 
