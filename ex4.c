@@ -12,13 +12,7 @@ void task3_parenthesis_validator() ;
 void task4_queens_battle() ;
 void task5_crossword_generator() ;
 
-// empty pyramid levels
-float
-    level0[1] = {-1},
-    level1[2] = {-1, -1},
-    level2[3] = {-1, -1, -1},
-    level3[4] = {-1, -1, -1, -1},
-    level4[5] = {-1, -1, -1, -1, -1} ;
+
 
 // initialize task
 int task = -1 ;
@@ -118,14 +112,21 @@ void task1_robot_paths()
 }
 
 
-void initPyramid(float *pyramidData[5])
-{
-    float *pyramidData[5] = {
-            level0,
-                level1,
-                    level2,
-                        level3,
-                            level4 } ;
+// empty pyramid levels
+float
+    level0[1] = {-1},
+    level1[2] = {-1, -1},
+    level2[3] = {-1, -1, -1},
+    level3[4] = {-1, -1, -1, -1},
+    level4[5] = {-1, -1, -1, -1, -1} ;
+
+// empties pyramid levels 
+void initPyramid(float *pyramidData[5]) {
+    pyramidData[0] = level0 ;
+    pyramidData[1] = level1 ;
+    pyramidData[2] = level2 ;
+    pyramidData[3] = level3 ;
+    pyramidData[4] = level4 ;
 }
 
 
