@@ -164,62 +164,40 @@ void task2_human_pyramid() {
     initPyramid(pyramidData) ;
     
     int fullData = getWeight(pyramidData) ;
-    
+
     if (!fullData) return ;
 
     for (int i = 0 ; i < 5 ; i++) {
         for (int j = 0 ; j <= i ; j++) {
 
-            int 
-                iUpLevel = 0,
-                jUpLeft = 0,
-                jUpRight = 0,
-                i_alt = i,
-                j_alt = j ;
+            int i_alt = i,
+                j_alt = j,
+                iUpLevel = i_alt - 1,
+                jUpLeft = j_alt - 1,
+                jUpRight = j_alt ;
+
             float
-                weightOrigin = pyramidData[i][j] ,
+                weightOrigin = pyramidData[i][j],
                 weightUpLeft = 0.00,
                 weightUpRight = 0.00,
-                weightLoad = 0.00;
+                weightLoad = 0.00 ;
 
-            if (j == 0) {
-
-                iUpLevel = i_alt - 1 ;
-                jUpRight = j_alt ;
-
-                weightUpRight = pyramidData[iUpLevel][jUpRight] ;
-
-                if (i == 0 || (i != 0 && weightUpRight == 0)) { weightLoad = weightOrigin ; }
-                else if (weightUpRight >= 0) { weightLoad = weightOrigin + ((float)weightUpRight / 2) ; }
-                else return ;
-            
-            } else if (j > 0 && j < i) {
-
-                iUpLevel = i_alt - 1 ;
-                jUpLeft = j_alt - 1 ;
-                jUpRight = j_alt ;
-
-                weightUpLeft = pyramidData[iUpLevel][jUpLeft] ;
-                weightUpRight = pyramidData[iUpLevel][jUpRight] ;
-
-                if (weightUpLeft >= 0) {
-                    if (weightUpRight >= 0) { weightLoad = weightOrigin + ((float)(weightUpLeft + weightUpRight) / 2) ; }
-                    else { weightLoad = weightOrigin + ((float)(weightUpLeft) / 2) ; }
-                } else {
-                    if (weightUpRight >= 0) { weightLoad = weightOrigin + ((float)(weightUpRight) / 2) ; }
-                    else { weightLoad = weightOrigin ; }
-                }
-
-            } else if (i > 0 && j == i) {
-
-                iUpLevel = i_alt - 1 ;
-                jUpLeft = j_alt - 1 ;
-
-                weightUpLeft = pyramidData[iUpLevel][jUpLeft] ;
-
-                if (weightUpLeft >= 0) { weightLoad = weightOrigin + ((float)weightUpLeft / 2) ; }
-                else { weightLoad = weightOrigin ; }
+            if (i != 0)
+            {
+                if (j != 0)
+                    { weightUpLeft = pyramidData[iUpLevel][jUpLeft] ; }
+                else if (j != i)
+                    { weightUpRight = pyramidData[iUpLevel][jUpRight] ; }
             }
+
+            if (weightUpLeft == 0 && weightUpRight == 0)
+                { weightLoad = weightOrigin ; }
+            else if (weightUpLeft == 0 && weightUpRight > 0)
+                { weightLoad = weightOrigin + ((float)weightUpRight / 2) ; }
+            else if (weightUpLeft > 0 && weightUpRight == 0)
+                { weightLoad = weightOrigin + ((float)weightUpLeft / 2) ; }
+            else if (weightUpLeft > 0 && weightUpRight > 0)
+                { weightLoad = weightOrigin + ((float)(weightUpLeft + weightUpRight) / 2) ; }
             
             printf("%.2f\n", weightLoad) ;
         }
