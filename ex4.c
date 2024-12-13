@@ -12,13 +12,10 @@ void task3_parenthesis_validator() ;
 void task4_queens_battle() ;
 void task5_crossword_generator() ;
 
-
-
-// initialize task
+// initialize task for main
 int task = -1 ;
 
-int main()
-{   
+int main() {
     do
     {
         printf("Choose an option:\n"
@@ -34,36 +31,36 @@ int main()
             switch (task)
             {
             case 6:
-                break;
+                break ;
             case 1:
                 task1_robot_paths() ;
-                break;
+                break ;
             case 2:
                 task2_human_pyramid() ;
-                break;
+                break ;
             case 3:
                 task3_parenthesis_validator() ;
-                break;
+                break ;
             case 4:
                 task4_queens_battle() ;
-                break;
+                break ;
             case 5:
                 task5_crossword_generator() ;
-                break;
+                break ;
             default:
-                printf("Please choose a task number from the list.\n");
-                break;
+                printf("Please choose a task number from the list.\n") ;
+                break ;
             }
         }
         else
         {
-            if (scanf(" %*[^\n] %*c") == EOF) {task = 6 ; } ;
+            if (scanf(" %*[^\n] %*c") == EOF) {task = 6 ; }
             // scanf("%*s");
         }
 
-    } while (task != 6);
+    } while (task != 6) ;
 
-    printf("Goodbye!\n");
+    printf("Goodbye!\n") ;
 }
 
 
@@ -81,8 +78,8 @@ long long getDistinctPaths(long long x, long long y) {
 }
 
 
-void task1_robot_paths()
-{
+void task1_robot_paths() {
+
     long long
         x = -1, y = -1,
         totalDistinctPathsHome = 0 ;
@@ -130,54 +127,38 @@ void initPyramid(float *pyramidData[5]) {
 }
 
 
-void getWeight(float *pyramidData[5])
-{
-    int fullPyramid = 0 ;
-    while ( !fullPyramid ) {
-        initPyramid(pyramidData) ;
-        int input = 0 ;
-        float nextWeight = -1.00 ;
+void getWeight(float *pyramidData[5]) {
 
-        printf("Please enter the weights of the cheerleaders:\n") ;
+    initPyramid(pyramidData) ;
 
-        for (int i = 0; i < 5 ; i++) {
-            for (int j = 0 ; j <= i ; j++)
-            {
+    printf("Please enter the weights of the cheerleaders:\n") ;
+
+    for (int i = 0; i < 5; i++) {
+        for (int j = 0; j <= i; j++) {
+
+            float
+                nextWeight = -1.00;
+            int
                 input = scanf(" %f", &nextWeight) ;
 
-                if (input == EOF) {
-                    task = 6 ;
-                    return ;
-                }
-                if (input != 1 || nextWeight < 0) {
-                    printf("Negative weights are not supported.\n") ;
-                    break ;
-                } else { pyramidData[i][j] = nextWeight ; }
+            if (input == EOF) {
+                task = 6 ;
+                return ;
             }
-            if (input != 1 || nextWeight < 0) break ;
-        }
-        if (input != 1 || nextWeight < 0) return ;
 
-        // assumption for validation
-        fullPyramid = 1 ;
-
-        // validation
-        for (int k = 0 ; k < 5 ; k++) {
-            for (int l = 0 ; l <= k ; l++) {
-                if (pyramidData[k][l] < 0) {
-                    fullPyramid = 0 ;
-                    break ;
-                }
+            if (input != 1 || nextWeight < 0) {
+                printf("Negative weights are not supported.\n") ;
+                return ;
             }
-            if ( !fullPyramid ) break ;
+
+            pyramidData[i][j] = nextWeight ;
         }
-        if ( !fullPyramid ) continue ;
     }
 }
 
 
-void task2_human_pyramid()
-{
+void task2_human_pyramid() {
+
     float *pyramidData[5] ;
     initPyramid(pyramidData) ;
     getWeight(pyramidData) ;
