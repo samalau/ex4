@@ -161,9 +161,13 @@ void task2_human_pyramid() {
 
     float *pyramidData[5] ;
     initPyramid(pyramidData) ;
-    getWeight(pyramidData) ;
 
-    if (pyramidData[4][4] >= 0) {
+    if (pyramidData[4][4] < 0) {
+
+        getWeight(pyramidData) ;
+    
+    } else {
+        
         for (int i = 0 ; i < 5 ; i++) {
             for (int j = 0 ; j <= i ; j++) {
 
