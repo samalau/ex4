@@ -202,7 +202,7 @@ void task2_human_pyramid() {
 
 void task3_parenthesis_validator()
 {
-    // Todo
+    
 }
 
 void task4_queens_battle()
