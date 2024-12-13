@@ -198,15 +198,8 @@ void task2_human_pyramid()
                     weightUpRight = 0.00 ,
                     weightLoad = 0.00 ;
 
-                if (j > 0 && j < i) {
-                    iUpLevel = i_alt - 1 ;
-                    jUpLeft = j_alt - 1 ;
-                    jUpRight = j_alt ;
-                    weightUpLeft = pyramidData[iUpLevel][jUpLeft] ;
-                    weightUpRight = pyramidData[iUpLevel][jUpRight] ;
-                    weightLoad = weightOrigin + ((float)(weightUpLeft + weightUpRight) / 2) ; }
+                if (j == 0) {
 
-                else if (j == 0) {
                     iUpLevel = i_alt - 1 ;
                     jUpRight = j_alt ;
                     weightUpRight = pyramidData[iUpLevel][jUpRight] ;
@@ -214,15 +207,38 @@ void task2_human_pyramid()
                         weightLoad = weightOrigin ;
                     } else if (weightUpRight >= 0) {
                         weightLoad = weightOrigin + ((float)weightUpRight / 2) ;
-                    } else return ; }
+                    } else return ;
+                
+                } else if (j > 0 && j < i) {
 
-                else if (i > 0 && j == i) {
+                    iUpLevel = i_alt - 1 ;
+                    jUpLeft = j_alt - 1 ;
+                    jUpRight = j_alt ;
+
+                    weightUpLeft = pyramidData[iUpLevel][jUpLeft] ;
+                    weightUpRight = pyramidData[iUpLevel][jUpRight] ;
+
+                    if (weightUpLeft) {
+
+                        if (weightUpRight) {
+                            weightLoad = weightOrigin + ((float)(weightUpLeft + weightUpRight) / 2) ;
+                        } else {
+                            weightLoad = weightOrigin + ((float)(weightUpLeft) / 2) ;
+                        }
+                    
+                    } else {
+
+                        if (weightUpRight) {
+                            weightLoad = weightOrigin + ((float)(weightUpRight) / 2) ;
+                        } else {
+                            weightLoad = weightOrigin ;
+                        }
+                    }
+                } else if (i > 0 && j == i) {
                     iUpLevel = i_alt - 1 ;
                     jUpLeft = j_alt - 1 ;
                     weightUpLeft = pyramidData[iUpLevel][jUpLeft] ;
-                    if (weightUpLeft) {
-
-                    }
+                    if (weightUpLeft)
                         { weightLoad = weightOrigin + ((float)weightUpLeft / 2) ; }
                     else
                         { weightLoad = weightOrigin ; }
