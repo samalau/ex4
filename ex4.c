@@ -64,26 +64,32 @@ int main()
 }
 
 
-int getDistinctPaths(int x , int y)
-{
-    if (x == 0 || y == 0)
-        return 1 ;
-    return getDistinctPaths(x - 1 , y) + getDistinctPaths(x , y - 1) ;
+long long getDistinctPaths(long long x, long long y) {
+
+    if (x > y) {
+        return getDistinctPaths(x - y, y) + getDistinctPaths(y, y) ;
+
+    } else if (y > x) {
+        return getDistinctPaths(x, y - x) + getDistinctPaths(x, x) ;
+
+    } else {
+        return 2 * getDistinctPaths(x - 1, y) ;
+    }
 }
 
 
 void task1_robot_paths()
 {
+    long long
+        x = -1, y = -1,
+        totalDistinctPathsHome = 0 ;
     int
-        x = -1 ,
-        y = -1 ,
-        totalDistinctPathsHome = 0,
         validCoordinates = 0 ;
-
+    
     while (validCoordinates != 2) {
         printf("Please enter the coordinates of the robot (column, row):\n") ;
 
-        validCoordinates = scanf(" %d %d%*[^\n] %*c", &x , &y) ;
+        validCoordinates = scanf(" %lld %lld%*[^\n] %*c", &x, &y) ;
 
         if (validCoordinates == EOF) {
             task = 6 ;
@@ -96,9 +102,10 @@ void task1_robot_paths()
         }
 
         if (x < 0 || y < 0) { totalDistinctPathsHome = 0 ; }
-        else { totalDistinctPathsHome = getDistinctPaths(x , y) ; }
+        else if (x == 0 || y == 0) { totalDistinctPathsHome = 1 ; }
+        else { totalDistinctPathsHome = getDistinctPaths(x, y) ; }
     }
-    printf("The total number of paths the robot can take to reach home is: %d\n", totalDistinctPathsHome) ;
+    printf("The total number of paths the robot can take to reach home is: %lld\n", totalDistinctPathsHome) ;
 }
 
 
@@ -165,7 +172,8 @@ void task2_human_pyramid()
         level1[2] ,
         level2[3] ,
         level3[4] ,
-        level4[5] ,
+        level4[5] ;
+    float
         *pyramidData[5] = { level0 ,
                             level1 ,
                             level2 ,
