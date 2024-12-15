@@ -179,17 +179,15 @@ const int
 int findIndex(char symbol) { 
     for (int i = 0; i < 8; i++) {
         if (bracketMapDim[i] == symbol)
-            {return i;}
+            return i;
     }
-    return -1;
 }
-
 
 // process input and check parentheses
 int processRecursive(int depth) {
     char symbol;
 
-    int unconfirmed = scanf("%c", &symbol);
+    int unconfirmed = scanf(" %1[()[]{}<>\n]", &symbol);
 
     // end of input
     if (unconfirmed != 1 || symbol == '\n') {
@@ -200,10 +198,6 @@ int processRecursive(int depth) {
     }
 
     int index = findIndex(symbol);
-
-    // skip non-bracket
-    if (index == -1)
-        {return processRecursive(depth);}
 
     int identity = identityMapDim[index];
 
@@ -229,7 +223,7 @@ void task3_parenthesis_validator() {
         {printf("The parentheses are not balanced correctly.\n");}
     // 6 exits main while-loop
 
-    scanf(" %*[^\n]"); scanf(" %*c");
+    scanf("%*[^\n]"); scanf(" %*c");
 }
 
 void task4_queens_battle()
