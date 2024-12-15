@@ -223,16 +223,20 @@ int processRecursive(int depth) {
     char symbol ;
 
     // end of input
-    int unconfirmed = scanf(" %c", &symbol) ;
+    int unconfirmed = scanf("%1[^\n]", &symbol) ;
     if (unconfirmed != 1 || symbol == '\n') {
-        if (unconfirmed == EOF) { task = 6 ; }
+        if (unconfirmed == EOF) {
+            task = 6 ;
+        }
         return depth == 0 ;
     }
 
     int index = findIndex(symbol) ;
 
     // skip non-bracket
-    if (index == -1) return processRecursive(depth) ;
+    if (index == -1) {
+        return processRecursive(depth) ;
+    }
 
     int identity = identityMapDim[index] ;
 
