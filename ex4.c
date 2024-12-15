@@ -14,6 +14,7 @@ void task5_crossword_generator();
 
 // initialize task for main
 int task = -1;
+
 int main() {
     do {
         printf("Choose an option:\n"
@@ -48,16 +49,18 @@ int main() {
                 break;
             }
         }
-        if (scanf(" %*[^\n] %*c") == EOF) {task = 6;}
+        if (scanf("%*[^\n] %*c") == EOF) {task = 6;}
     } while (task != 6);
     printf("Goodbye!\n");
 }
 
 
 long long getDistinctPaths(long long x, long long y) {
-    if (x > y) return getDistinctPaths(x - y, y) + getDistinctPaths(y, y);
+    if (x > y)
+        return getDistinctPaths(x - y, y) + getDistinctPaths(y, y);
     
-    else if (y > x) return getDistinctPaths(x, y - x) + getDistinctPaths(x, x);
+    else if (y > x)
+        return getDistinctPaths(x, y - x) + getDistinctPaths(x, x);
     
     else return 2 * getDistinctPaths(x - 1, y);
 }
@@ -75,38 +78,38 @@ void task1_robot_paths() {
 
         validCoordinates = scanf(" %lld %lld%*[^\n] %*c", &x, &y);
 
-        if (validCoordinates == EOF) {task = 6; break;}
-        if (validCoordinates != 2) {scanf(" %*[^\n] %*c"); continue;}
+        if (validCoordinates == EOF) {
+            task = 6;
+            break;
+        }
+        if (validCoordinates != 2) {
+            scanf("%*[^\n]");
+            scanf(" %*c");
+            continue;
+        }
 
-        if (x < 0 || y < 0) {totalDistinctPathsHome = 0;}
-        else if (x == 0 || y == 0) {totalDistinctPathsHome = 1;}
+        if (x < 0 || y < 0)
+            {totalDistinctPathsHome = 0;}
+        else if (x == 0 || y == 0)
+            {totalDistinctPathsHome = 1;}
         else {totalDistinctPathsHome = getDistinctPaths(x, y);}
     }
     printf("The total number of paths the robot can take to reach home is: %lld\n", totalDistinctPathsHome);
 }
 
 
-float dataPyramid[5][5] = {
-    {-1},  // top level
-    {-1, -1},  // second level
-    {-1, -1, -1},  // third level
-    {-1, -1, -1, -1},  // fourth level
-    {-1, -1, -1, -1, -1}  // fifth level
-};
+float *dataPyramid[5];
+dataPyramid[0] = {-1};  // 1st row
+dataPyramid[1] = {-1, -1};  // 2nd row
+dataPyramid[2] = {-1, -1, -1};  // 3rd row
+dataPyramid[3] = {-1, -1, -1, -1};  // 4th row
+dataPyramid[4] = {-1, -1, -1, -1, -1};  // 5th row
 
 
 void resetPyramidData() {
-    float freshPyramid[5][5] = {
-        {-1},  // top level
-        {-1, -1},  // second level
-        {-1, -1, -1},  // third level
-        {-1, -1, -1, -1},  // fourth level
-        {-1, -1, -1, -1, -1}  // fifth level
-    };
-
     for (int i = 0; i < 5; i++) {
         for (int j = 0; j <= i; j++) {
-            dataPyramid[i][j] = freshPyramid[i][j];
+            dataPyramid[i][j] = -1;
         }
     }
 }
@@ -117,13 +120,14 @@ int getWeight(float *dataPyramid[5]) {
 
     for (int i = 0; i < 5; i++) {
         for (int j = 0; j <= i; j++) {
-            // initialize/reset nextWeight
             float nextWeight = -1.00;
-
             int input = scanf(" %f", &nextWeight);
 
             // 6 exits main while-loop
-            if (input == EOF) {task = 6; return 0;}
+            if (input == EOF) {
+                task = 6;
+                return 0;
+            }
             if (input != 1 || nextWeight < 0) {
                 printf("Negative weights are not supported.\n");
                 return 0;
@@ -155,8 +159,10 @@ void task2_human_pyramid() {
                     weightUpLeft = (j > 0) ? dataPyramid[i_alt - 1][j_alt - 1] : 0,
                     weightUpRight = (j < i) ? dataPyramid[i_alt - 1][j] : 0;
 
-                if (j == 0) {weightLoad += weightUpRight / 2;}
-                else if (j == i) {weightLoad += weightUpLeft / 2;}
+                if (j == 0)
+                    {weightLoad += weightUpRight / 2;}
+                else if (j == i)
+                    {weightLoad += weightUpLeft / 2;}
                 else {weightLoad += (weightUpLeft + weightUpRight) / 2;}
 
                 dataPyramid[i][j] = weightLoad;
@@ -182,6 +188,7 @@ int findIndex(char symbol) {
             return i;
     }
 }
+
 
 // process input and check parentheses
 int processRecursive(int depth) {
@@ -223,7 +230,8 @@ void task3_parenthesis_validator() {
         {printf("The parentheses are not balanced correctly.\n");}
     // 6 exits main while-loop
 
-    scanf("%*[^\n]"); scanf(" %*c");
+    scanf("%*[^\n]");
+    scanf(" %*c");
 }
 
 void task4_queens_battle()
