@@ -9,8 +9,8 @@ Assignment: 4
 #define MAX_CHUNK 64;
 #define ITERATIONS_PER_CHUNK 8;
 
-//for task 3
-#define MAX_DEPTH 64
+//for tasks 1, 3
+#define MAX_DEPTH 64;
 
 void task1_robot_paths();
 void task2_human_pyramid();
@@ -19,7 +19,7 @@ void task4_queens_battle();
 void task5_crossword_generator();
 
 // task 1 helper
-long long getDistinctPaths(long long x, long long y);
+long long getDistinctPaths(long long x, long long y, int depth);
 
 // task 2 helpers
 void initializePyramid();
@@ -87,26 +87,26 @@ long long getDistinctPaths(long long x, long long y, int depth) {
     
     // reset depth if needed
     if (depth >= MAX_DEPTH) {
-        depth = 0;
+        return 0;
     }
 
     if (x < 0 || y < 0) return 0;
 
     else if (x == 0 || y == 0) return 1;
 
-    else if (x > y) return getDistinctPaths(x - y, y) + getDistinctPaths(y, y);
+    else if (x > y) return getDistinctPaths(x - y, y, depth + 1) + getDistinctPaths(y, y, depth + 1);
     
-    else if (y > x) return getDistinctPaths(x, y - x) + getDistinctPaths(x, x);
+    else if (y > x) return getDistinctPaths(x, y - x, depth + 1) + getDistinctPaths(x, x, depth + 1);
     
-    else return 2 * getDistinctPaths(x - 1, y);
+    else return 2 * getDistinctPaths(x - 1, y, depth + 1);
 }
 
 long long chunkyChunkDistinctPaths(long long x, long long y, long long chunkIndex) {
-    long long chunkResult = 0;
+    long long result = 0;
     for (int i = 0; i < ITERATIONS_PER_CHUNK; i++) {
-        chunkResult += getDistinctPaths(x, y);
+        result += getDistinctPaths(x, y, 0);
     }
-
+    return result;
 }
 
 
@@ -136,7 +136,7 @@ void task1_robot_paths() {
         } else if (x == 0 || y == 0) {
             totalDistinctPathsHome = 1;
         } else {
-            for (long long chunk = 0; i < MAX_CHUNK; chunk++) {
+            for (long long chunk = 0; chunk < MAX_CHUNK; chunk++) {
                 totalDistinctPathsHome += chunkyChunkDistinctPaths(x, y, chunk);
             }
         }
