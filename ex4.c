@@ -14,7 +14,7 @@ void task3_parenthesis_validator();
 void task4_queens_battle();
 void task5_crossword_generator();
 
-// initialize task for main
+// initialize task
 int task = -1;
 
 int main() {
@@ -40,8 +40,6 @@ int main() {
         }
 
         switch (task) {
-            case 6:
-                break;
             case 1:
                 task1_robot_paths();
                 break;
@@ -57,21 +55,22 @@ int main() {
             case 5:
                 task5_crossword_generator();
                 break;
+            case 6:
+                break;
             default:
                 printf("Please choose a task number from the list.\n");
                 break;
             }
     } while (task != 6);
+
     printf("Goodbye!\n");
 }
 
 
 long long getDistinctPaths(long long x, long long y) {
-    if (x > y)
-        return getDistinctPaths(x - y, y) + getDistinctPaths(y, y);
+    if (x > y) return getDistinctPaths(x - y, y) + getDistinctPaths(y, y);
     
-    else if (y > x)
-        return getDistinctPaths(x, y - x) + getDistinctPaths(x, x);
+    else if (y > x) return getDistinctPaths(x, y - x) + getDistinctPaths(x, x);
     
     else return 2 * getDistinctPaths(x - 1, y);
 }
@@ -84,26 +83,27 @@ void task1_robot_paths() {
         totalDistinctPathsHome = 0;
     int validCoordinates = 0;
     
-    while (validCoordinates != 2) 
-    {   printf("Please enter the coordinates of the robot (column, row):\n");
+    while (validCoordinates != 2) {
+        printf("Please enter the coordinates of the robot (column, row):\n");
 
-        validCoordinates = scanf(" %lld %lld%*[^\n] %*c", &x, &y);
-
-        if (validCoordinates == EOF) {
-            task = 6;
-            break;
-        }
+        validCoordinates = scanf(" %lld %lld", &x, &y);
         if (validCoordinates != 2) {
             scanf("%*[^\n]");
             scanf(" %*c");
+            if (validCoordinates == EOF) {
+                task = 6;
+                return;
+            }
             continue;
         }
 
-        if (x < 0 || y < 0)
-            {totalDistinctPathsHome = 0;}
-        else if (x == 0 || y == 0)
-            {totalDistinctPathsHome = 1;}
-        else {totalDistinctPathsHome = getDistinctPaths(x, y);}
+        if (x < 0 || y < 0) {
+            totalDistinctPathsHome = 0;
+        } else if (x == 0 || y == 0) {
+            totalDistinctPathsHome = 1;
+        } else {
+            totalDistinctPathsHome = getDistinctPaths(x, y);
+        }
     }
     printf("The total number of paths the robot can take to reach home is: %lld\n", totalDistinctPathsHome);
 }
@@ -142,7 +142,7 @@ int getWeight() {
 
     for (int i = 0; i < 5; i++) {
         for (int j = 0; j <= i; j++) {
-            float nextWeight = -1.00;
+            float nextWeight = -1;
             int input = scanf(" %f", &nextWeight);
 
             if (input == EOF) {
@@ -182,11 +182,13 @@ void task2_human_pyramid() {
                     weightUpLeft = (j > 0) ? dataPyramid[i_alt - 1][j_alt - 1] : 0,
                     weightUpRight = (j < i) ? dataPyramid[i_alt - 1][j] : 0;
 
-                if (j == 0)
-                    {weightLoad += weightUpRight / 2;}
-                else if (j == i)
-                    {weightLoad += weightUpLeft / 2;}
-                else {weightLoad += (weightUpLeft + weightUpRight) / 2;}
+                if (j == 0) {
+                    weightLoad += weightUpRight / 2;
+                } else if (j == i) {
+                    weightLoad += weightUpLeft / 2;
+                } else {
+                    weightLoad += (weightUpLeft + weightUpRight) / 2;
+                }
 
                 dataPyramid[i][j] = weightLoad;
             }
@@ -207,8 +209,9 @@ const int
 
 int findIndex(char symbol) { 
     for (int i = 0; i < 8; i++) {
-        if (bracketMapDim[i] == symbol)
+        if (bracketMapDim[i] == symbol) {
             return i;
+        }
     }
     return -1;
 }
@@ -216,7 +219,8 @@ int findIndex(char symbol) {
 
 // process input and check parentheses
 int processRecursive(int depth) {
-    if (depth > MAX_DEPTH) {  // temporary
+    // temporary
+    if (depth > MAX_DEPTH) {
         // 6 exits main while-loop
         task = 6;
         return depth == 0;
@@ -224,9 +228,7 @@ int processRecursive(int depth) {
 
     // buffer index 1 is \0
     char buffer[2];
-
     int unconfirmed = scanf(" %1[()[]{}<>\n]", buffer);
-
     char symbol = buffer[0];
 
     // end of input
@@ -240,9 +242,7 @@ int processRecursive(int depth) {
 
     int index = findIndex(symbol);
 
-    if (index == -1) {
-        return 0;
-    }
+    if (index == -1) return 0;
 
     int identity = identityMapDim[index];
 
@@ -256,19 +256,20 @@ int processRecursive(int depth) {
     if (depth <= 0 || mirrorMapDim[index] != identityMapDim[expectedIndex]) {
         return 0;
     }
+
     return processRecursive(depth - 1);
 }
 
 
 void task3_parenthesis_validator() {
     printf("Please enter a term for validation:\n");
-    
-    if (processRecursive(0))
-        {printf("The parentheses are balanced correctly.\n");}
 
-    else if (task != 6)
-        {printf("The parentheses are not balanced correctly.\n");}
-    // 6 exits main while-loop
+    if (processRecursive(0)) {
+        printf("The parentheses are balanced correctly.\n");
+    } else if (task != 6) {
+        printf("The parentheses are not balanced correctly.\n");
+    }
+    // task = 6 exits main while-loop
 
     scanf("%*[^\n]");
     scanf(" %*c");
