@@ -6,13 +6,29 @@ Assignment: 4
 #include <stdio.h>
 #include <string.h>
 
-#define MAX_DEPTH 50000  // temporary
+// for task 1
+#define MAX_CHUNK 64
+
+//for task 3
+#define MAX_DEPTH 64
 
 void task1_robot_paths();
 void task2_human_pyramid();
 void task3_parenthesis_validator();
 void task4_queens_battle();
 void task5_crossword_generator();
+
+// task 1 helper
+long long getDistinctPaths(long long x, long long y);
+
+// task 2 helpers
+void initializePyramid();
+void resetPyramidData();
+int getWeight();
+
+// task 3 helpers
+int findIndex(char symbol);
+int processRecursive(int depth);
 
 // initialize task
 int task = -1;
@@ -68,7 +84,11 @@ int main() {
 
 
 long long getDistinctPaths(long long x, long long y) {
-    if (x > y) return getDistinctPaths(x - y, y) + getDistinctPaths(y, y);
+    if (x < 0 || y < 0) return 0;
+
+    else if (x == 0 || y == 0) return 1;
+
+    else if (x > y) return getDistinctPaths(x - y, y) + getDistinctPaths(y, y);
     
     else if (y > x) return getDistinctPaths(x, y - x) + getDistinctPaths(x, x);
     
@@ -219,11 +239,10 @@ int findIndex(char symbol) {
 
 // process input and check parentheses
 int processRecursive(int depth) {
-    // temporary
-    if (depth > MAX_DEPTH) {
-        // 6 exits main while-loop
-        task = 6;
-        return depth == 0;
+    
+    // reset depth if needed
+    if (depth >= MAX_DEPTH) {
+        depth = 0;
     }
 
     // buffer index 1 is \0
