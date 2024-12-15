@@ -122,7 +122,9 @@ void task1_robot_paths() {
         } else if (x == 0 || y == 0) {
             totalDistinctPathsHome = 1;
         } else {
-            totalDistinctPathsHome = getDistinctPaths(x, y);
+            for (long long i = 0; i < MAX_CHUNK; i++) {
+                totalDistinctPathsHome += getDistinctPaths(x, y);
+            }
         }
     }
     printf("The total number of paths the robot can take to reach home is: %lld\n", totalDistinctPathsHome);
