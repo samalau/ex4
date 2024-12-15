@@ -261,12 +261,13 @@ void task3_parenthesis_validator() {
 
     if (processRecursive(0)) {
         printf("The parentheses are balanced correctly.\n") ;
-        return ;
+    } else {
+        if (task != 6)
+            { printf("The parentheses are not balanced correctly.\n") ; }
     }
-    if (task != 6)
-        { printf("The parentheses are not balanced correctly.\n") ; }   
+    scanf(" %*[^\n]");
+    scanf(" %*c");
 }
-
 
 void task4_queens_battle()
 {
