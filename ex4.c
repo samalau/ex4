@@ -6,29 +6,32 @@ Assignment: 4
 #include <stdio.h>
 #include <string.h>
 
-#define MAX_CHUNK 64;
-#define ITERATIONS_PER_CHUNK 8;
+// task 1 macro
+#define MAX_CHUNK 128;  //placeholder
+#define ITERATIONS_PER_CHUNK 128;  //placeholder
 
-//for tasks 1, 3
-#define MAX_DEPTH 64;
+// tasks 1, 3 macro
+#define MAX_DEPTH 128;  //placeholder
 
+// task 1 helper
+long long chunkyChunkDistinctPaths(long long x, long long y, int depth);
+long long getDistinctPaths(long long x, long long y, int chunk);
+
+// task 2 helper
+void initializePyramid();
+void resetPyramidData();
+int getWeight();
+
+// task 3 helper
+int findIndex(char symbol);
+int processRecursive(int depth);
+
+// task root functions
 void task1_robot_paths();
 void task2_human_pyramid();
 void task3_parenthesis_validator();
 void task4_queens_battle();
 void task5_crossword_generator();
-
-// task 1 helper
-long long getDistinctPaths(long long x, long long y, int depth);
-
-// task 2 helpers
-void initializePyramid();
-void resetPyramidData();
-int getWeight();
-
-// task 3 helpers
-int findIndex(char symbol);
-int processRecursive(int depth);
 
 // initialize task
 int task = -1;
@@ -83,30 +86,26 @@ int main() {
 }
 
 
-long long getDistinctPaths(long long x, long long y, int depth) {
+long long chunkyChunkDistinctPaths(long long x, long long y, int depth) {
     
     // reset depth if needed
-    if (depth >= MAX_DEPTH) {
-        return 0;
-    }
+    if (depth >= MAX_DEPTH) return depth == 0;
 
     if (x < 0 || y < 0) return 0;
-
     else if (x == 0 || y == 0) return 1;
 
     else if (x > y) return getDistinctPaths(x - y, y, depth + 1) + getDistinctPaths(y, y, depth + 1);
-    
     else if (y > x) return getDistinctPaths(x, y - x, depth + 1) + getDistinctPaths(x, x, depth + 1);
-    
     else return 2 * getDistinctPaths(x - 1, y, depth + 1);
 }
 
-long long chunkyChunkDistinctPaths(long long x, long long y, long long chunkIndex) {
-    long long result = 0;
+long long getDistinctPaths(long long x, long long y, int chunk) {
+    long long totalPaths = 0;
+    int depth = 0;
     for (int i = 0; i < ITERATIONS_PER_CHUNK; i++) {
-        result += getDistinctPaths(x, y, 0);
+        totalPaths += chunkyChunkDistinctPaths(x, y, depth);
     }
-    return result;
+    return totalPaths;
 }
 
 
@@ -114,7 +113,7 @@ void task1_robot_paths() {
     long long
         x = -1,
         y = -1,
-        totalDistinctPathsHome = 0;
+        totalDistinctPaths = 0;
     int validCoordinates = 0;
     
     while (validCoordinates != 2) {
@@ -132,16 +131,16 @@ void task1_robot_paths() {
         }
 
         if (x < 0 || y < 0) {
-            totalDistinctPathsHome = 0;
+            totalDistinctPaths = 0;
         } else if (x == 0 || y == 0) {
-            totalDistinctPathsHome = 1;
+            totalDistinctPaths = 1;
         } else {
-            for (long long chunk = 0; chunk < MAX_CHUNK; chunk++) {
-                totalDistinctPathsHome += chunkyChunkDistinctPaths(x, y, chunk);
+            for (int chunk = 0; chunk < MAX_CHUNK; chunk++) {
+                totalDistinctPaths += getDistinctPaths(x, y, chunk);
             }
         }
     }
-    printf("The total number of paths the robot can take to reach home is: %lld\n", totalDistinctPathsHome);
+    printf("The total number of paths the robot can take to reach home is: %lld\n", totalDistinctPaths);
 }
 
 
