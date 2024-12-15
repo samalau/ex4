@@ -86,15 +86,13 @@ int main() {
 }
 
 
+// TASK 1 robot paths
 long long getDistinctPaths(long long *x, long long *y, int depth) {
-    
+
     // reset depth if needed
     if (depth >= MAX_DEPTH) {
-        if (*x < 0 || *y < 0) {
-            return 0;
-        } else if (*x == 0 || *y == 0) {
-            return 1;
-        }
+        if (*x < 0 || *y < 0) return 0;
+        else if (*x == 0 || *y == 0) return 1;
         return 0;
     }
 
@@ -155,6 +153,7 @@ void task1_robot_paths() {
 }
 
 
+// TASK 2 human pyramid
 float *dataPyramid[5];
 
 float
@@ -246,6 +245,7 @@ void task2_human_pyramid() {
 }
 
 
+// TASK 3 parenthesis validation
 const char
     bracketMapDim[8] = {'(', '[', '{', '<', '>', '}', ']', ')'};
 const int
