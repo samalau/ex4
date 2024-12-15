@@ -56,7 +56,7 @@ int main() {
         }
         else
         {
-            if (scanf(" %*[^\n] %*c") == EOF) {task = 6 ; }
+            if (scanf(" %*[^\n] %*c") == EOF) { task = 6 ; }
             // scanf("%*s");
         }
 
@@ -68,25 +68,21 @@ int main() {
 
 long long getDistinctPaths(long long x, long long y) {
 
-    if (x > y) {
-        return getDistinctPaths(x - y, y) + getDistinctPaths(y, y) ;
+    if (x > y) return getDistinctPaths(x - y, y) + getDistinctPaths(y, y) ;
 
-    } else if (y > x) {
-        return getDistinctPaths(x, y - x) + getDistinctPaths(x, x) ;
+    else if (y > x) return getDistinctPaths(x, y - x) + getDistinctPaths(x, x) ;
 
-    } else {
-        return 2 * getDistinctPaths(x - 1, y) ;
-    }
+    else return 2 * getDistinctPaths(x - 1, y) ;
 }
 
 
 void task1_robot_paths() {
 
     long long
-        x = -1, y = -1,
+        x = -1,
+        y = -1,
         totalDistinctPathsHome = 0 ;
-    int
-        validCoordinates = 0 ;
+    int validCoordinates = 0 ;
     
     while (validCoordinates != 2) {
         printf("Please enter the coordinates of the robot (column, row):\n") ;
@@ -104,45 +100,55 @@ void task1_robot_paths() {
         }
 
         if (x < 0 || y < 0) { totalDistinctPathsHome = 0 ; }
+
         else if (x == 0 || y == 0) { totalDistinctPathsHome = 1 ; }
+
         else { totalDistinctPathsHome = getDistinctPaths(x, y) ; }
     }
     printf("The total number of paths the robot can take to reach home is: %lld\n", totalDistinctPathsHome) ;
 }
 
 
-// empty pyramid levels
-float
-    level0[1] = {-1},
-    level1[2] = {-1, -1},
-    level2[3] = {-1, -1, -1},
-    level3[4] = {-1, -1, -1, -1},
-    level4[5] = {-1, -1, -1, -1, -1} ;
+float dataPyramid[5][5] = {
+    {-1},  // top level
+    {-1, -1},  // second level
+    {-1, -1, -1},  // third level
+    {-1, -1, -1, -1},  // fourth level
+    {-1, -1, -1, -1, -1}  // fifth level
+} ;
 
-// empties pyramid levels 
-void initPyramid(float *pyramidData[5]) {
-    pyramidData[0] = level0 ;
-    pyramidData[1] = level1 ;
-    pyramidData[2] = level2 ;
-    pyramidData[3] = level3 ;
-    pyramidData[4] = level4 ;
+
+void resetPyramidData() {
+
+    float freshPyramid[5][5] = {
+        {-1},  // top level
+        {-1, -1},  // second level
+        {-1, -1, -1},  // third level
+        {-1, -1, -1, -1},  // fourth level
+        {-1, -1, -1, -1, -1}  // fifth level
+    } ;
+
+    for (int i = 0; i < 5; i++) {
+        for (int j = 0; j <= i; j++) {
+            dataPyramid[i][j] = freshPyramid[i][j];
+        }
+    }
 }
 
 
-int getWeight(float *pyramidData[5]) {
-
-    initPyramid(pyramidData) ;
+int getWeight(float *dataPyramid[5]) {
 
     printf("Please enter the weights of the cheerleaders:\n") ;
 
     for (int i = 0; i < 5; i++) {
         for (int j = 0; j <= i; j++) {
 
-            float
-                nextWeight = -1.00;
-            int
-                input = scanf(" %f", &nextWeight) ;
+            // initialize nextWeight
+            float nextWeight = -1.00;
 
+            int input = scanf(" %f", &nextWeight) ;
+
+            // task 6 exits main menu
             if (input == EOF) {
                 task = 6 ;
                 return 0 ;
@@ -153,7 +159,7 @@ int getWeight(float *pyramidData[5]) {
                 return 0 ;
             }
 
-            pyramidData[i][j] = nextWeight ;
+            dataPyramid[i][j] = nextWeight ;
         }
     }
     return 1 ;
@@ -161,48 +167,42 @@ int getWeight(float *pyramidData[5]) {
 
 
 void task2_human_pyramid() {
-
-    float *pyramidData[5] ;
-    initPyramid(pyramidData) ;
     
-    int fullData = getWeight(pyramidData) ;
+    int fullData = getWeight(dataPyramid) ;
     if (!fullData) return ;
 
     for (int i = 0 ; i < 5 ; i++) {
         for (int j = 0 ; j <= i ; j++) {
-
             int
                 i_alt = i,
                 j_alt = j ;
 
-            float
-                weightOrigin = pyramidData[i][j] ;
-            float
-                weightLoad = weightOrigin ;
+            float weightOrigin = dataPyramid[i][j] ;
+            
+            // initialize weightLoad
+            float weightLoad = weightOrigin ;
 
             if (i > 0) {
-                float weightUpLeft = (j > 0) ? pyramidData[i_alt - 1][j_alt - 1] : 0 ;
-                float weightUpRight = (j < i) ? pyramidData[i_alt - 1][j] : 0 ;
+                float
+                    weightUpLeft = (j > 0) ? dataPyramid[i_alt - 1][j_alt - 1] : 0,
+                    weightUpRight = (j < i) ? dataPyramid[i_alt - 1][j] : 0 ;
 
-                if (j == 0) {
-                    weightLoad += weightUpRight / 2 ;
-                } else if (j == i) {
-                    weightLoad += weightUpLeft / 2 ;
-                } else {
-                    weightLoad += (weightUpLeft + weightUpRight) / 2 ;
-                }
+                if (j == 0) { weightLoad += weightUpRight / 2 ; }
+                else if (j == i) { weightLoad += weightUpLeft / 2 ; }
+                else { weightLoad += (weightUpLeft + weightUpRight) / 2 ; }
 
-                pyramidData[i][j] = weightLoad ;
+                dataPyramid[i][j] = weightLoad ;
             }
 
             printf("%.2f ", weightLoad) ;
         }
         printf("\n") ;
     }
+    resetPyramidData() ;
 }
 
-const char
-    bracketMapDim[8] = {'(', '[', '{', '<', '>', '}', ']', ')'} ;
+
+const char bracketMapDim[8] = {'(', '[', '{', '<', '>', '}', ']', ')'} ;
 const int
     identityMapDim[8] = {0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80},
     mirrorMapDim[8] = {0x80, 0x40, 0x20, 0x10, 0x08, 0x04, 0x02, 0x01} ;
@@ -210,9 +210,8 @@ const int
 
 int findIndex(char symbol) {
     for (int i = 0; i < 8; i++) {
-        if (bracketMapDim[i] == symbol) {
-            return i ;
-        }
+        if (bracketMapDim[i] == symbol)
+            { return i ; }
     }
     return -1 ;
 }
@@ -224,19 +223,16 @@ int processRecursive(int depth) {
 
     // end of input
     int unconfirmed = scanf("%c", &symbol) ;
-    if (unconfirmed != 1 || symbol == '\n') {
-        if (unconfirmed == EOF) {
-            task = 6 ;
-        }
-        return depth == 0 ;
-    }
+
+    // task 6 exits main menu
+    if (unconfirmed == EOF) { task = 6 ; }
+
+    if (unconfirmed != 1 || symbol == '\n') return depth == 0 ;
 
     int index = findIndex(symbol) ;
 
     // skip non-bracket
-    if (index == -1) {
-        return processRecursive(depth) ;
-    }
+    if (index == -1) return processRecursive(depth) ;
 
     int identity = identityMapDim[index] ;
 
@@ -244,12 +240,10 @@ int processRecursive(int depth) {
     if (identity <= 0x08) {
         return processRecursive(depth + 1) ;
     }
+
     // handle closing parentheses
-    else {
-        if (depth <= 0 || mirrorMapDim[index] != identityMapDim[findIndex(bracketMapDim[index ^ 7])]) {
-            return 0 ;
-        }
-        // depth-- ;
+    else if (depth <= 0 || mirrorMapDim[index] != identityMapDim[findIndex(bracketMapDim[index ^ 7])]) {
+        return 0 ;
     }
 
     return processRecursive(depth - 1) ;
@@ -258,12 +252,12 @@ int processRecursive(int depth) {
 
 void task3_parenthesis_validator() {
     printf("Please enter a term for validation:\n") ;
-
+    
     if (processRecursive(0)) printf("The parentheses are balanced correctly.\n") ;
+    
     else if (task != 6) printf("The parentheses are not balanced correctly.\n") ;
-
-    scanf(" %*[^\n]");
-    scanf(" %*c");
+    
+    scanf(" %*[^\n]"); scanf(" %*c");
 }
 
 void task4_queens_battle()
