@@ -6,8 +6,8 @@ Assignment: 4
 #include <stdio.h>
 #include <string.h>
 
-// for task 1
-#define MAX_CHUNK 64
+#define MAX_CHUNK 64;
+#define ITERATIONS_PER_CHUNK 8;
 
 //for task 3
 #define MAX_DEPTH 64
@@ -83,7 +83,13 @@ int main() {
 }
 
 
-long long getDistinctPaths(long long x, long long y) {
+long long getDistinctPaths(long long x, long long y, int depth) {
+    
+    // reset depth if needed
+    if (depth >= MAX_DEPTH) {
+        depth = 0;
+    }
+
     if (x < 0 || y < 0) return 0;
 
     else if (x == 0 || y == 0) return 1;
@@ -93,6 +99,14 @@ long long getDistinctPaths(long long x, long long y) {
     else if (y > x) return getDistinctPaths(x, y - x) + getDistinctPaths(x, x);
     
     else return 2 * getDistinctPaths(x - 1, y);
+}
+
+long long chunkyChunkDistinctPaths(long long x, long long y, long long chunkIndex) {
+    long long chunkResult = 0;
+    for (int i = 0; i < ITERATIONS_PER_CHUNK; i++) {
+        chunkResult += getDistinctPaths(x, y);
+    }
+
 }
 
 
@@ -122,8 +136,8 @@ void task1_robot_paths() {
         } else if (x == 0 || y == 0) {
             totalDistinctPathsHome = 1;
         } else {
-            for (long long i = 0; i < MAX_CHUNK; i++) {
-                totalDistinctPathsHome += getDistinctPaths(x, y);
+            for (long long chunk = 0; i < MAX_CHUNK; chunk++) {
+                totalDistinctPathsHome += chunkyChunkDistinctPaths(x, y, chunk);
             }
         }
     }
