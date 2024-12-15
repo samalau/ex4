@@ -223,7 +223,7 @@ int processRecursive(int depth) {
     char symbol ;
 
     // end of input
-    int unconfirmed = scanf("%1[^\n]", &symbol) ;
+    int unconfirmed = scanf("%c", &symbol) ;
     if (unconfirmed != 1 || symbol == '\n') {
         if (unconfirmed == EOF) {
             task = 6 ;
@@ -242,19 +242,17 @@ int processRecursive(int depth) {
 
     // handle opening parentheses
     if (identity <= 0x08) {
-        if (!processRecursive(depth + 1)) {
-            return 0 ;
-        }
+        return processRecursive(depth + 1) ;
     }
     // handle closing parentheses
     else {
         if (depth <= 0 || mirrorMapDim[index] != identityMapDim[findIndex(bracketMapDim[index ^ 7])]) {
             return 0 ;
         }
-        depth-- ;
+        // depth-- ;
     }
 
-    return processRecursive(depth) ;
+    return processRecursive(depth - 1) ;
 }
 
 
