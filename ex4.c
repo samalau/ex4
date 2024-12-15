@@ -24,7 +24,7 @@ int getWeight();
 
 // task 3 helper
 int findIndex(char symbol);
-int processRecursive(int depth);
+int processSymbol(int depth);
 
 // task root functions
 void task1_robot_paths();
@@ -157,11 +157,11 @@ void task1_robot_paths() {
 float *dataPyramid[5];
 
 float
-    level_1[] = {-1},  // top row
-    level_2[] = {-1, -1},  // 2nd row
-    level_3[] = {-1, -1, -1},  // 3rd row
-    level_4[] = {-1, -1, -1, -1},  // 4th row
-    level_5[] = {-1, -1, -1, -1, -1};  // 5th row
+    level_1[] = {-1},  
+    level_2[] = {-1, -1},
+    level_3[] = {-1, -1, -1},
+    level_4[] = {-1, -1, -1, -1},
+    level_5[] = {-1, -1, -1, -1, -1};
 
 
 void initializePyramid() {
@@ -214,6 +214,7 @@ void task2_human_pyramid() {
 
     for (int i = 0; i < 5; i++) {
         for (int j = 0; j <= i; j++) {
+
             int i_alt = i,
                 j_alt = j;
 
@@ -234,7 +235,6 @@ void task2_human_pyramid() {
                 } else {
                     weightLoad += (weightUpLeft + weightUpRight) / 2;
                 }
-
                 dataPyramid[i][j] = weightLoad;
             }
             printf("%.2f ", weightLoad);
@@ -246,8 +246,8 @@ void task2_human_pyramid() {
 
 
 // TASK 3 parenthesis validation
-const char
-    bracketMapDim[8] = {'(', '[', '{', '<', '>', '}', ']', ')'};
+const char bracketMapDim[8] = {'(', '[', '{', '<', '>', '}', ']', ')'};
+
 const int
     identityMapDim[8] = {0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80},
     mirrorMapDim[8] = {0x80, 0x40, 0x20, 0x10, 0x08, 0x04, 0x02, 0x01};
@@ -263,8 +263,8 @@ int findIndex(char symbol) {
 }
 
 
-// process input and check parentheses
-int processRecursive(int depth) {
+// process input to extract parentheses
+int processSymbol(int depth) {
     
     // reset depth if needed
     if (depth >= MAX_DEPTH) {
@@ -292,24 +292,22 @@ int processRecursive(int depth) {
     int identity = identityMapDim[index];
 
     // handle opening parentheses
-    if (identity <= 0x08) {
-        return processRecursive(depth + 1);
-    }
-
+    if (identity <= 0x08) return processSymbol(depth + 1);
+    
     // handle closing parentheses
     int expectedIndex = findIndex(bracketMapDim[index ^ 7]);
     if (depth <= 0 || mirrorMapDim[index] != identityMapDim[expectedIndex]) {
         return 0;
     }
 
-    return processRecursive(depth - 1);
+    return processSymbol(depth - 1);
 }
 
 
 void task3_parenthesis_validator() {
     printf("Please enter a term for validation:\n");
 
-    if (processRecursive(0)) {
+    if (processSymbol(0)) {
         printf("The parentheses are balanced correctly.\n");
     } else if (task != 6) {
         printf("The parentheses are not balanced correctly.\n");
