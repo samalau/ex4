@@ -7,11 +7,11 @@ Assignment: 4
 #include <string.h>
 
 // task 1 macro
-#define MAX_CHUNK 128;  //placeholder
-#define ITERATIONS_PER_CHUNK 128;  //placeholder
+#define MAX_CHUNK 64  //placeholder
+#define ITERATIONS_PER_CHUNK 64  //placeholder
 
 // tasks 1, 3 macro
-#define MAX_DEPTH 128;  //placeholder
+#define MAX_DEPTH 64  //placeholder
 
 // task 1 helper
 long long chunkyChunkDistinctPaths(long long x, long long y, int depth);
