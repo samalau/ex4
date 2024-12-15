@@ -14,8 +14,8 @@ Assignment: 4
 #define MAX_DEPTH 64  //placeholder
 
 // task 1 helper
-long long chunkyChunkDistinctPaths(long long x, long long y, int depth);
-long long getDistinctPaths(long long x, long long y, int chunk);
+long long getDistinctPaths(long long *x, long long *y, int depth);
+long long totalPaths(long long *x, long long *y, int chunk);
 
 // task 2 helper
 void initializePyramid();
@@ -86,27 +86,37 @@ int main() {
 }
 
 
-long long chunkyChunkDistinctPaths(long long x, long long y, int depth) {
+long long getDistinctPaths(long long *x, long long *y, int depth) {
     
     // reset depth if needed
-    if (depth >= MAX_DEPTH) return 0;
+    if (depth >= MAX_DEPTH) {
+        if (*x < 0 || *y < 0) {
+            return 0;
+        } else if (*x == 0 || *y == 0) {
+            return 1;
+        }
+        return 0;
+    }
 
-    if (x < 0 || y < 0) return 0;
-    else if (x == 0 || y == 0) return 1;
+    if (*x < 0 || *y < 0) return 0;
+    else if (*x == 0 || *y == 0) return 1;
 
-    else if (x > y) return getDistinctPaths(x - y, y, depth + 1) + getDistinctPaths(y, y, depth + 1);
-    else if (y > x) return getDistinctPaths(x, y - x, depth + 1) + getDistinctPaths(x, x, depth + 1);
+    else if (*x > *y) return getDistinctPaths(x - y, y, depth + 1) + getDistinctPaths(y, y, depth + 1);
+    else if (*y > *x) return getDistinctPaths(x, y - x, depth + 1) + getDistinctPaths(x, x, depth + 1);
     else return 2 * getDistinctPaths(x - 1, y, depth + 1);
 }
 
 
-long long getDistinctPaths(long long x, long long y, int chunk) {
-    long long totalPaths = 0;
+long long totalPaths(long long *x, long long *y, int chunk) {
+    long long total = 0;
     int depth = 0;
     for (int i = 0; i < ITERATIONS_PER_CHUNK; i++) {
-        totalPaths += chunkyChunkDistinctPaths(x, y, depth);
+        long long chunkyChunk = getDistinctPaths(x, y, depth);
+        if (chunkyChunk != 0) {
+            total += chunkyChunk;
+        }
     }
-    return totalPaths;
+    return total;
 }
 
 
@@ -137,7 +147,7 @@ void task1_robot_paths() {
             totalDistinctPaths = 1;
         } else {
             for (int chunk = 0; chunk < MAX_CHUNK; chunk++) {
-                totalDistinctPaths += getDistinctPaths(x, y, chunk);
+                totalDistinctPaths += totalPaths(&x, &y, chunk);
             }
         }
     }
