@@ -6,6 +6,8 @@ Assignment: 4
 #include <stdio.h>
 #include <string.h>
 
+#define CHUNK_SIZE 1024
+
 void task1_robot_paths() ;
 void task2_human_pyramid() ;
 void task3_parenthesis_validator() ;
@@ -199,11 +201,70 @@ void task2_human_pyramid() {
     }
 }
 
+const char
+    bracketMapDim[8] = {'(', '[', '{', '<', '>', '}', ']', ')'} ;
+const int
+    identityMapDim[8] = {0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80},
+    mirrorMapDim[8] = {0x80, 0x40, 0x20, 0x10, 0x08, 0x04, 0x02, 0x01} ;
 
-void task3_parenthesis_validator()
-{
-    
+
+int findIndex(char symbol) {
+    for (int i = 0; i < 8; i++) {
+        if (bracketMapDim[i] == symbol) {
+            return i ;
+        }
+    }
+    return -1 ;
 }
+
+
+// process input and check parentheses
+int processRecursive(int depth) {
+    char symbol ;
+
+    // end of input
+    int unconfirmed = scanf(" %c", &symbol) ;
+    if (unconfirmed != 1 || symbol == '\n') {
+        if (unconfirmed == EOF) { task = 6 ; }
+        return depth == 0 ;
+    }
+
+    int index = findIndex(symbol) ;
+
+    // skip non-bracket
+    if (index == -1) return processRecursive(depth) ;
+
+    int identity = identityMapDim[index] ;
+
+    // handle opening parentheses
+    if (identity <= 0x08) {
+        if (!processRecursive(depth + 1)) {
+            return 0 ;
+        }
+    }
+    // handle closing parentheses
+    else {
+        if (depth <= 0 || mirrorMapDim[index] != identityMapDim[findIndex(bracketMapDim[index ^ 7])]) {
+            return 0 ;
+        }
+        depth-- ;
+    }
+
+    return processRecursive(depth) ;
+}
+
+
+void task3_parenthesis_validator() {
+    printf("Please enter a term for validation:\n") ;
+
+    if (processRecursive(0)) {
+        printf("The parentheses are balanced correctly.\n") ;
+        return ;
+    }
+    if (task != 6)
+        { printf("The parentheses are not balanced correctly.\n") ; }   
+}
+
 
 void task4_queens_battle()
 {
