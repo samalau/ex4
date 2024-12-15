@@ -99,8 +99,8 @@ long long getDistinctPaths(long long *x, long long *y, int depth) {
     if (*x < 0 || *y < 0) return 0;
     else if (*x == 0 || *y == 0) return 1;
 
-    else if (*x > *y) return getDistinctPaths(x - y, y, depth + 1) + getDistinctPaths(y, y, depth + 1);
-    else if (*y > *x) return getDistinctPaths(x, y - x, depth + 1) + getDistinctPaths(x, x, depth + 1);
+    else if (*x > *y) return getDistinctPaths(x - *y, y, depth + 1) + getDistinctPaths(y, y, depth + 1);
+    else if (*y > *x) return getDistinctPaths(x, y - *x, depth + 1) + getDistinctPaths(x, x, depth + 1);
     else return 2 * getDistinctPaths(x - 1, y, depth + 1);
 }
 
@@ -293,7 +293,7 @@ int processSymbol(int depth) {
 
     // handle opening parentheses
     if (identity <= 0x08) return processSymbol(depth + 1);
-    
+
     // handle closing parentheses
     int expectedIndex = findIndex(bracketMapDim[index ^ 7]);
     if (depth <= 0 || mirrorMapDim[index] != identityMapDim[expectedIndex]) {
@@ -318,11 +318,13 @@ void task3_parenthesis_validator() {
     scanf(" %*c");
 }
 
+// TASK 4 QUEEN BATTLE
 void task4_queens_battle()
 {
     // Todo
 }
 
+// TASK 5 CROSSWORD
 void task5_crossword_generator()
 {
     // Todo
