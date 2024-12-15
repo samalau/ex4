@@ -6,8 +6,6 @@ Assignment: 4
 #include <stdio.h>
 #include <string.h>
 
-#define CHUNK_SIZE 1024
-
 void task1_robot_paths() ;
 void task2_human_pyramid() ;
 void task3_parenthesis_validator() ;
@@ -56,7 +54,7 @@ int main() {
         }
         else
         {
-            if (scanf(" %*[^\n] %*c") == EOF) { task = 6 ; }
+            if (scanf(" %*[^\n] %*c") == EOF) {task = 6 ;}
             // scanf("%*s");
         }
 
@@ -67,11 +65,10 @@ int main() {
 
 
 long long getDistinctPaths(long long x, long long y) {
-
     if (x > y) return getDistinctPaths(x - y, y) + getDistinctPaths(y, y) ;
-
+    
     else if (y > x) return getDistinctPaths(x, y - x) + getDistinctPaths(x, x) ;
-
+    
     else return 2 * getDistinctPaths(x - 1, y) ;
 }
 
@@ -99,11 +96,11 @@ void task1_robot_paths() {
             continue ;
         }
 
-        if (x < 0 || y < 0) { totalDistinctPathsHome = 0 ; }
+        if (x < 0 || y < 0) {totalDistinctPathsHome = 0 ;}
 
-        else if (x == 0 || y == 0) { totalDistinctPathsHome = 1 ; }
+        else if (x == 0 || y == 0) {totalDistinctPathsHome = 1 ;}
 
-        else { totalDistinctPathsHome = getDistinctPaths(x, y) ; }
+        else {totalDistinctPathsHome = getDistinctPaths(x, y) ;}
     }
     printf("The total number of paths the robot can take to reach home is: %lld\n", totalDistinctPathsHome) ;
 }
@@ -119,7 +116,6 @@ float dataPyramid[5][5] = {
 
 
 void resetPyramidData() {
-
     float freshPyramid[5][5] = {
         {-1},  // top level
         {-1, -1},  // second level
@@ -137,7 +133,6 @@ void resetPyramidData() {
 
 
 int getWeight(float *dataPyramid[5]) {
-
     printf("Please enter the weights of the cheerleaders:\n") ;
 
     for (int i = 0; i < 5; i++) {
@@ -148,7 +143,7 @@ int getWeight(float *dataPyramid[5]) {
 
             int input = scanf(" %f", &nextWeight) ;
 
-            // task 6 exits main menu
+            // 6 exits main while-loop
             if (input == EOF) {
                 task = 6 ;
                 return 0 ;
@@ -167,7 +162,6 @@ int getWeight(float *dataPyramid[5]) {
 
 
 void task2_human_pyramid() {
-    
     int fullData = getWeight(dataPyramid) ;
     if (!fullData) return ;
 
@@ -187,9 +181,9 @@ void task2_human_pyramid() {
                     weightUpLeft = (j > 0) ? dataPyramid[i_alt - 1][j_alt - 1] : 0,
                     weightUpRight = (j < i) ? dataPyramid[i_alt - 1][j] : 0 ;
 
-                if (j == 0) { weightLoad += weightUpRight / 2 ; }
-                else if (j == i) { weightLoad += weightUpLeft / 2 ; }
-                else { weightLoad += (weightUpLeft + weightUpRight) / 2 ; }
+                if (j == 0) {weightLoad += weightUpRight / 2 ;}
+                else if (j == i) {weightLoad += weightUpLeft / 2 ;}
+                else {weightLoad += (weightUpLeft + weightUpRight) / 2 ;}
 
                 dataPyramid[i][j] = weightLoad ;
             }
@@ -209,10 +203,8 @@ const int
 
 
 int findIndex(char symbol) {
-    for (int i = 0; i < 8; i++) {
-        if (bracketMapDim[i] == symbol)
-            { return i ; }
-    }
+    for (int i = 0; i < 8; i++)
+        {if (bracketMapDim[i] == symbol) return i ;}
     return -1 ;
 }
 
@@ -221,13 +213,15 @@ int findIndex(char symbol) {
 int processRecursive(int depth) {
     char symbol ;
 
-    // end of input
     int unconfirmed = scanf("%c", &symbol) ;
 
-    // task 6 exits main menu
-    if (unconfirmed == EOF) { task = 6 ; }
-
-    if (unconfirmed != 1 || symbol == '\n') return depth == 0 ;
+    // end of input
+    if (unconfirmed != 1 || symbol == '\n') {
+        if (unconfirmed == EOF)
+            {task = 6 ;}
+            // 6 exits main while-loop
+        return depth == 0 ;
+    }
 
     int index = findIndex(symbol) ;
 
@@ -254,9 +248,9 @@ void task3_parenthesis_validator() {
     printf("Please enter a term for validation:\n") ;
     
     if (processRecursive(0)) printf("The parentheses are balanced correctly.\n") ;
-    
     else if (task != 6) printf("The parentheses are not balanced correctly.\n") ;
-    
+    // 6 exits main while-loop
+
     scanf(" %*[^\n]"); scanf(" %*c");
 }
 
