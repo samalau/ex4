@@ -89,7 +89,7 @@ int main() {
 long long chunkyChunkDistinctPaths(long long x, long long y, int depth) {
     
     // reset depth if needed
-    if (depth >= MAX_DEPTH) return depth == 0;
+    if (depth >= MAX_DEPTH) return 0;
 
     if (x < 0 || y < 0) return 0;
     else if (x == 0 || y == 0) return 1;
@@ -98,6 +98,7 @@ long long chunkyChunkDistinctPaths(long long x, long long y, int depth) {
     else if (y > x) return getDistinctPaths(x, y - x, depth + 1) + getDistinctPaths(x, x, depth + 1);
     else return 2 * getDistinctPaths(x - 1, y, depth + 1);
 }
+
 
 long long getDistinctPaths(long long x, long long y, int chunk) {
     long long totalPaths = 0;
