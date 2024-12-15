@@ -6,6 +6,8 @@ Assignment: 4
 #include <stdio.h>
 #include <string.h>
 
+#define MAX_DEPTH 50000  // temporary
+
 void task1_robot_paths();
 void task2_human_pyramid();
 void task3_parenthesis_validator();
@@ -24,9 +26,20 @@ int main() {
                "4. Queens Battle\n"
                "5. Crossword Generator\n"
                "6. Exit\n");
+        
+        int input = scanf(" %d", &task);
+        if (input != 1) {
+            if (input == EOF){
+                task = 6;
+            } else {
+                task = -1;
+            }
+            scanf("%*[^\n]");
+            scanf(" %*c");
+            continue;
+        }
 
-        if (scanf(" %d", &task))
-        { switch (task) {
+        switch (task) {
             case 6:
                 break;
             case 1:
@@ -48,8 +61,6 @@ int main() {
                 printf("Please choose a task number from the list.\n");
                 break;
             }
-        }
-        if (scanf("%*[^\n] %*c") == EOF) {task = 6;}
     } while (task != 6);
     printf("Goodbye!\n");
 }
@@ -99,11 +110,22 @@ void task1_robot_paths() {
 
 
 float *dataPyramid[5];
-dataPyramid[0] = {-1};  // 1st row
-dataPyramid[1] = {-1, -1};  // 2nd row
-dataPyramid[2] = {-1, -1, -1};  // 3rd row
-dataPyramid[3] = {-1, -1, -1, -1};  // 4th row
-dataPyramid[4] = {-1, -1, -1, -1, -1};  // 5th row
+
+float
+    level_1[] = {-1},  // top row
+    level_2[] = {-1, -1},  // 2nd row
+    level_3[] = {-1, -1, -1},  // 3rd row
+    level_4[] = {-1, -1, -1, -1},  // 4th row
+    level_5[] = {-1, -1, -1, -1, -1};  // 5th row
+
+
+void initializePyramid() {
+    dataPyramid[0] = level_1;
+    dataPyramid[1] = level_2;
+    dataPyramid[2] = level_3;
+    dataPyramid[3] = level_4;
+    dataPyramid[4] = level_5;
+}
 
 
 void resetPyramidData() {
@@ -115,7 +137,7 @@ void resetPyramidData() {
 }
 
 
-int getWeight(float *dataPyramid[5]) {
+int getWeight() {
     printf("Please enter the weights of the cheerleaders:\n");
 
     for (int i = 0; i < 5; i++) {
@@ -123,13 +145,14 @@ int getWeight(float *dataPyramid[5]) {
             float nextWeight = -1.00;
             int input = scanf(" %f", &nextWeight);
 
-            // 6 exits main while-loop
             if (input == EOF) {
+                // 6 exits main while-loop
                 task = 6;
                 return 0;
             }
             if (input != 1 || nextWeight < 0) {
                 printf("Negative weights are not supported.\n");
+                // return to main
                 return 0;
             }
 
@@ -141,7 +164,7 @@ int getWeight(float *dataPyramid[5]) {
 
 
 void task2_human_pyramid() {
-    int fullData = getWeight(dataPyramid);
+    int fullData = getWeight();
     if (!fullData) return;
 
     for (int i = 0; i < 5; i++) {
@@ -187,35 +210,52 @@ int findIndex(char symbol) {
         if (bracketMapDim[i] == symbol)
             return i;
     }
+    return -1;
 }
 
 
 // process input and check parentheses
 int processRecursive(int depth) {
-    char symbol;
+    if (depth > MAX_DEPTH) {  // temporary
+        // 6 exits main while-loop
+        task = 6;
+        return depth == 0;
+    }
 
-    int unconfirmed = scanf(" %1[()[]{}<>\n]", &symbol);
+    // buffer index 1 is \0
+    char buffer[2];
+
+    int unconfirmed = scanf(" %1[()[]{}<>\n]", buffer);
+
+    char symbol = buffer[0];
 
     // end of input
     if (unconfirmed != 1 || symbol == '\n') {
-        if (unconfirmed == EOF)
-            {task = 6;}
+        if (unconfirmed == EOF) {
             // 6 exits main while-loop
+            task = 6;
+        }
         return depth == 0;
     }
 
     int index = findIndex(symbol);
 
+    if (index == -1) {
+        return 0;
+    }
+
     int identity = identityMapDim[index];
 
     // handle opening parentheses
-    if (identity <= 0x08)
-        {return processRecursive(depth + 1);}
+    if (identity <= 0x08) {
+        return processRecursive(depth + 1);
+    }
 
     // handle closing parentheses
-    else if (depth <= 0 || mirrorMapDim[index] != identityMapDim[findIndex(bracketMapDim[index ^ 7])])
-        {return 0;}
-
+    int expectedIndex = findIndex(bracketMapDim[index ^ 7]);
+    if (depth <= 0 || mirrorMapDim[index] != identityMapDim[expectedIndex]) {
+        return 0;
+    }
     return processRecursive(depth - 1);
 }
 
