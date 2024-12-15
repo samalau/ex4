@@ -259,12 +259,9 @@ int processRecursive(int depth) {
 void task3_parenthesis_validator() {
     printf("Please enter a term for validation:\n") ;
 
-    if (processRecursive(0)) {
-        printf("The parentheses are balanced correctly.\n") ;
-    } else {
-        if (task != 6)
-            { printf("The parentheses are not balanced correctly.\n") ; }
-    }
+    if (processRecursive(0)) printf("The parentheses are balanced correctly.\n") ;
+    else if (task != 6) printf("The parentheses are not balanced correctly.\n") ;
+
     scanf(" %*[^\n]");
     scanf(" %*c");
 }
