@@ -204,7 +204,7 @@ void task1_robot_paths() {
         validCoordinates = scanf(" %lld %lld%n", &x, &y, &charsRead);
 
         int detectedTrailingChars = scanf("%*[^\n]");
-        if (charsRead > 20 || validCoordinates != 2 || detectedTrailingChars != 0) {
+        if (validCoordinates != 2 || detectedTrailingChars != 0 || charsRead > 20) {
             scanf(" %*c");
             if (validCoordinates == EOF || detectedTrailingChars == EOF) {
                 task = 6;
@@ -275,6 +275,8 @@ int getWeight() {
             }
             if (input != 1 || nextWeight < 0) {
                 printf("Negative weights are not supported.\n");
+                scanf("%*[^\n]");
+                scanf(" %*c");
                 // return to main
                 return 0;
             }
