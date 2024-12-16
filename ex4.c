@@ -348,9 +348,13 @@ int processSymbol(int depth, int remainingDepth) {
     
     // if needed: new segment, depth reset
     if (remainingDepth <= 0) {
-        return processSymbol(depth, MAX_DEPTH);
+        if (depth != 0) {
+            // unmatched parentheses
+            return 0;
+        }
+        return processSymbol(0, MAX_DEPTH);
     }
-    
+
     // buffer index 1 is \0
     char buffer[2];
     int unconfirmed = scanf(" %1[()[]{}<>\n]", buffer);
@@ -368,7 +372,9 @@ int processSymbol(int depth, int remainingDepth) {
 
     int index = findIndex(symbol);
 
-    if (index == -1) return 0;
+    if (index == -1) {
+        return 0;
+    }
 
     int identity = identityMapDim[index];
 
