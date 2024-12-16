@@ -7,14 +7,12 @@ Assignment: 4
 #include <string.h>
 
 
-// task 1 macro
-// modulus to prevent overflow
+// task 1 macro -- overflow protection
+#define LARGE 0x80000  // placeholder
 #define M 1000000007
 
-// tasks 1, 3 macro
-// placeholder (consider 128)
-#define MAX_DEPTH 64
-
+// task 3 macro
+#define MAX_DEPTH 128  // placeholder (consider 64)
 
 // task 1 helper
 void cacheInitialize();
@@ -24,6 +22,9 @@ unsigned long long factorial(long long n);
 // task 1 cache
 unsigned long long cacheFactorial[171] = {0};
 unsigned long long cacheTask1Flag0[21][21] = {0};
+unsigned long long cacheTask1Flag2x[LARGE] = {0};
+unsigned long long cacheTask1Flag2y[LARGE] = {0};
+unsigned long long cacheTask1Flag2Result[LARGE] = {0};
 
 // task 2 helper
 void initializePyramid();
@@ -34,7 +35,6 @@ int getWeight();
 int findIndex(char symbol);
 int processSymbol(int depth);
 
-
 // task entry points
 void task1_robot_paths();
 void task2_human_pyramid();
@@ -42,12 +42,14 @@ void task3_parenthesis_validator();
 void task4_queens_battle();
 void task5_crossword_generator();
 
-
 // initialize cache
 void cacheInitialize() {
     cacheFactorial[0] = 1;
     cacheFactorial[1] = 1;
     cacheTask1Flag0[1][1] = 2;
+    cacheTask1Flag2x[0] = 0;
+    cacheTask1Flag2y[0] = 0;
+    cacheTask1Flag2Result[0] = 0;
 }
 
 // initialize task
@@ -106,8 +108,6 @@ int main() {
 
 
 // TASK 1 robot paths
-
-
 unsigned long long factorial(long long n) {
     if (n < 0) {
         return 0;
@@ -168,12 +168,20 @@ unsigned long long compute_paths(long long x, long long y) {
 
     // x + y >= 170
     if (flag == 2) {
+        int index = (x + y) % LARGE;
+        if (cacheTask1Flag2x[index] == x && cacheTask1Flag2y[index] == y) {
+            return cacheTask1Flag2Result[index];
+        }
+
+        cacheTask1Flag2x[index] = x;
+        cacheTask1Flag2y[index] = y;
+
         if (x > y) {
             // x-dimension segmentation to reduce recursion depth
-            return (compute_paths(x / 2, y) * compute_paths(x - x / 2, y)) % M;
+            return cacheTask1Flag2Result[index] = (compute_paths(x / 2, y) * compute_paths(x - x / 2, y)) % M;
         } else {
             // y-dimension segmentation to reduce recursion depth
-            return (compute_paths(x, y / 2) * compute_paths(x, y - y / 2)) % M;
+            return cacheTask1Flag2Result[index] = (compute_paths(x, y / 2) * compute_paths(x, y - y / 2)) % M;
         }
     }
     return 0;
@@ -207,7 +215,12 @@ void task1_robot_paths() {
         } else if (x == 0 || y == 0) {
             totalDistinctPaths = 1;
         } else {
-            totalDistinctPaths = compute_paths(x, y);
+            if (x + y < LARGE)
+                totalDistinctPaths = compute_paths(x, y);
+            else {
+                // placeholder overflow protection
+                totalDistinctPaths = 0;
+            }
         }
     }
     printf("The total number of paths the robot can take to reach home is: %lld\n", totalDistinctPaths);
@@ -249,7 +262,7 @@ int getWeight() {
     for (int i = 0; i < 5; i++) {
         for (int j = 0; j <= i; j++) {
             double nextWeight = -1;
-            int input = scanf(" %f", &nextWeight);
+            int input = scanf(" %1f", &nextWeight);
 
             if (input == EOF) {
                 // 6 exits main while-loop
