@@ -66,14 +66,16 @@ int main() {
                "6. Exit\n");
         
         int input = scanf(" %d", &task);
-        int detectedTrailingChars = scanf("%*[^\n]");
-        if (input != 1 || detectedTrailingChars != 0) {
-            if (input == EOF || detectedTrailingChars == EOF){
+        // int detectedTrailingChars = scanf("%*[^\n]");
+        // if (input != 1 || detectedTrailingChars != 0) {
+        if (input != 1) {
+            if (input == EOF) {
+            // if (input == EOF || detectedTrailingChars == EOF) {
                 task = 6;
             } else {
                 task = -1;
             }
-            scanf(" %*c");
+            // scanf(" %*c");
         }
 
         switch (task) {
@@ -275,8 +277,7 @@ int getWeight() {
             }
             if (input != 1 || nextWeight < 0) {
                 printf("Negative weights are not supported.\n");
-                scanf("%*[^\n]");
-                scanf(" %*c");
+                scanf("%*[^\n]") <= 0 ? 1 : (scanf(" %*c"), 0);
                 // return to main
                 return 0;
             }
@@ -366,20 +367,25 @@ int processSymbol(int depth, int remainingDepth) {
             task = 6;
             return 0;
         }
-        if (scanf("%*[^\n]") != 0) scanf(" %*c");
+        scanf("%*[^\n]") <= 0 ? 1 : (scanf(" %*c"), 0);
         return 0;
     }
 
     if (buffer[0] == '\n') {
-        if (scanf("%*[^\n]") != 0) scanf(" %*c");
-        return (depth == 0);
+        if (depth == 0) {
+            // balanced
+            return 1;
+        } else {
+            // unbalanced
+            return 0;
+        }
     }
 
     char symbol = buffer[0];
     int index = findIndex(symbol);
 
     if (index == -1) {
-        if (scanf("%*[^\n]") != 0) scanf(" %*c");
+        scanf("%*[^\n]") <= 0 ? 1 : (scanf(" %*c"), 0);
         return 0;
     }
 
@@ -393,7 +399,7 @@ int processSymbol(int depth, int remainingDepth) {
     // handle closing parentheses
     int expectedIndex = findIndex(bracketMapDim[index ^ 7]);
     if (depth <= 0 || mirrorMapDim[index] != identityMapDim[expectedIndex]) {
-        if (scanf("%*[^\n]") != 0) scanf(" %*c");
+        scanf("%*[^\n]") <= 0 ? 1 : (scanf(" %*c"), 0);
         return 0;
     }
 
