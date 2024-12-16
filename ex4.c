@@ -364,30 +364,36 @@ int processSymbol(int depth, int remainingDepth) {
         if (unconfirmed == EOF) {
             // 6 exits main while-loop
             task = 6;
+            return 0;
         }
+        if (scanf("%*[^\n]") != 0) scanf(" %*c");
         return 0;
     }
 
     if (buffer[0] == '\n') {
-        return 1;
+        if (scanf("%*[^\n]") != 0) scanf(" %*c");
+        return (depth == 0);
     }
 
     char symbol = buffer[0];
-
     int index = findIndex(symbol);
 
     if (index == -1) {
+        if (scanf("%*[^\n]") != 0) scanf(" %*c");
         return 0;
     }
 
     int identity = identityMapDim[index];
 
     // handle opening parentheses
-    if (identity <= 0x08) return processSymbol(depth + 1, remainingDepth - 1);
+    if (identity <= 0x08) {
+        return processSymbol(depth + 1, remainingDepth - 1);
+    }
 
     // handle closing parentheses
     int expectedIndex = findIndex(bracketMapDim[index ^ 7]);
     if (depth <= 0 || mirrorMapDim[index] != identityMapDim[expectedIndex]) {
+        if (scanf("%*[^\n]") != 0) scanf(" %*c");
         return 0;
     }
 
@@ -408,7 +414,7 @@ void task3_parenthesis_validator() {
     }
     // task = 6 exits main while-loop
 
-    if (scanf("%*[^\n]")) scanf(" %*c");
+    // if (scanf("%*[^\n]") != 0) scanf(" %*c");
 
 }
 
