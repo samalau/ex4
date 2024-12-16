@@ -228,9 +228,9 @@ void task1_robot_paths() {
 
 
 // TASK 2 human pyramid
-float *dataPyramid[5];
+double *dataPyramid[5];
 
-float
+double
     level_1[] = {-1},  
     level_2[] = {-1, -1},
     level_3[] = {-1, -1, -1},
@@ -262,7 +262,7 @@ int getWeight() {
     for (int i = 0; i < 5; i++) {
         for (int j = 0; j <= i; j++) {
             double nextWeight = -1;
-            int input = scanf(" %1f", &nextWeight);
+            int input = scanf(" %1lf", &nextWeight);
 
             if (input == EOF) {
                 // 6 exits main while-loop
