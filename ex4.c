@@ -88,7 +88,7 @@ int main() {
 
 // TASK 1 robot paths
 long long chunkyPath(long long x, long long y) {
-    if (x == 0 && y == 0) {
+    if (x == 0 || y == 0) {
         return 1;
     }
     long long midX = x / 2;
