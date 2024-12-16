@@ -16,8 +16,9 @@ Assignment: 4
 
 // task 1 helper
 void cacheInitialize();
-unsigned long long compute_paths(long long x, long long y);
 unsigned long long factorial(long long n);
+unsigned long long modMult(unsigned long long a, unsigned long long b);
+unsigned long long compute_paths(long long x, long long y);
 
 // task 1 cache
 unsigned long long cacheFactorial[171] = {0};
@@ -115,7 +116,11 @@ unsigned long long factorial(long long n) {
     if (cacheFactorial[n] != 0) {
         return cacheFactorial[n];
     }
-    return cacheFactorial[n] = (n * factorial(n - 1)) % M;
+    return cacheFactorial[n] = modMult(n, factorial(n - 1));
+}
+
+unsigned long long modMult(unsigned long long a, unsigned long long b) {
+    return ((a % M) * (b % M)) % M;
 }
 
 unsigned long long compute_paths(long long x, long long y) {
@@ -146,7 +151,7 @@ unsigned long long compute_paths(long long x, long long y) {
         // DENOMINATOR
         denominator1 = factorial(x);
         denominator2 = factorial(y);
-        unsigned long long denominator = (denominator1 * denominator2) % M;
+        unsigned long long denominator = modMult(denominator1, denominator2);
 
         unsigned long long
             inverse = 1,
@@ -155,12 +160,12 @@ unsigned long long compute_paths(long long x, long long y) {
         
         while (exp > 0) {
             if (exp % 2 == 1) {
-                inverse = (inverse * base) % M;
+                inverse = modMult(inverse, base);
             }
-            base = (base * base) % M;
+            base = modMult(base, base);
             exp /= 2;
         }
-        return (numerator * inverse) % M;
+        return modMult(numerator, inverse);
     }
 
     // x + y >= 170
@@ -175,10 +180,10 @@ unsigned long long compute_paths(long long x, long long y) {
 
         if (x > y) {
             // x-dimension segmentation to reduce recursion depth
-            return cacheTask1Flag2Result[index] = (compute_paths(x / 2, y) * compute_paths(x - x / 2, y)) % M;
+            return cacheTask1Flag2Result[index] = modMult(compute_paths(x / 2, y), compute_paths(x - x / 2, y));
         } else {
             // y-dimension segmentation to reduce recursion depth
-            return cacheTask1Flag2Result[index] = (compute_paths(x, y / 2) * compute_paths(x, y - y / 2)) % M;
+            return cacheTask1Flag2Result[index] = modMult(compute_paths(x, y / 2), compute_paths(x, y - y / 2));
         }
     }
     return 0;
@@ -198,10 +203,11 @@ void task1_robot_paths() {
         printf("Please enter the coordinates of the robot (column, row):\n");
 
         validCoordinates = scanf(" %lld %lld%n", &x, &y, &charsRead);
-        if (charsRead > 20 || validCoordinates != 2) {
-            scanf("%*[^\n]");
+
+        int detectedTrailingChars = scanf("%*[^\n]");
+        if (charsRead > 20 || validCoordinates != 2 || detectedTrailingChars != 0) {
             scanf(" %*c");
-            if (validCoordinates == EOF) {
+            if (validCoordinates == EOF || detectedTrailingChars == EOF) {
                 task = 6;
                 return;
             }
@@ -213,8 +219,9 @@ void task1_robot_paths() {
         } else if (x == 0 || y == 0) {
             totalDistinctPaths = 1;
         } else {
-            if (x < LARGE && y < LARGE && x + y < LARGE)
+            if (x < LARGE && y < LARGE && x + y < LARGE){
                 totalDistinctPaths = compute_paths(x, y);
+            }
             else {
                 // placeholder overflow protection
                 totalDistinctPaths = 0;
