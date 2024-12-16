@@ -34,7 +34,7 @@ int getWeight();
 
 // task 3 helper
 int findIndex(char symbol);
-int processSymbol(int depth, int remainingDepth);
+int processSymbol(int depth, int remainingDepth, int* globalBalance);
 
 // task entry points
 void task1_robot_paths();
@@ -425,12 +425,20 @@ void task3_parenthesis_validator() {
 
     printf("Please enter a term for validation:\n");
 
-    if (processSymbol(0, remainingDepth - 1, &globalBalance) && globalBalance == 0) {
-        printf("The parentheses are balanced correctly.\n");
-    } else if (task != 6 || globalBalance != 0) {
-        printf("The parentheses are not balanced correctly.\n");
+    while (1) {
+        if (processSymbol(0, remainingDepth - 1, &globalBalance) && globalBalance == 0) {
+            printf("The parentheses are balanced correctly.\n");
+            break;
+        } else {
+            if (globalBalance != 0) {
+                // if task == 6 -- nothing prints, exits main while-loop
+                if (task != 6) {
+                    printf("The parentheses are not balanced correctly.\n");
+                }
+                break;
+            }
+        }
     }
-    // if task == 6 -- nothing prints, exits main while-loop
 }
 
 
