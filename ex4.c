@@ -105,7 +105,7 @@ long long chunkyPath(long long x, long long y) {
 
 
 long long totalPaths(long long *x, long long *y) {
-    if (!x || !y || *x < 0 || *y < 0) {
+    if (x == NULL || y == NULL || *x < 0 || *y < 0) {
         return 0;
     }
 
