@@ -66,16 +66,12 @@ int main() {
                "6. Exit\n");
         
         int input = scanf(" %d", &task);
-        // int detectedTrailingChars = scanf("%*[^\n]");
-        // if (input != 1 || detectedTrailingChars != 0) {
         if (input != 1) {
             if (input == EOF) {
-            // if (input == EOF || detectedTrailingChars == EOF) {
                 task = 6;
             } else {
                 task = -1;
             }
-            // scanf(" %*c");
         }
 
         switch (task) {
@@ -412,7 +408,7 @@ int processSymbol(int depth, int remainingDepth, int* globalBalance) {
     // decrease global balance for closing parentheses
     (*globalBalance)--; 
 
-    return processSymbol(depth - 1, remainingDepth - 1);
+    return processSymbol(depth - 1, remainingDepth - 1, globalBalance);
 }
 
 
