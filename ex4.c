@@ -47,9 +47,6 @@ void cacheInitialize() {
     cacheFactorial[0] = 1;
     cacheFactorial[1] = 1;
     cacheTask1Flag0[1][1] = 2;
-    cacheTask1Flag2x[0] = 0;
-    cacheTask1Flag2y[0] = 0;
-    cacheTask1Flag2Result[0] = 0;
 }
 
 // initialize task
@@ -194,13 +191,14 @@ void task1_robot_paths() {
         y = -1;
 
     unsigned long long totalDistinctPaths = 0;
-    int validCoordinates = 0;
+    int validCoordinates = 0,
+        charsRead = 0;
     
     while (validCoordinates != 2) {
         printf("Please enter the coordinates of the robot (column, row):\n");
 
-        validCoordinates = scanf(" %lld %lld", &x, &y);
-        if (validCoordinates != 2) {
+        validCoordinates = scanf(" %lld %lld%n", &x, &y, &charsRead);
+        if (charsRead > 20 || validCoordinates != 2) {
             scanf("%*[^\n]");
             scanf(" %*c");
             if (validCoordinates == EOF) {
@@ -209,13 +207,13 @@ void task1_robot_paths() {
             }
             continue;
         }
-
+        
         if (x < 0 || y < 0) {
             totalDistinctPaths = 0;
         } else if (x == 0 || y == 0) {
             totalDistinctPaths = 1;
         } else {
-            if (x + y < LARGE)
+            if (x < LARGE && y < LARGE && x + y < LARGE)
                 totalDistinctPaths = compute_paths(x, y);
             else {
                 // placeholder overflow protection
