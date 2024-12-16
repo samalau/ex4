@@ -355,7 +355,11 @@ int processSymbol(int depth, int remainingDepth, int* globalBalance) {
 
     // buffer index 1 is \0
     char buffer[2];
-    int unconfirmed = scanf(" %1[()[]{}<>\n]", buffer);
+    int unconfirmed = scanf(" %1[()\\[\\]{}<>\n]", buffer);
+
+    ///
+    printf("Processing: %c\n", buffer[0]);  // REMOVE
+    ///
     
     // end of input
     if (unconfirmed != 1) {
