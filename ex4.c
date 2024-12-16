@@ -66,15 +66,14 @@ int main() {
                "6. Exit\n");
         
         int input = scanf(" %d", &task);
-        if (input != 1) {
-            if (input == EOF){
+        int detectedTrailingChars = scanf("%*[^\n]");
+        if (input != 1 || detectedTrailingChars != 0) {
+            if (input == EOF || detectedTrailingChars == EOF){
                 task = 6;
             } else {
                 task = -1;
             }
-            scanf("%*[^\n]");
             scanf(" %*c");
-            continue;
         }
 
         switch (task) {
