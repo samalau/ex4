@@ -7,15 +7,15 @@ Assignment: 4
 #include <string.h>
 
 // task 1 macro
-#define MAX_CHUNK 64  //placeholder
-#define ITERATIONS_PER_CHUNK 64  //placeholder
+// modulus to prevent overflow
+#define M 1000000007
 
 // tasks 1, 3 macro
 #define MAX_DEPTH 64  //placeholder
 
 // task 1 helper
-long long totalPaths(long long *x, long long *y);
-long long chunkyPath(long long x, long long y);
+unsigned long long compute_paths(long long x, long long y);
+unsigned long long factorial(long long n);
 
 // task 2 helper
 void initializePyramid();
@@ -37,6 +37,9 @@ void task5_crossword_generator();
 int task = -1;
 
 int main() {
+    cacheFactorial[0] = 1;
+    cacheFactorial[1] = 1;
+    cacheTask1Flag0[1][1] = 2;
     do {
         printf("Choose an option:\n"
                "1. Robot Paths\n"
@@ -85,43 +88,93 @@ int main() {
     printf("Goodbye!\n");
 }
 
-
-// TASK 1 robot paths
-long long chunkyPath(long long x, long long y) {
-    if (x == 0 || y == 0) {
-        return 1;
-    }
-    long long midX = x / 2;
-    long long midY = y / 2;
-
-    // (x, y) to (x/2, y/2)
-    long long chunkA = chunkyPath(midX, midY);
-
-    // (x/2, y/2) to (0, 0)
-    long long chunkB = chunkyPath(x - midX, y - midY);
-
-    return chunkA + chunkB;
-}
-
-
-long long totalPaths(long long *x, long long *y) {
-    if (x == NULL || y == NULL || *x < 0 || *y < 0) {
+unsigned long long factorial(long long n) {
+    if (n < 0) {
         return 0;
     }
-
-    if (*x == 0 || *y == 0) {
+    if (n == 0) {
         return 1;
     }
-    return chunkyPath(*x, *y);
+    if (cacheFactorial[n] != 0) {
+        return cacheFactorial[n];
+    }
+    return (n * factorial(n - 1)) % M;
+}
+
+// TASK 1 robot paths
+unsigned long long cacheTask1Flag0[21][21] = {0};
+unsigned long long cacheFactorial[171] = {0};
+
+unsigned long long compute_paths(long long x, long long y) {
+    if (x < 0 || y < 0) return 0;
+    if (x == 0 || y == 0) return 1;
+
+    int flag = (x + y <= 20) ? 0 : ((x + y < 170) ? 1 : 2);
+
+    // x + y <= 20
+    if (flag == 0) {
+        if (cacheTask1Flag0[x][y] != 0) {
+            return cacheTask1Flag0[x][y];
+        }
+        cacheTask1Flag0[x][y] = compute_paths(x - 1, y) + compute_paths(x, y - 1);
+        return cacheTask1Flag0[x][y] ;
+    }
+
+    // x + y < 170
+    if (flag == 1) {
+        unsigned long long
+            numerator = -1,
+            denominator1 = -1,
+            denominator2 = -1;
+        
+        // NUMERATOR
+        numerator = factorial(x + y);
+
+        // DENOMINATOR
+        denominator1 = factorial(x);
+        denominator2 = factorial(y);
+        unsigned long long denominator = (denominator1 * denominator2) % M;
+
+        unsigned long long
+            inverse = 1,
+            base = denominator,
+            exp = M - 2;
+        
+        while (exp > 0) {
+            if (exp % 2 == 1) {
+                inverse = (inverse * base) % M;
+            }
+            base = (base * base) % M;
+            exp /= 2;
+        }
+        return (numerator * inverse) % M;
+    }
+
+    // x + y >= 170
+    if (flag == 2) {
+        if (x > y) {
+            return (compute_paths(x / 2, y) * compute_paths(x - x / 2, y)) % M;
+        } else {
+            return (compute_paths(x, y / 2) * compute_paths(x, y - y / 2)) % M;
+        }
+        // int x_mid = x / 2,
+        //     y_mid = y / 2;
+
+        // unsigned long long left = compute_paths(x - x_mid, y - y_mid);
+        // unsigned long long right = compute_paths(x_mid, y_mid);
+        
+        // return (left * right) % M;
+    }
+    return 0;
 }
 
 
 void task1_robot_paths() {
     long long
         x = -1,
-        y = -1,
-        totalDistinctPaths = 0;
+        y = -1;
 
+    unsigned long long totalDistinctPaths = 0;
     int validCoordinates = 0;
     
     while (validCoordinates != 2) {
@@ -143,7 +196,7 @@ void task1_robot_paths() {
         } else if (x == 0 || y == 0) {
             totalDistinctPaths = 1;
         } else {
-            totalDistinctPaths = totalPaths(&x, &y);
+            totalDistinctPaths = compute_paths(x, y);
         }
     }
     printf("The total number of paths the robot can take to reach home is: %lld\n", totalDistinctPaths);
@@ -184,7 +237,7 @@ int getWeight() {
 
     for (int i = 0; i < 5; i++) {
         for (int j = 0; j <= i; j++) {
-            float nextWeight = -1;
+            double nextWeight = -1;
             int input = scanf(" %f", &nextWeight);
 
             if (input == EOF) {
@@ -215,13 +268,13 @@ void task2_human_pyramid() {
             int i_alt = i,
                 j_alt = j;
 
-            float weightOrigin = dataPyramid[i][j];
+            double weightOrigin = dataPyramid[i][j];
             
             // initialize weightLoad
-            float weightLoad = weightOrigin;
+            double weightLoad = weightOrigin;
 
             if (i > 0) {
-                float
+                double
                     weightUpLeft = (j > 0) ? dataPyramid[i_alt - 1][j_alt - 1] : 0,
                     weightUpRight = (j < i) ? dataPyramid[i_alt - 1][j] : 0;
 
