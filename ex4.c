@@ -350,12 +350,13 @@ int processSymbol(int depth, int remainingDepth, int* globalBalance) {
             // unbalanced
             return 0;
         }
-        return processSymbol(0, MAX_DEPTH, globalBalance);
+        return 1;
+        // return processSymbol(0, MAX_DEPTH, globalBalance);
     }
 
     // buffer index 1 is \0
     char buffer[2];
-    int unconfirmed = scanf(" %1[()\\[\\]{}<>\n]", buffer);
+    int unconfirmed = scanf("%1[()\\[\\]{}<>\n]", buffer);
 
     ///
     printf("Processing: %c\n", buffer[0]);  // REMOVE
@@ -369,7 +370,7 @@ int processSymbol(int depth, int remainingDepth, int* globalBalance) {
             return 0;
         }
         scanf("%*[^\n]");
-        scanf(" %*c");
+        scanf("%*c");
         // unbalanced
         return 0;
     }
@@ -389,7 +390,7 @@ int processSymbol(int depth, int remainingDepth, int* globalBalance) {
 
     if (index == -1) {
         scanf("%*[^\n]");
-        scanf(" %*c");
+        scanf("%*c");
         // unbalanced
         return 0;
     }
@@ -434,13 +435,11 @@ void task3_parenthesis_validator() {
             printf("The parentheses are balanced correctly.\n");
             break;
         } else {
-            if (globalBalance != 0) {
-                // if task == 6 -- nothing prints, exits main while-loop
-                if (task != 6) {
-                    printf("The parentheses are not balanced correctly.\n");
-                }
-                break;
+            // if task == 6 -- nothing prints, exits main while-loop
+            if (task != 6) {
+                printf("The parentheses are not balanced correctly.\n");
             }
+            break;
         }
     }
 }
