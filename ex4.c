@@ -11,11 +11,18 @@ Assignment: 4
 #define M 1000000007
 
 // tasks 1, 3 macro
-#define MAX_DEPTH 64  //placeholder
+// placeholder (consider 128)
+#define MAX_DEPTH 64
+
 
 // task 1 helper
+void cacheInitialize();
 unsigned long long compute_paths(long long x, long long y);
 unsigned long long factorial(long long n);
+
+// task 1 cache
+unsigned long long cacheFactorial[171] = {0};
+unsigned long long cacheTask1Flag0[21][21] = {0};
 
 // task 2 helper
 void initializePyramid();
@@ -26,20 +33,28 @@ int getWeight();
 int findIndex(char symbol);
 int processSymbol(int depth);
 
-// task root
+
+// task entry points
 void task1_robot_paths();
 void task2_human_pyramid();
 void task3_parenthesis_validator();
 void task4_queens_battle();
 void task5_crossword_generator();
 
+
+// initialize cache
+void cacheInitialize() {
+    cacheFactorial[0] = 1;
+    cacheFactorial[1] = 1;
+    cacheTask1Flag0[1][1] = 2;
+}
+
 // initialize task
 int task = -1;
 
 int main() {
-    cacheFactorial[0] = 1;
-    cacheFactorial[1] = 1;
-    cacheTask1Flag0[1][1] = 2;
+    cacheInitialize();
+
     do {
         printf("Choose an option:\n"
                "1. Robot Paths\n"
@@ -88,6 +103,10 @@ int main() {
     printf("Goodbye!\n");
 }
 
+
+// TASK 1 robot paths
+
+
 unsigned long long factorial(long long n) {
     if (n < 0) {
         return 0;
@@ -98,12 +117,8 @@ unsigned long long factorial(long long n) {
     if (cacheFactorial[n] != 0) {
         return cacheFactorial[n];
     }
-    return (n * factorial(n - 1)) % M;
+    return cacheFactorial[n] = (n * factorial(n - 1)) % M;
 }
-
-// TASK 1 robot paths
-unsigned long long cacheTask1Flag0[21][21] = {0};
-unsigned long long cacheFactorial[171] = {0};
 
 unsigned long long compute_paths(long long x, long long y) {
     if (x < 0 || y < 0) return 0;
@@ -153,17 +168,12 @@ unsigned long long compute_paths(long long x, long long y) {
     // x + y >= 170
     if (flag == 2) {
         if (x > y) {
+            // x-dimension segmentation to reduce recursion depth
             return (compute_paths(x / 2, y) * compute_paths(x - x / 2, y)) % M;
         } else {
+            // y-dimension segmentation to reduce recursion depth
             return (compute_paths(x, y / 2) * compute_paths(x, y - y / 2)) % M;
         }
-        // int x_mid = x / 2,
-        //     y_mid = y / 2;
-
-        // unsigned long long left = compute_paths(x - x_mid, y - y_mid);
-        // unsigned long long right = compute_paths(x_mid, y_mid);
-        
-        // return (left * right) % M;
     }
     return 0;
 }
@@ -368,11 +378,13 @@ void task3_parenthesis_validator() {
     scanf(" %*c");
 }
 
+
 // TASK 4 QUEEN BATTLE
 void task4_queens_battle()
 {
     // Todo
 }
+
 
 // TASK 5 CROSSWORD
 void task5_crossword_generator()
