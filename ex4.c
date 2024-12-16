@@ -207,7 +207,7 @@ void task1_robot_paths() {
             }
             continue;
         }
-        
+
         if (x < 0 || y < 0) {
             totalDistinctPaths = 0;
         } else if (x == 0 || y == 0) {
@@ -221,7 +221,7 @@ void task1_robot_paths() {
             }
         }
     }
-    printf("The total number of paths the robot can take to reach home is: %lld\n", totalDistinctPaths);
+    printf("The total number of paths the robot can take to reach home is: %llu\n", totalDistinctPaths);
 }
 
 
