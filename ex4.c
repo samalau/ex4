@@ -273,7 +273,8 @@ int getWeight() {
             }
             if (input != 1 || nextWeight < 0) {
                 printf("Negative weights are not supported.\n");
-                scanf("%*[^\n]") <= 0 ? 1 : (scanf(" %*c"), 0);
+                scanf("%*[^\n]");
+                scanf(" %*c");
                 // return to main
                 return 0;
             }
@@ -363,7 +364,8 @@ int processSymbol(int depth, int remainingDepth, int* globalBalance) {
             task = 6;
             return 0;
         }
-        scanf("%*[^\n]") <= 0 ? 1 : (scanf(" %*c"), 0);
+        scanf("%*[^\n]");
+        scanf(" %*c");
         // unbalanced
         return 0;
     }
@@ -382,7 +384,8 @@ int processSymbol(int depth, int remainingDepth, int* globalBalance) {
     int index = findIndex(symbol);
 
     if (index == -1) {
-        scanf("%*[^\n]") <= 0 ? 1 : (scanf(" %*c"), 0);
+        scanf("%*[^\n]");
+        scanf(" %*c");
         // unbalanced
         return 0;
     }
@@ -400,7 +403,8 @@ int processSymbol(int depth, int remainingDepth, int* globalBalance) {
     int expectedIndex = findIndex(bracketMapDim[index ^ 7]);
 
     if (depth <= 0 || mirrorMapDim[index] != identityMapDim[expectedIndex]) {
-        scanf("%*[^\n]") <= 0 ? 1 : (scanf(" %*c"), 0);
+        scanf("%*[^\n]");
+        scanf(" %*c");
         // unbalanced
         return 0;
     }
