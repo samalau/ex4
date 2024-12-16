@@ -345,15 +345,15 @@ int findIndex(char symbol) {
 
 
 // recursively extract parentheses
-int processSymbol(int depth, int remainingDepth) {
+int processSymbol(int depth, int remainingDepth, int* globalBalance) {
     
     // if needed: new segment, depth reset
     if (remainingDepth <= 0) {
         if (depth != 0) {
-            // unmatched parentheses
+            // unbalanced
             return 0;
         }
-        return processSymbol(0, MAX_DEPTH);
+        return processSymbol(0, MAX_DEPTH, globalBalance);
     }
 
     // buffer index 1 is \0
@@ -368,6 +368,7 @@ int processSymbol(int depth, int remainingDepth) {
             return 0;
         }
         scanf("%*[^\n]") <= 0 ? 1 : (scanf(" %*c"), 0);
+        // unbalanced
         return 0;
     }
 
@@ -386,6 +387,7 @@ int processSymbol(int depth, int remainingDepth) {
 
     if (index == -1) {
         scanf("%*[^\n]") <= 0 ? 1 : (scanf(" %*c"), 0);
+        // unbalanced
         return 0;
     }
 
@@ -393,15 +395,22 @@ int processSymbol(int depth, int remainingDepth) {
 
     // handle opening parentheses
     if (identity <= 0x08) {
-        return processSymbol(depth + 1, remainingDepth - 1);
+        // increase global balance for opening parentheses
+        (*globalBalance)++;
+        return processSymbol(depth + 1, remainingDepth - 1, globalBalance);
     }
 
     // handle closing parentheses
     int expectedIndex = findIndex(bracketMapDim[index ^ 7]);
+
     if (depth <= 0 || mirrorMapDim[index] != identityMapDim[expectedIndex]) {
         scanf("%*[^\n]") <= 0 ? 1 : (scanf(" %*c"), 0);
+        // unbalanced
         return 0;
     }
+
+    // decrease global balance for closing parentheses
+    (*globalBalance)--; 
 
     return processSymbol(depth - 1, remainingDepth - 1);
 }
@@ -411,17 +420,17 @@ void task3_parenthesis_validator() {
     // initialize remainingDepth
     int remainingDepth = MAX_DEPTH;
 
+    // initialize globalBalance
+    int globalBalance = 0;
+
     printf("Please enter a term for validation:\n");
 
-    if (processSymbol(0, remainingDepth - 1)) {
+    if (processSymbol(0, remainingDepth - 1, &globalBalance) && globalBalance == 0) {
         printf("The parentheses are balanced correctly.\n");
-    } else if (task != 6) {
+    } else if (task != 6 || globalBalance != 0) {
         printf("The parentheses are not balanced correctly.\n");
     }
-    // task = 6 exits main while-loop
-
-    // if (scanf("%*[^\n]") != 0) scanf(" %*c");
-
+    // if task == 6 -- nothing prints, exits main while-loop
 }
 
 
