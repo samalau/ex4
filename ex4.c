@@ -375,7 +375,7 @@ int processSymbol(int depth, int remainingDepth, int* globalBalance) {
     }
 
     if (buffer[0] == '\n') {
-        if (depth == 0) {
+        if (depth == 0 && *globalBalance == 0) {
             // balanced
             return 1;
         } else {
