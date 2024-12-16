@@ -430,7 +430,7 @@ void task3_parenthesis_validator() {
     printf("Please enter a term for validation:\n");
 
     while (1) {
-        if (processSymbol(0, remainingDepth - 1, &globalBalance) && globalBalance == 0) {
+        if (processSymbol(0, remainingDepth - 1, &globalBalance)) {
             printf("The parentheses are balanced correctly.\n");
             break;
         } else {
