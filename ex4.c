@@ -8,7 +8,7 @@ Assignment: 4
 
 
 // task 1 macro -- overflow protection
-#define LARGE 0x80000  // placeholder
+#define LARGE 0x80000
 #define M 1000000007
 
 // task 3 macro
