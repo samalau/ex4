@@ -360,12 +360,16 @@ int processSymbol(int depth, int remainingDepth) {
     int unconfirmed = scanf(" %1[()[]{}<>\n]", buffer);
     
     // end of input
-    if (unconfirmed != 1 || buffer[0] == '\n') {
+    if (unconfirmed != 1) {
         if (unconfirmed == EOF) {
             // 6 exits main while-loop
             task = 6;
         }
-        return depth == 0;
+        return 0;
+    }
+
+    if (buffer[0] == '\n') {
+        return 1;
     }
 
     char symbol = buffer[0];
@@ -404,8 +408,8 @@ void task3_parenthesis_validator() {
     }
     // task = 6 exits main while-loop
 
-    scanf("%*[^\n]");
-    scanf(" %*c");
+    if (scanf("%*[^\n]")) scanf(" %*c");
+
 }
 
 
