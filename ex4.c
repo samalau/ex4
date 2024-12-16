@@ -6,6 +6,7 @@ Assignment: 4
 #include <stdio.h>
 #include <string.h>
 
+
 // task 1 macro
 // modulus to prevent overflow
 #define M 1000000007
