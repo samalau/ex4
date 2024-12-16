@@ -34,7 +34,7 @@ int getWeight();
 
 // task 3 helper
 int findIndex(char symbol);
-int processSymbol(int depth);
+int processSymbol(int depth, int remainingDepth);
 
 // task entry points
 void task1_robot_paths();
@@ -344,26 +344,27 @@ int findIndex(char symbol) {
 
 
 // recursively extract parentheses
-int processSymbol(int depth) {
+int processSymbol(int depth, int remainingDepth) {
     
-    // reset depth if needed
-    if (depth >= MAX_DEPTH) {
-        depth = 0;
+    // if needed: new segment, depth reset
+    if (remainingDepth <= 0) {
+        return processSymbol(depth, MAX_DEPTH);
     }
-
+    
     // buffer index 1 is \0
     char buffer[2];
     int unconfirmed = scanf(" %1[()[]{}<>\n]", buffer);
-    char symbol = buffer[0];
-
+    
     // end of input
-    if (unconfirmed != 1 || symbol == '\n') {
+    if (unconfirmed != 1 || buffer[0] == '\n') {
         if (unconfirmed == EOF) {
             // 6 exits main while-loop
             task = 6;
         }
         return depth == 0;
     }
+
+    char symbol = buffer[0];
 
     int index = findIndex(symbol);
 
@@ -372,7 +373,7 @@ int processSymbol(int depth) {
     int identity = identityMapDim[index];
 
     // handle opening parentheses
-    if (identity <= 0x08) return processSymbol(depth + 1);
+    if (identity <= 0x08) return processSymbol(depth + 1, remainingDepth - 1);
 
     // handle closing parentheses
     int expectedIndex = findIndex(bracketMapDim[index ^ 7]);
@@ -380,14 +381,17 @@ int processSymbol(int depth) {
         return 0;
     }
 
-    return processSymbol(depth - 1);
+    return processSymbol(depth - 1, remainingDepth - 1);
 }
 
 
 void task3_parenthesis_validator() {
+    // initialize remainingDepth
+    int remainingDepth = MAX_DEPTH;
+
     printf("Please enter a term for validation:\n");
 
-    if (processSymbol(0)) {
+    if (processSymbol(0, remainingDepth - 1)) {
         printf("The parentheses are balanced correctly.\n");
     } else if (task != 6) {
         printf("The parentheses are not balanced correctly.\n");
