@@ -28,8 +28,7 @@ unsigned long long cacheTask1Flag2y[LARGE] = {0};
 unsigned long long cacheTask1Flag2Result[LARGE] = {0};
 
 // task 2 helper
-void initializePyramid();
-void resetPyramidData();
+void setupPyramid();
 int getWeight();
 
 // task 3 helper
@@ -315,7 +314,7 @@ int getWeight() {
 
 void task2_human_pyramid() {
 	int fullData = getWeight();
-	
+
 	if (!fullData) return;
 
 	printf("The total weight on each cheerleader is:\n");
