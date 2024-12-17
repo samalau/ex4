@@ -387,7 +387,7 @@ int processSymbol(int depth, int remainingDepth, int* globalBalance) {
 
 		// protection against any remaining invalid chars
 		if (index == -1) {
-			scanf("%*[^(){}<>\n]");
+			scanf("%*[^()[]{}<>\n]");
 			continue;
 		}
 
