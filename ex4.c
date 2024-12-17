@@ -33,7 +33,7 @@ int getWeight();
 
 // task 3 helper
 int findIndex(char symbol);
-int processSymbol(int* globalBalance);
+int processSymbol(int* globalBalance, char lastOpening);
 // int processSymbol(int depth, int remainingDepth, int* globalBalance);
 
 // task entry points
@@ -384,9 +384,9 @@ int findIndex(char symbol) {
 
 // recursively extract parentheses
 // balanced is 1, unbalanced is 0
-int processSymbol(int* globalBalance) {
-	char symbol;
+int processSymbol(int* globalBalance, char lastOpening) {
 
+	char symbol = '\0';
 	int input = scanf("%c", &symbol);
 
 	if (input != 1 || symbol == '\n') {
@@ -400,29 +400,25 @@ int processSymbol(int* globalBalance) {
 
 	// skip invalid chars
 	if (index == -1) {
-		return processSymbol(globalBalance);
+		return processSymbol(globalBalance, lastOpening);
 	}
 
 	// handle opening parentheses
 	if (symbolBitmask[index] <= 0x08) {
 		// increase global balance for opening parentheses
 		(*globalBalance)++;
-		if (!processSymbol(globalBalance)) {
-			return 0;
-		}
 	}
 
 	// handle closing parentheses
 	else {
-		if (*globalBalance <= 0 || validSymbols[index ^ 1] != symbol) {
+		if (*globalBalance <= 0) {
 			// unbalanced
 			return 0;
 		}
 		// decrease global balance for closing parentheses
 		(*globalBalance)--;
 	}
-	return 1;
-	// return processSymbol(globalBalance);
+	return processSymbol(globalBalance, lastOpening);
 }
 
 
@@ -437,7 +433,7 @@ void task3_parenthesis_validator() {
 	scanf("%*c");
 
 	if (task != 6) {
-		if (processSymbol(&globalBalance)) {
+		if (processSymbol(&globalBalance, '\0')) {
 			printf("The parentheses are balanced correctly.\n");
 		} else {
 			printf("The parentheses are not balanced correctly.\n");
