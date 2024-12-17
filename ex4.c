@@ -336,13 +336,12 @@ void task2_human_pyramid() {
 					weightUpRight = (i_alt > 0 && j_alt < i_alt) ? dataPyramid[i_alt - 1][j_alt] : 0;
 
 				if (j == 0) {
-					weightLoad += weightUpRight;
+					weightLoad += weightUpRight / 2;
 				} else if (j == i) {
-					weightLoad += weightUpLeft;
+					weightLoad += weightUpLeft / 2;
 				} else {
-					weightLoad += (weightUpLeft + weightUpRight);
+					weightLoad += (weightUpLeft + weightUpRight) / 2;
 				}
-				double weightLoad = (weightLoad * 100.0 + 0.5) / 100.0;
 				dataPyramid[i][j] = weightLoad;
 			}
 			printf("%.2f ", weightLoad);
