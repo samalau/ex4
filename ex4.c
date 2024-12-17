@@ -319,6 +319,8 @@ void task2_human_pyramid() {
 
 	if (!fullData) return;
 
+	printf("The total weight on each cheerleader is:\n");
+
 	for (int i = 0; i < 5; i++) {
 		for (int j = 0; j <= i; j++) {
 
@@ -331,7 +333,6 @@ void task2_human_pyramid() {
 			double weightLoad = weightOrigin;
 
 			if (i > 0) {
-
 				double
 					weightUpLeft = (i_alt > 0 && j_alt > 0) ? dataPyramid[i_alt - 1][j_alt - 1] : 0,
 					weightUpRight = (i_alt > 0 && j_alt < i_alt) ? dataPyramid[i_alt - 1][j_alt] : 0;
