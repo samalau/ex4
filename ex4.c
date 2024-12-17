@@ -66,11 +66,15 @@ int main() {
                "6. Exit\n");
         
         int input = scanf(" %d", &task);
+        
         if (input != 1) {
             if (input == EOF) {
-                task = 6;
+                printf("Goodbye!\n");
+                return 0;
             } else {
+                printf("Please choose a task number from the list.\n");
                 task = -1;
+                continue;
             }
         }
 
@@ -99,6 +103,7 @@ int main() {
     } while (task != 6);
 
     printf("Goodbye!\n");
+    return 0;
 }
 
 
@@ -279,6 +284,7 @@ int getWeight() {
                 return 0;
             }
 
+            // valid weight
             dataPyramid[i][j] = nextWeight;
         }
     }
@@ -344,14 +350,9 @@ int findIndex(char symbol) {
 // recursively extract parentheses
 int processSymbol(int depth, int remainingDepth, int* globalBalance) {
     
-    // if needed: new segment, depth reset
+    // depth reset --overflow protection
     if (remainingDepth <= 0) {
-        if (depth != 0) {
-            // unbalanced
-            return 0;
-        }
-        return 1;
-        // return processSymbol(0, MAX_DEPTH, globalBalance);
+        return (depth == 0) ? 1 : 0;
     }
 
     // buffer index 1 is \0
@@ -369,8 +370,8 @@ int processSymbol(int depth, int remainingDepth, int* globalBalance) {
             task = 6;
             return 0;
         }
-        scanf("%*[^\n]");
-        scanf("%*c");
+        // scanf("%*[^\n]");
+        // scanf("%*c");
         // unbalanced
         return 0;
     }
@@ -389,8 +390,8 @@ int processSymbol(int depth, int remainingDepth, int* globalBalance) {
     int index = findIndex(symbol);
 
     if (index == -1) {
-        scanf("%*[^\n]");
-        scanf("%*c");
+        // scanf("%*[^\n]");
+        // scanf("%*c");
         // unbalanced
         return 0;
     }
@@ -408,8 +409,6 @@ int processSymbol(int depth, int remainingDepth, int* globalBalance) {
     int expectedIndex = findIndex(bracketMapDim[index ^ 7]);
 
     if (depth <= 0 || mirrorMapDim[index] != identityMapDim[expectedIndex]) {
-        scanf("%*[^\n]");
-        scanf(" %*c");
         // unbalanced
         return 0;
     }
@@ -430,16 +429,12 @@ void task3_parenthesis_validator() {
 
     printf("Please enter a term for validation:\n");
 
-    while (1) {
-        if (processSymbol(0, remainingDepth - 1, &globalBalance)) {
-            printf("The parentheses are balanced correctly.\n");
-            break;
-        } else {
-            // if task == 6 -- nothing prints, exits main while-loop
-            if (task != 6) {
-                printf("The parentheses are not balanced correctly.\n");
-            }
-            break;
+    if (processSymbol(0, remainingDepth - 1, &globalBalance)) {
+        printf("The parentheses are balanced correctly.\n");
+    } else {
+        // if task == 6 -- nothing prints, exits main while-loop
+        if (task != 6) {
+            printf("The parentheses are not balanced correctly.\n");
         }
     }
 }
