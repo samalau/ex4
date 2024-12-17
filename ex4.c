@@ -33,7 +33,8 @@ int getWeight();
 
 // task 3 helper
 int findIndex(char symbol);
-int processSymbol(int depth, int remainingDepth, int* globalBalance);
+int processSymbol(int* globalBalance);
+// int processSymbol(int depth, int remainingDepth, int* globalBalance);
 
 // task entry points
 void task1_robot_paths();
@@ -383,80 +384,65 @@ int findIndex(char symbol) {
 
 // recursively extract parentheses
 // balanced is 1, unbalanced is 0
-int processSymbol(int depth, int remainingDepth, int* globalBalance) {
-	// depth reset --overflow protection
-	if (remainingDepth < 0) return 0;
-
+int processSymbol(int* globalBalance) {
 	char symbol;
-	int unconfirmed;
 
-	while ((unconfirmed = scanf(" %c", &symbol)) == 1) {
-	// while ((unconfirmed = scanf("%*[^()\\[\\]{}<>\n]%c", &symbol)) == 1) {
+	int input = scanf("%c", &symbol);
 
-		if (symbol == '\n') {
-			break;
+	if (input != 1 || symbol == '\n') {
+		if (input == EOF) {
+			// 6 exits main while-loop
+			task = 6;
 		}
-
-		// char validation, identification in validSymbols
-		int index = findIndex(symbol);
-
-		// skip invalid chars
-		if (index == -1) {
-			// scanf("%*[^()[]{}<>\n]");
-			continue;
-		}
-
-		// handle opening parentheses
-		if (symbolBitmask[index] <= 0x08) {
-			// increase global balance for opening parentheses
-			(*globalBalance)++;
-			if (!processSymbol(depth + 1, remainingDepth - 1, globalBalance)) {
-				// unbalanced
-				return 0;
-			}
-		}
-
-		// handle closing parentheses
-		else {
-			// mirrormask identification, validaton
-			// int expectedIndex = validSymbols;
-			// validate mirror match to bitmask
-			if (*globalBalance <= 0 || symbolMirrormask[index] != symbolBitmask[findIndex(validSymbols[index ^ 1])]) {
-				// unbalanced
-				return 0;
-			}
-			// decrease global balance for closing parentheses
-			(*globalBalance)--;
-			if (!processSymbol(depth - 1, remainingDepth - 1, globalBalance)) {
-				// unbalanced
-				return 0;
-			}
-		}
-		return (depth == 0 && *globalBalance == 0) ? 1 : 0;
-	}
-
-	// end of input
-	if (unconfirmed == EOF) {
-		// 6 exits main while-loop
-		task = 6;
 		return (*globalBalance == 0);
 	}
+	
+	// char validation, identification in validSymbols
+	int index = findIndex(symbol);
 
-	return (depth == 0 && *globalBalance == 0) ? 1 : 0;
+	// skip invalid chars
+	if (index == -1) {
+		return processSymbol(globalBalance);
+	}
+
+	// handle opening parentheses
+	if (symbolBitmask[index] <= 0x08) {
+		// increase global balance for opening parentheses
+		(*globalBalance)++;
+		if (!processSymbol(globalBalance)) {
+			return 0;
+		}
+	}
+
+	// handle closing parentheses
+	else {
+		// mirrormask identification, validaton
+		// int expectedIndex = validSymbols;
+		// validate mirror match to bitmask
+		if (*globalBalance <= 0 || symbolMirrormask[index] != symbolBitmask[index ^ 1]) {
+			// unbalanced
+			return 0;
+		}
+		// decrease global balance for closing parentheses
+		(*globalBalance)--;
+	}
+	return 1;
+	// return processSymbol(globalBalance);
 }
 
 
 void task3_parenthesis_validator() {
 	// initialize remainingDepth
-	int remainingDepth = MAX_DEPTH;
+	// int remainingDepth = MAX_DEPTH;
 
 	// initialize globalBalance
 	int globalBalance = 0;
 
 	printf("Please enter a term for validation:\n");
+	scanf("%*c");
 
 	if (task != 6) {
-		if (processSymbol(0, remainingDepth - 1, &globalBalance)) {
+		if (processSymbol(&globalBalance)) {
 			printf("The parentheses are balanced correctly.\n");
 		} else {
 			printf("The parentheses are not balanced correctly.\n");
