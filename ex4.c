@@ -398,15 +398,14 @@ int processSymbol(int depth, int remainingDepth, int* globalBalance) {
 		// char validation, identification in validSymbols
 		int index = findIndex(symbol);
 
-		// protection against invalid char remaining after filter
-		// terminates, unbalanced
-		if (index == -1) return 0;
-
-		// bitmask identification
-		int identity = symbolBitmask[index];
+		// protection against any remaining invalid chars
+		if (index == -1) {
+			scanf("%*[^(){}<>\n]");
+			continue;
+		}
 
 		// handle opening parentheses
-		if (identity <= 0x08) {
+		if (symbolBitmask[index] <= 0x08) {
 			// increase global balance for opening parentheses
 			(*globalBalance)++;
 			if (!processSymbol(depth + 1, remainingDepth - 1, globalBalance)) {
