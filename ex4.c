@@ -364,12 +364,12 @@ const int symbolBitmask[8] = {
 	0x08, 0x10     // '<', '>'
 };
 
-const int symbolMirrormask[8] = {
-	0x80, 0x01,    // ')', '('
-	0x40, 0x02,    // ']', '['
-	0x20, 0x04,    // '}', '{'
-	0x10, 0x08     // '>', '<'
-};
+// const int symbolMirrormask[8] = {
+// 	0x80, 0x01,    // ')', '('
+// 	0x40, 0x02,    // ']', '['
+// 	0x20, 0x04,    // '}', '{'
+// 	0x10, 0x08     // '>', '<'
+// };
 
 
 int findIndex(char symbol) { 
@@ -390,10 +390,8 @@ int processSymbol(int* globalBalance) {
 	int input = scanf("%c", &symbol);
 
 	if (input != 1 || symbol == '\n') {
-		if (input == EOF) {
-			// 6 exits main while-loop
-			task = 6;
-		}
+		// 6 exits main while-loop
+		if (input == EOF) {task = 6;}
 		return (*globalBalance == 0);
 	}
 	
@@ -416,10 +414,7 @@ int processSymbol(int* globalBalance) {
 
 	// handle closing parentheses
 	else {
-		// mirrormask identification, validaton
-		// int expectedIndex = validSymbols;
-		// validate mirror match to bitmask
-		if (*globalBalance <= 0 || symbolMirrormask[index] != symbolBitmask[index ^ 1]) {
+		if (*globalBalance <= 0 || validSymbols[index ^ 1] != symbol) {
 			// unbalanced
 			return 0;
 		}
