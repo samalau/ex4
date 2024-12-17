@@ -202,8 +202,10 @@ void task1_robot_paths() {
 		y = -1;
 
 	unsigned long long totalDistinctPaths = 0;
-	int validCoordinates = 0,
-		charsRead = 0;
+	int validCoordinates = 0;
+
+	// protects against validating number input longer than long long limit
+	int charsRead = 0;
 	
 	while (validCoordinates != 2) {
 		printf("Please enter the coordinates of the robot (column, row):\n");
@@ -211,7 +213,7 @@ void task1_robot_paths() {
 		validCoordinates = scanf(" %lld %lld%n", &x, &y, &charsRead);
 
 		int detectedTrailingChars = scanf("%*[^\n]");
-		if (validCoordinates != 2 || detectedTrailingChars != 0 || charsRead > 20) {
+		if (validCoordinates != 2 || detectedTrailingChars != 0 || charsRead > 40) {
 			scanf(" %*c");
 			if (validCoordinates == EOF || detectedTrailingChars == EOF) {
 				task = 6;
@@ -334,16 +336,31 @@ void task2_human_pyramid() {
 
 
 // TASK 3 parenthesis validation
-const char bracketMapDim[8] = {'(', '[', '{', '<', '>', '}', ']', ')'};
+const char validSymbols[8] = {
+	'(', ')',    // 0x01, 0x80
+	'[', ']',    // 0x02, 0x40
+	'{', '}',    // 0x04, 0x20
+	'<', '>'     // 0x08, 0x10
+};
 
-const int
-	identityMapDim[8] = {0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80},
-	mirrorMapDim[8] = {0x80, 0x40, 0x20, 0x10, 0x08, 0x04, 0x02, 0x01};
+const int symbolBitmask[8] = {
+	0x01, 0x80,    // '(', ')'
+	0x02, 0x40,    // '[', ']'
+	0x04, 0x20,    // '{', '}'
+	0x08, 0x10     // '<', '>'
+};
+
+const int symbolMirrormask[8] = {
+	0x80, 0x01,    // ')', '('
+	0x40, 0x02,    // ']', '['
+	0x20, 0x04,    // '}', '{'
+	0x10, 0x08     // '>', '<'
+};
 
 
 int findIndex(char symbol) { 
 	for (int i = 0; i < 8; i++) {
-		if (bracketMapDim[i] == symbol) {
+		if (validSymbols[i] == symbol) {
 			return i;
 		}
 	}
@@ -357,31 +374,36 @@ int processSymbol(int depth, int remainingDepth, int* globalBalance) {
 	// depth reset --overflow protection
 	if (remainingDepth < 0) return (depth == 0 && *globalBalance == 0) ? 1 : 0;
 
-	// buffer index 1 is \0
-	char buffer[2] = {0};
-
+	char symbol;
 	int unconfirmed;
 
-	while ((unconfirmed = scanf("%1[(){}<>]", buffer)) == 1 || scanf("%1[\n]", buffer) == 1) {
+	while (((unconfirmed = scanf("%1[(){}<>]", &symbol)) == 1) || ((unconfirmed = scanf("%1[\n]", &symbol)) == 1)) {
 		
-		// end of input
-		if (buffer[0] == '\n') return (depth == 0 && *globalBalance == 0) ? 1 : 0;
+		if (unconfirmed != 1) {
+			// skip invalid chars
+			scanf("%*[^(){}<>\n]");
+			continue;
+		}
 
-		char symbol = buffer[0];
+		// end of input
+		if (symbol == '\n') {
+			return (depth == 0 && *globalBalance == 0) ? 1 : 0;
+		}
+
+		// char validation, identification in validSymbols
 		int index = findIndex(symbol);
 
-		// protection against invalid char remaining after filtering
-		// unbalanced
+		// protection against invalid char remaining after filter
+		// terminates, unbalanced
 		if (index == -1) return 0;
 
-		int identity = identityMapDim[index];
+		// bitmask identification
+		int identity = symbolBitmask[index];
 
 		// handle opening parentheses
 		if (identity <= 0x08) {
 			// increase global balance for opening parentheses
 			(*globalBalance)++;
-			
-			// continues processing
 			if (!processSymbol(depth + 1, remainingDepth - 1, globalBalance)) {
 				// unbalanced
 				return 0;
@@ -390,15 +412,15 @@ int processSymbol(int depth, int remainingDepth, int* globalBalance) {
 
 		// handle closing parentheses
 		else {
-			int expectedIndex = findIndex(bracketMapDim[index ^ 7]);
-			if (*globalBalance <= 0 || mirrorMapDim[index] != identityMapDim[expectedIndex]) {
+			// mirrormask identification, validaton
+			int expectedIndex = findIndex(validSymbols[index ^ 7]);
+			// validate mirror match to bitmask
+			if (*globalBalance <= 0 || symbolMirrormask[index] != symbolBitmask[expectedIndex]) {
 				// unbalanced
 				return 0;
 			}
 			// decrease global balance for closing parentheses
 			(*globalBalance)--;
-
-			// continues processing
 			if (!processSymbol(depth - 1, remainingDepth - 1, globalBalance)) {
 				// unbalanced
 				return 0;
@@ -409,8 +431,9 @@ int processSymbol(int depth, int remainingDepth, int* globalBalance) {
 	if (unconfirmed == EOF) {
 		// 6 exits main while-loop
 		task = 6;
-		return 0;
+		return (*globalBalance == 0);
 	}
+
 	return 1;
 }
 
@@ -427,7 +450,7 @@ void task3_parenthesis_validator() {
 	if (processSymbol(0, remainingDepth - 1, &globalBalance)) {
 		printf("The parentheses are balanced correctly.\n");
 	} else {
-		// if task == 6 -- nothing prints, exits main while-loop
+		// nothing prints for EOF, task has been reassigned 6
 		if (task != 6) {
 			printf("The parentheses are not balanced correctly.\n");
 		}
