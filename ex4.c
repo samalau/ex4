@@ -443,13 +443,7 @@ void task3_parenthesis_validator() {
 		if (processSymbol(&globalBalance, '\0')) {
 			printf("The parentheses are balanced correctly.\n");
 		} else {
-			char f = getchar();
-			printf("f = %c\n", f);
-			putchar(f);
 			scanf("%*c");
-			f = getchar();
-			printf("f = %c\n", f);
-			putchar(f);
 			printf("The parentheses are not balanced correctly.\n");
 		}
 	}
