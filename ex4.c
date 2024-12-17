@@ -197,16 +197,15 @@ unsigned long long compute_paths(long long x, long long y) {
 
 
 void task1_robot_paths() {
-	long long
-		x = -1,
-		y = -1;
-
 	unsigned long long totalDistinctPaths = 0;
+	long long x = -1, y = -1;
 	int validCoordinates = 0;
 
-	// protects against validating number input longer than long long limit
+	// protects against number input longer than long long limit
+	// x: charsRead <= 20, y: charsRead <= 20
+	// x+y: charsRead <= 40
 	int charsRead = 0;
-	
+
 	while (validCoordinates != 2) {
 		printf("Please enter the coordinates of the robot (column, row):\n");
 
@@ -227,7 +226,7 @@ void task1_robot_paths() {
 		} else if (x == 0 || y == 0) {
 			totalDistinctPaths = 1;
 		} else {
-			if (x < LARGE && y < LARGE && x + y < LARGE){
+			if (x >=0 && x < LARGE && y >=0 && y < LARGE && x + y < 0xF4240){
 				totalDistinctPaths = compute_paths(x, y);
 			}
 			else {
