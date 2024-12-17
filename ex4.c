@@ -241,30 +241,40 @@ void task1_robot_paths() {
 
 // TASK 2 human pyramid
 double *dataPyramid[5];
-
 double
-	level_1[] = {-1},  
-	level_2[] = {-1, -1},
-	level_3[] = {-1, -1, -1},
-	level_4[] = {-1, -1, -1, -1},
-	level_5[] = {-1, -1, -1, -1, -1};
+	level_1[1] = {0.00},
+	level_2[2] = {0.00},
+	level_3[3] = {0.00},
+	level_4[4] = {0.00},
+	level_5[5] = {0.00};
 
 
-void initializePyramid() {
-	dataPyramid[0] = level_1;
-	dataPyramid[1] = level_2;
-	dataPyramid[2] = level_3;
-	dataPyramid[3] = level_4;
-	dataPyramid[4] = level_5;
-}
+void setupPyramid() {
+	// ensures pointers are initialized once
+	static int initialized = 0;
 
+	// track when needs reset
+    static int pyramidNeedsReset = 1;
 
-void resetPyramidData() {
-	for (int i = 0; i < 5; i++) {
-		for (int j = 0; j <= i; j++) {
-			dataPyramid[i][j] = -1;
-		}
-	}
+    if (!initialized) {
+        // one-time pointer setup
+        dataPyramid[0] = level_1;
+        dataPyramid[1] = level_2;
+        dataPyramid[2] = level_3;
+        dataPyramid[3] = level_4;
+        dataPyramid[4] = level_5;
+        initialized = 1;
+    }
+
+    if (pyramidNeedsReset) {
+        for (int i = 0; i < 5; i++) {
+            for (int j = 0; j <= i; j++) {
+                dataPyramid[i][j] = -1.00;
+            }
+        }
+        pyramidNeedsReset = 0;
+		// pyramid is now reset
+    }
 }
 
 
@@ -274,7 +284,7 @@ int getWeight() {
 	for (int i = 0; i < 5; i++) {
 		for (int j = 0; j <= i; j++) {
 
-			double nextWeight = -1;
+			double nextWeight = -1.00;
 			int input = scanf(" %lf", &nextWeight);
 
 			if (input == EOF) {
@@ -285,23 +295,28 @@ int getWeight() {
 
 			if (input != 1 || nextWeight < 0) {
 				printf("Negative weights are not supported.\n");
-				scanf("%*[^\n]");
-				scanf(" %*c");
+				// scanf("%*[^\n]");
+				// scanf("%*c");
 				// return to main
 				return 0;
 			}
 
 			// valid weight
 			dataPyramid[i][j] = nextWeight;
+			if (i == 0) {
+				static int pyramidNeedsReset = 1;
+			}
 		}
 	}
-
 	return 1;
 }
 
 
 void task2_human_pyramid() {
+	setupPyramid();
+
 	int fullData = getWeight();
+
 	if (!fullData) return;
 
 	for (int i = 0; i < 5; i++) {
@@ -316,7 +331,7 @@ void task2_human_pyramid() {
 			double weightLoad = weightOrigin;
 
 			if (i > 0) {
-				
+
 				double
 					weightUpLeft = (i_alt > 0 && j_alt > 0) ? dataPyramid[i_alt - 1][j_alt - 1] : 0,
 					weightUpRight = (i_alt > 0 && j_alt < i_alt) ? dataPyramid[i_alt - 1][j_alt] : 0;
@@ -334,7 +349,7 @@ void task2_human_pyramid() {
 		}
 		printf("\n");
 	}
-	resetPyramidData();
+	setupPyramid();
 }
 
 
