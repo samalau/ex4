@@ -378,21 +378,8 @@ int processSymbol(int depth, int remainingDepth, int* globalBalance) {
 
 	while ((unconfirmed = scanf(" %c", &symbol)) == 1) {
 
-		// end of input
-		if (unconfirmed == EOF) {
-			// 6 exits main while-loop
-			task = 6;
-			return (*globalBalance == 0);
-		}
-
 		if (symbol == '\n') {
 			return (depth == 0 && *globalBalance == 0) ? 1 : 0;
-		}
-
-		if (unconfirmed != 1 || ((symbol < '(' || symbol > '>') || !((1 << (symbol - '(')) & 0xE727))) {
-			// skip invalid chars
-			scanf("%*[^(){}<>\n]");
-			continue;
 		}
 
 		// char validation, identification in validSymbols
@@ -429,8 +416,16 @@ int processSymbol(int depth, int remainingDepth, int* globalBalance) {
 				// unbalanced
 				return 0;
 			}
-		}		
+		}
 	}
+
+	// end of input
+	if (unconfirmed == EOF) {
+		// 6 exits main while-loop
+		task = 6;
+		return (*globalBalance == 0);
+	}
+
 	return 1;
 }
 
