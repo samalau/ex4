@@ -66,19 +66,9 @@ int main() {
 		
 		int input = scanf(" %d", &task);
 		
-		if (input != 1) {
-			if (input == EOF) {
-				printf("Goodbye!\n");
-				return 0;
-			} else {
-				scanf("%*[^\n]");
-				scanf("%*c");
-				printf("Please choose a task number from the list.\n");
-				task = -1;
-				continue;
-			}
+		if (input == EOF) {
+			break;
 		}
-
 		switch (task) {
 			case 1:
 				task1_robot_paths();
@@ -99,13 +89,12 @@ int main() {
 			case 6:
 				break;
 			default:
+				scanf("%*[^\n]");
+				scanf(" %*c");
 				printf("Please choose a task number from the list.\n");
 				break;
 		}
-		scanf("%*[^\n]");
-		scanf("%*c");
 	} while (task != 6);
-
 	printf("Goodbye!\n");
 	return 0;
 }
