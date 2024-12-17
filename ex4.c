@@ -55,7 +55,7 @@ int task = -1;
 
 int main() {
 	cacheInitialize();
-
+	setupPyramid();
 	do {
 		printf("Choose an option:\n"
 			   "1. Robot Paths\n"
@@ -86,6 +86,7 @@ int main() {
 				break;
 			case 2:
 				task2_human_pyramid();
+				setupPyramid();
 				break;
 			case 3:
 				task3_parenthesis_validator();
@@ -313,10 +314,8 @@ int getWeight() {
 
 
 void task2_human_pyramid() {
-	setupPyramid();
-
 	int fullData = getWeight();
-
+	
 	if (!fullData) return;
 
 	printf("The total weight on each cheerleader is:\n");
@@ -338,19 +337,19 @@ void task2_human_pyramid() {
 					weightUpRight = (i_alt > 0 && j_alt < i_alt) ? dataPyramid[i_alt - 1][j_alt] : 0;
 
 				if (j == 0) {
-					weightLoad += weightUpRight / 2;
+					weightLoad += weightUpRight;
 				} else if (j == i) {
-					weightLoad += weightUpLeft / 2;
+					weightLoad += weightUpLeft;
 				} else {
-					weightLoad += (weightUpLeft + weightUpRight) / 2;
+					weightLoad += (weightUpLeft + weightUpRight);
 				}
+				double weightLoad = (weightLoad * 100.0 + 0.5) / 100.0;
 				dataPyramid[i][j] = weightLoad;
 			}
 			printf("%.2f ", weightLoad);
 		}
 		printf("\n");
 	}
-	setupPyramid();
 }
 
 
