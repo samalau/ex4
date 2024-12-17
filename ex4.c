@@ -67,12 +67,14 @@ int main() {
 		int input = scanf(" %d", &task);
 		scanf("%*[^\n]");
 		scanf("%*c");
-		if (input == EOF) {
-			break;
-		}
-		if (input != 1) {
+		if (input != 1 || task < 1 || task > 6) {
+			if (input == EOF) {
+				break;
+			}
 			task = -1;
 			printf("Please choose a task number from the list.\n");
+			// scanf("%*[^\n]");
+			// scanf("%*c");
 			continue;
 		}
 
