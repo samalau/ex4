@@ -376,7 +376,7 @@ int processSymbol(int depth, int remainingDepth, int* globalBalance) {
 	char symbol;
 	int unconfirmed;
 
-	while ((unconfirmed = scanf(" %*[^(){}<>\n]%c", &symbol)) == 1) {
+	while ((unconfirmed = scanf(" %*[^()[]{}<>\n]%c", &symbol)) == 1) {
 
 		if (symbol == '\n') {
 			return (depth == 0 && *globalBalance == 0) ? 1 : 0;
