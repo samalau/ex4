@@ -72,7 +72,9 @@ int main() {
 			}
 			task = -1;
 			printf("Please choose a task number from the list.\n");
-			scanf("%*[^\n]");
+			if (scanf("%*[^\n]") == EOF) {
+				break;
+			}
 			scanf("%*c");
 			continue;
 		}
@@ -96,7 +98,10 @@ int main() {
 			case 6:
 				break;
 			default:
-				scanf("%*[^\n]");
+				if (scanf("%*[^\n]") == EOF) {
+					task = 6;
+					break;
+				}
 				scanf("%*c");
 				printf("Please choose a task number from the list.\n");
 				break;
@@ -208,11 +213,10 @@ void task1_robot_paths() {
 		validCoordinates = scanf(" %lld %lld", &x, &y);
 
 		if (validCoordinates != 2) {
-			if (validCoordinates == EOF) {
+			if (scanf("%*[^\n]") == EOF || validCoordinates == EOF) {
 				task = 6;
 				return;
 			}
-			scanf("%*[^\n]");
 			scanf("%*c");
 			continue;
 		}
@@ -292,7 +296,10 @@ int getWeight() {
 
 			if (input != 1 || nextWeight < 0) {
 				printf("Negative weights are not supported.\n");
-				scanf("%*[^\n]");
+				if (scanf("%*[^\n]") == EOF) {
+					task = 6;
+					break;
+				}
 				scanf("%*c");
 				// return to main
 				return 0;
@@ -436,6 +443,13 @@ void task3_parenthesis_validator() {
 		if (processSymbol(&globalBalance, '\0')) {
 			printf("The parentheses are balanced correctly.\n");
 		} else {
+			char f = getchar();
+			printf("f = %c\n", f);
+			putchar(f);
+			scanf("%*c");
+			f = getchar();
+			printf("f = %c\n", f);
+			putchar(f);
 			printf("The parentheses are not balanced correctly.\n");
 		}
 	}
