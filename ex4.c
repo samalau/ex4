@@ -406,7 +406,7 @@ int processSymbol(int depth, int remainingDepth, int* globalBalance) {
 			// mirrormask identification, validaton
 			// int expectedIndex = validSymbols;
 			// validate mirror match to bitmask
-			if (*globalBalance <= 0 || symbolMirrormask[index] != symbolBitmask[index ^ 1]) {
+			if (*globalBalance <= 0 || symbolMirrormask[index] != symbolBitmask[findIndex(validSymbols[index ^ 1])]) {
 				// unbalanced
 				return 0;
 			}
