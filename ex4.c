@@ -33,7 +33,7 @@ int getWeight();
 
 // task 3 helper
 int findIndex(char symbol);
-int processSymbol(int* globalBalance, char lastOpening);
+int processSymbol(int* globalBalance, char expected);
 // int processSymbol(int depth, int remainingDepth, int* globalBalance);
 
 // task entry points
@@ -70,13 +70,16 @@ int main() {
 			if (input == EOF) {
 				break;
 			}
-			task = -1;
-			printf("Please choose a task number from the list.\n");
 			if (scanf("%*[^\n]") == EOF) {
 				break;
 			}
+			task = -1;
 			scanf("%*c");
+			printf("Please choose a task number from the list.\n");
 			continue;
+		}
+		if (scanf("%*[^\n]") == EOF) {
+			break;
 		}
 		switch (task) {
 			case 1:
@@ -226,7 +229,7 @@ void task1_robot_paths() {
 		} else if (x == 0 || y == 0) {
 			totalDistinctPaths = 1;
 		} else {
-			if (x >=0 && x < LARGE && y >=0 && y < LARGE && x + y < LARGE){
+			if (x >= 0 && x < LARGE && y >= 0 && y < LARGE && x + y < LARGE){
 				totalDistinctPaths = compute_paths(x, y);
 			}
 			else {
@@ -236,7 +239,7 @@ void task1_robot_paths() {
 		}
 	}
 	printf("The total number of paths the robot can take to reach home is: %llu\n", totalDistinctPaths);
-	return ;
+	return;
 }
 
 
@@ -288,19 +291,15 @@ int getWeight() {
 			double nextWeight = -1.00;
 			int input = scanf(" %lf", &nextWeight);
 
-			if (input == EOF) {
-				// 6 exits main while-loop
+			if (input == EOF || scanf("%*[^\n]") == EOF) {
+				// task = 6 exits main while-loop
 				task = 6;
 				return 0;
 			}
 
 			if (input != 1 || nextWeight < 0) {
-				printf("Negative weights are not supported.\n");
-				if (scanf("%*[^\n]") == EOF) {
-					task = 6;
-					break;
-				}
 				scanf("%*c");
+				printf("Negative weights are not supported.\n");
 				// return to main
 				return 0;
 			}
@@ -352,7 +351,7 @@ void task2_human_pyramid() {
 		}
 		printf("\n");
 	}
-	return ;
+	return;
 }
 
 
@@ -391,41 +390,50 @@ int findIndex(char symbol) {
 
 // recursively extract parentheses
 // balanced is 1, unbalanced is 0
-int processSymbol(int* globalBalance, char lastOpening) {
+int processSymbol(int* globalBalance, char expected) {
 
-	char symbol = '\0';
+	char symbol;
 	int input = scanf("%c", &symbol);
 
 	if (input != 1 || symbol == '\n') {
-		// 6 exits main while-loop
-		if (input == EOF) {task = 6;}
+		// task = 6 exits main while-loop
+		if (input == EOF || scanf("%*[^\n]") == EOF) {
+			task = 6;
+		}
+		scanf("%*c");
 		return (*globalBalance == 0);
 	}
+
 	
+
 	// char validation, identification in validSymbols
 	int index = findIndex(symbol);
 
 	// skip invalid chars
-	if (index == -1) {
-		return processSymbol(globalBalance, lastOpening);
+	if (symbol == ' ' || index == -1) {
+		return processSymbol(globalBalance, expected);
 	}
 
 	// handle opening parentheses
 	if (symbolBitmask[index] <= 0x08) {
 		// increase global balance for opening parentheses
 		(*globalBalance)++;
+		if (!processSymbol(globalBalance, validSymbols[index ^ 1])) {
+            return 0;
+        }
 	}
 
 	// handle closing parentheses
 	else {
-		if (*globalBalance <= 0) {
+		if (*globalBalance <= 0 || symbol != expected) {
 			// unbalanced
 			return 0;
 		}
 		// decrease global balance for closing parentheses
 		(*globalBalance)--;
 	}
-	return processSymbol(globalBalance, lastOpening);
+
+	return processSymbol(globalBalance, expected);
 }
 
 
@@ -437,12 +445,16 @@ void task3_parenthesis_validator() {
 	int globalBalance = 0;
 
 	printf("Please enter a term for validation:\n");
-	scanf("%*c");
-
-	if (task != 6) {
-		if (processSymbol(&globalBalance, '\0')) {
-			printf("The parentheses are balanced correctly.\n");
-		} else {
+	
+	if (scanf("%*[^\n]") != 0) {
+		scanf("%*c");
+	}
+	
+	if (processSymbol(&globalBalance, '\0')) {
+		printf("The parentheses are balanced correctly.\n");
+	} else {
+		// task = 6 exits main while-loop
+		if (task != 6) {
 			scanf("%*c");
 			printf("The parentheses are not balanced correctly.\n");
 		}
