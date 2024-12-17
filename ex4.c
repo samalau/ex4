@@ -273,6 +273,7 @@ int getWeight() {
 
 	for (int i = 0; i < 5; i++) {
 		for (int j = 0; j <= i; j++) {
+
 			double nextWeight = -1;
 			int input = scanf(" %lf", &nextWeight);
 
@@ -281,6 +282,7 @@ int getWeight() {
 				task = 6;
 				return 0;
 			}
+
 			if (input != 1 || nextWeight < 0) {
 				printf("Negative weights are not supported.\n");
 				scanf("%*[^\n]");
@@ -293,6 +295,7 @@ int getWeight() {
 			dataPyramid[i][j] = nextWeight;
 		}
 	}
+
 	return 1;
 }
 
@@ -313,9 +316,10 @@ void task2_human_pyramid() {
 			double weightLoad = weightOrigin;
 
 			if (i > 0) {
+				
 				double
-					weightUpLeft = (j > 0) ? dataPyramid[i_alt - 1][j_alt - 1] : 0,
-					weightUpRight = (j < i) ? dataPyramid[i_alt - 1][j] : 0;
+					weightUpLeft = (i_alt > 0 && j_alt > 0) ? dataPyramid[i_alt - 1][j_alt - 1] : 0,
+					weightUpRight = (i_alt > 0 && j_alt < i_alt) ? dataPyramid[i_alt - 1][j_alt] : 0;
 
 				if (j == 0) {
 					weightLoad += weightUpRight / 2;
