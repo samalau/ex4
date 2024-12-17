@@ -376,7 +376,7 @@ int processSymbol(int depth, int remainingDepth, int* globalBalance) {
 	char symbol;
 	int unconfirmed;
 
-	while ((unconfirmed = scanf("% c", &symbol)) == 1) {
+	while ((unconfirmed = scanf(" %c", &symbol)) == 1) {
 
 		// end of input
 		if (unconfirmed == EOF) {
