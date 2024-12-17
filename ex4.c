@@ -8,7 +8,7 @@ Assignment: 4
 
 
 // task 1 macro -- overflow protection
-#define LARGE 0x80000
+#define LARGE 0x8000  // 0x10000
 #define M 1000000007
 
 // task 3 macro
@@ -226,7 +226,7 @@ void task1_robot_paths() {
 		} else if (x == 0 || y == 0) {
 			totalDistinctPaths = 1;
 		} else {
-			if (x >=0 && x < LARGE && y >=0 && y < LARGE && x + y < 0xF4240){
+			if (x >=0 && x < LARGE && y >=0 && y < LARGE && x + y < LARGE){
 				totalDistinctPaths = compute_paths(x, y);
 			}
 			else {
@@ -274,7 +274,7 @@ int getWeight() {
 	for (int i = 0; i < 5; i++) {
 		for (int j = 0; j <= i; j++) {
 			double nextWeight = -1;
-			int input = scanf(" %1lf", &nextWeight);
+			int input = scanf(" %lf", &nextWeight);
 
 			if (input == EOF) {
 				// 6 exits main while-loop
@@ -376,17 +376,23 @@ int processSymbol(int depth, int remainingDepth, int* globalBalance) {
 	char symbol;
 	int unconfirmed;
 
-	while (((unconfirmed = scanf("%1[(){}<>]", &symbol)) == 1) || ((unconfirmed = scanf("%1[\n]", &symbol)) == 1)) {
-		
-		if (unconfirmed != 1) {
+	while ((unconfirmed = scanf("% c", &symbol)) == 1) {
+
+		// end of input
+		if (unconfirmed == EOF) {
+			// 6 exits main while-loop
+			task = 6;
+			return (*globalBalance == 0);
+		}
+
+		if (symbol == '\n') {
+			return (depth == 0 && *globalBalance == 0) ? 1 : 0;
+		}
+
+		if (unconfirmed != 1 || ((symbol < '(' || symbol > '>') || !((1 << (symbol - '(')) & 0xE727))) {
 			// skip invalid chars
 			scanf("%*[^(){}<>\n]");
 			continue;
-		}
-
-		// end of input
-		if (symbol == '\n') {
-			return (depth == 0 && *globalBalance == 0) ? 1 : 0;
 		}
 
 		// char validation, identification in validSymbols
@@ -412,9 +418,9 @@ int processSymbol(int depth, int remainingDepth, int* globalBalance) {
 		// handle closing parentheses
 		else {
 			// mirrormask identification, validaton
-			int expectedIndex = findIndex(validSymbols[index ^ 7]);
+			// int expectedIndex = validSymbols;
 			// validate mirror match to bitmask
-			if (*globalBalance <= 0 || symbolMirrormask[index] != symbolBitmask[expectedIndex]) {
+			if (*globalBalance <= 0 || symbolMirrormask[index] != symbolBitmask[index ^ 1]) {
 				// unbalanced
 				return 0;
 			}
@@ -426,13 +432,6 @@ int processSymbol(int depth, int remainingDepth, int* globalBalance) {
 			}
 		}		
 	}
-
-	if (unconfirmed == EOF) {
-		// 6 exits main while-loop
-		task = 6;
-		return (*globalBalance == 0);
-	}
-
 	return 1;
 }
 
