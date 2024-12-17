@@ -64,23 +64,17 @@ int main() {
 			   "5. Crossword Generator\n"
 			   "6. Exit\n");
 		
-		int check = 2;
-		int input = scanf(" %d%n", &task, &check);
-		if (input != 1 || task < 1 || task >= 6 || check > 1) {
-			
-			if (scanf("%*[^\n]") == EOF) {
-				break;
-			}
-			scanf("%*c");
-			if (task == 6) {
+		int input = scanf(" %d", &task);
+		if (input != 1 || task < 1 || task > 6) {
+			if (input == EOF) {
 				break;
 			}
 			task = -1;
 			printf("Please choose a task number from the list.\n");
+			scanf("%*[^\n]");
+			scanf("%*c");
 			continue;
 		}
-		scanf("%*[^\n]");
-		scanf("%*c");
 		switch (task) {
 			case 1:
 				task1_robot_paths();
@@ -101,8 +95,8 @@ int main() {
 			case 6:
 				break;
 			default:
-				// scanf("%*[^\n]");
-				// scanf("%*c");
+				scanf("%*[^\n]");
+				scanf("%*c");
 				printf("Please choose a task number from the list.\n");
 				break;
 		}
@@ -205,20 +199,20 @@ void task1_robot_paths() {
 	// protects against number input longer than long long limit
 	// x: charsRead <= 20, y: charsRead <= 20
 	// x+y: charsRead <= 40
-	int charsRead = 0;
+	// int charsRead = 0;
 
 	while (validCoordinates != 2) {
 		printf("Please enter the coordinates of the robot (column, row):\n");
 
-		validCoordinates = scanf(" %lld %lld%n", &x, &y, &charsRead);
+		validCoordinates = scanf(" %lld %lld", &x, &y);
 
-		int detectedTrailingChars = scanf("%*[^\n]");
-		if (validCoordinates != 2 || detectedTrailingChars != 0 || charsRead > 40) {
-			scanf(" %*c");
-			if (validCoordinates == EOF || detectedTrailingChars == EOF) {
+		if (validCoordinates != 2) {
+			if (validCoordinates == EOF) {
 				task = 6;
 				return;
 			}
+			scanf("%*[^\n]");
+			scanf("%*c");
 			continue;
 		}
 
@@ -237,6 +231,7 @@ void task1_robot_paths() {
 		}
 	}
 	printf("The total number of paths the robot can take to reach home is: %llu\n", totalDistinctPaths);
+	return ;
 }
 
 
@@ -255,7 +250,7 @@ void setupPyramid() {
 	static int initialized = 0;
 
 	// track when needs reset
-    static int pyramidNeedsReset = 1;
+    // static int pyramidNeedsReset = 1;
 
     if (!initialized) {
         // one-time pointer setup
@@ -267,15 +262,15 @@ void setupPyramid() {
         initialized = 1;
     }
 
-    if (pyramidNeedsReset) {
-        for (int i = 0; i < 5; i++) {
-            for (int j = 0; j <= i; j++) {
-                dataPyramid[i][j] = -1.00;
-            }
-        }
-        pyramidNeedsReset = 0;
+    // if (pyramidNeedsReset) {
+	for (int i = 0; i < 5; i++) {
+		for (int j = 0; j <= i; j++) {
+			dataPyramid[i][j] = -1.00;
+		}
+	}
+        // pyramidNeedsReset = 0;
 		// pyramid is now reset
-    }
+    // }
 }
 
 
@@ -296,9 +291,8 @@ int getWeight() {
 
 			if (input != 1 || nextWeight < 0) {
 				printf("Negative weights are not supported.\n");
-				// if (scanf("%*[^\n]") != 0) {
-				// 	scanf(" %*c");
-				// }
+				scanf("%*[^\n]");
+				scanf("%*c");
 				// return to main
 				return 0;
 			}
@@ -350,6 +344,7 @@ void task2_human_pyramid() {
 		}
 		printf("\n");
 	}
+	return ;
 }
 
 
@@ -390,23 +385,24 @@ int findIndex(char symbol) {
 // balanced is 1, unbalanced is 0
 int processSymbol(int depth, int remainingDepth, int* globalBalance) {
 	// depth reset --overflow protection
-	if (remainingDepth < 0) return (depth == 0 && *globalBalance == 0) ? 1 : 0;
+	if (remainingDepth < 0) return 0;
 
 	char symbol;
 	int unconfirmed;
 
-	while ((unconfirmed = scanf("%*[^()[]{}<>\n]%c", &symbol)) == 1) {
+	while ((unconfirmed = scanf(" %c", &symbol)) == 1) {
+	// while ((unconfirmed = scanf("%*[^()\\[\\]{}<>\n]%c", &symbol)) == 1) {
 
 		if (symbol == '\n') {
-			return (depth == 0 && *globalBalance == 0) ? 1 : 0;
+			break;
 		}
 
 		// char validation, identification in validSymbols
 		int index = findIndex(symbol);
 
-		// protection against any remaining invalid chars
+		// skip invalid chars
 		if (index == -1) {
-			scanf("%*[^()[]{}<>\n]");
+			// scanf("%*[^()[]{}<>\n]");
 			continue;
 		}
 
@@ -436,6 +432,7 @@ int processSymbol(int depth, int remainingDepth, int* globalBalance) {
 				return 0;
 			}
 		}
+		return (depth == 0 && *globalBalance == 0) ? 1 : 0;
 	}
 
 	// end of input
@@ -458,11 +455,10 @@ void task3_parenthesis_validator() {
 
 	printf("Please enter a term for validation:\n");
 
-	if (processSymbol(0, remainingDepth - 1, &globalBalance)) {
-		printf("The parentheses are balanced correctly.\n");
-	} else {
-		// nothing prints for EOF, task has been reassigned 6
-		if (task != 6) {
+	if (task != 6) {
+		if (processSymbol(0, remainingDepth - 1, &globalBalance)) {
+			printf("The parentheses are balanced correctly.\n");
+		} else {
 			printf("The parentheses are not balanced correctly.\n");
 		}
 	}
