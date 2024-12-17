@@ -64,20 +64,23 @@ int main() {
 			   "5. Crossword Generator\n"
 			   "6. Exit\n");
 		
-		int input = scanf(" %d", &task);
-		scanf("%*[^\n]");
-		scanf("%*c");
-		if (input != 1 || task < 1 || task > 6) {
-			if (input == EOF) {
+		int check = 2;
+		int input = scanf(" %d%n", &task, &check);
+		if (input != 1 || task < 1 || task >= 6 || check > 1) {
+			
+			if (scanf("%*[^\n]") == EOF) {
+				break;
+			}
+			scanf("%*c");
+			if (task == 6) {
 				break;
 			}
 			task = -1;
 			printf("Please choose a task number from the list.\n");
-			// scanf("%*[^\n]");
-			// scanf("%*c");
 			continue;
 		}
-
+		scanf("%*[^\n]");
+		scanf("%*c");
 		switch (task) {
 			case 1:
 				task1_robot_paths();
@@ -98,8 +101,8 @@ int main() {
 			case 6:
 				break;
 			default:
-				scanf("%*[^\n]");
-				scanf("%*c");
+				// scanf("%*[^\n]");
+				// scanf("%*c");
 				printf("Please choose a task number from the list.\n");
 				break;
 		}
@@ -293,8 +296,9 @@ int getWeight() {
 
 			if (input != 1 || nextWeight < 0) {
 				printf("Negative weights are not supported.\n");
-				// scanf("%*[^\n]");
-				// scanf("%*c");
+				// if (scanf("%*[^\n]") != 0) {
+				// 	scanf(" %*c");
+				// }
 				// return to main
 				return 0;
 			}
@@ -391,7 +395,7 @@ int processSymbol(int depth, int remainingDepth, int* globalBalance) {
 	char symbol;
 	int unconfirmed;
 
-	while ((unconfirmed = scanf(" %*[^()[]{}<>\n]%c", &symbol)) == 1) {
+	while ((unconfirmed = scanf("%*[^()[]{}<>\n]%c", &symbol)) == 1) {
 
 		if (symbol == '\n') {
 			return (depth == 0 && *globalBalance == 0) ? 1 : 0;
