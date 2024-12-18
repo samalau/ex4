@@ -55,20 +55,33 @@ Assignment: 4
 // initialize pointers
 int *task = 0;
 int *sizeRemainder = 0;
+char *bufferExtract[] = {0};
 char *nextMainTask = 0;
-char *bufferExtract = {0};
+char *remainderOfExtract[] = {0};
 
 int main() {
 	cacheInitialize();
 	setupPyramid();
 
 	///////////////////////////////////////////////////////////////////////////
-	
-	char *remainderOfExtract[] = {0};
-
-	manageContinuousBuffer(nextMainTask);
 
 	do {
+		if ((scanf(" %[^1-6]", &bufferExtract)) < 1) {
+			*sizeRemainder = (sizeof(bufferExtract) / sizeof(bufferExtract[0]));
+			if (sizeRemainder > 1) {
+				*nextMainTask = bufferExtract[0];
+				if (sizeRemainder > 2) {
+					for (int i = 1; i < sizeRemainder ; i++) {
+						*remainderOfExtract[i] = bufferExtract[i];
+					}
+				}
+			}
+			if (nextMainTask >= '1' || nextMainTask <= '6')
+				{*task = (int)nextMainTask;}
+			else
+				{*task = 0;}
+		}
+
 		printf("Choose an option:\n"
 			   "1. Robot Paths\n"
 			   "2. The Human Pyramid\n"
@@ -77,28 +90,27 @@ int main() {
 			   "5. Crossword Generator\n"
 			   "6. Exit\n");
 
-		if (nextMainTask)
-		{	*task = (int)nextMainTask;
-			if (task < '1' || task > '6')
-			{	if (*sizeRemainder == 1) {*task = 0;}
-				else
-				{	*nextMainTask = remainderOfExtract[0];
+		if (nextMainTask[0] != '\0') {	
+			if (task < '1' || task > '6') {
+				if (*sizeRemainder == 1) {
+					*task = 0;
+				} else {
+					*nextMainTask = remainderOfExtract[0];
 					*sizeRemainder = sizeof(remainderOfExtract) / sizeof(remainderOfExtract[0]);
-					for (int i = 0 ; i < sizeRemainder - 1; i++){
+					for (int i = 0 ; i < sizeRemainder - 1; i++) {
 						*remainderOfExtract[i] = remainderOfExtract[i + 1];
 					}
 				}
 			}
-		}
-		
-		else
-		{	*nextMainTask = scanf(" %d", &task);
-			if (nextMainTask == EOF) {break;}
-			if (nextMainTask != 1 || task < '1' || task > '6') {*task = 0;}
+		} else {
+			*nextMainTask = scanf(" %d", &task);
+			if (nextMainTask == EOF)
+				{break;}
+			if (nextMainTask != 1 || task < '1' || task > '6')
+				{*task = 0;}
 		}
 
-		switch (*task)
-		{
+		switch (*task) {
 			case 1:
 				task1_robot_paths();
 				break;
@@ -137,7 +149,7 @@ long long x_1(int *valid) {
 	if ((xget = scanf(" %lld", &x)) != 1) {
 		*valid = 0;
 		if (xget == EOF) {
-			task = 6;
+			*task = 6;
 		}
 		return -1;
 	}
@@ -158,49 +170,6 @@ long long y_1(int *valid) {
 	}
 	*valid = 1;
 	return y;
-}
-
-
-void manageContinuousBuffer(int *nextMainTask) {
-
-	if ((scanf(" %[^1-6]", &bufferExtract)) == 1) {
-		*sizeRemainder = (sizeof(bufferExtract) / sizeof(bufferExtract[0]));
-		if (sizeRemainder > 1) {
-			*nextMainTask = bufferExtract[0];
-			if (sizeRemainder > 2) {
-				char *remainderOfExtract[] = {0};
-				for (int i = 1; i < sizeRemainder ; i++) {
-					*remainderOfExtract[i] = bufferExtract[i];
-				}
-			}
-		}
-
-		switch (*nextMainTask) {
-			default:
-				break;
-			case 1:
-
-				break;
-			case 2:
-
-				break;
-			case 3:
-			
-				break;
-			case 4:
-			
-				break;
-			case 5:
-			
-				break;
-			case 6:
-				*task = 6;
-				break;
-		}
-
-
-	}
-	
 }
 
 
