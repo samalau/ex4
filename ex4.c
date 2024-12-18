@@ -25,11 +25,11 @@ Assignment: 4
 // unsigned long long compute_paths(long long x, long long y);
 
 // task 1 cache
-// unsigned long long cacheFactorial[171] = {0};
-// unsigned long long cacheTask1Flag0[21][21] = {0};
-// unsigned long long cacheTask1Flag2x[LARGE] = {0};
-// unsigned long long cacheTask1Flag2y[LARGE] = {0};
-// unsigned long long cacheTask1Flag2Result[LARGE] = {0};
+unsigned long long cacheFactorial[171] = {0};
+unsigned long long cacheTask1Flag0[21][21] = {0};
+unsigned long long cacheTask1Flag2x[LARGE] = {0};
+unsigned long long cacheTask1Flag2y[LARGE] = {0};
+unsigned long long cacheTask1Flag2Result[LARGE] = {0};
 
 // task 2 helper
 // void setupPyramid();
@@ -48,11 +48,11 @@ Assignment: 4
 // void task5_crossword_generator();
 
 // initialize cache
-// void cacheInitialize() {
-// 	cacheFactorial[0] = 1;
-// 	cacheFactorial[1] = 1;
-// 	cacheTask1Flag0[1][1] = 2;
-// }
+void cacheInitialize() {
+	cacheFactorial[0] = 1;
+	cacheFactorial[1] = 1;
+	cacheTask1Flag0[1][1] = 2;
+}
 
 ///////////////////////////////////////////////////////////////////////////
 
