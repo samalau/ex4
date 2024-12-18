@@ -162,7 +162,7 @@ int main() {
 ///////////////////////////////////////////////////////////////////////////
 
 
-// TASK 1 VALIDATE X
+// TASK 1: VALIDATE: X
 long long x_1(int *valid) {
 	long long x, xget;
 	if ((xget = scanf(" %lld", &x)) != 1) {
@@ -176,8 +176,7 @@ long long x_1(int *valid) {
 	return x;
 }
 
-
-// TASK 1 VALIDATE Y
+// TASK 1: VALIDATE: Y
 long long y_1(int *valid) {
 	long long y, yget;
 	if ((yget = scanf(" %lld", &y)) != 1) {
@@ -191,7 +190,7 @@ long long y_1(int *valid) {
 	return y;
 }
 
-
+// TASK 1: ENTRY
 void task1_robot_paths() {
 	int valid = 0;
 	printf("Please enter the coordinates of the robot (column, row):\n");
@@ -201,6 +200,7 @@ void task1_robot_paths() {
 	if (!y || !valid) {return;}
 	task1(x, y);
 }
+
 
 ///////////////////////////////////////////////////////////////////////////
 
