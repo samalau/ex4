@@ -15,6 +15,9 @@ Assignment: 4
 #define MAX_DEPTH 128  // placeholder (consider 64)
 
 // task 1 helper
+void task1(long long x, long long y);
+long long x_1(int *valid);
+long long y_1(int *valid);
 void cacheInitialize();
 unsigned long long factorial(long long n);
 unsigned long long modMult(unsigned long long a, unsigned long long b);
@@ -33,7 +36,7 @@ int getWeight();
 
 // task 3 helper
 int findIndex(char symbol);
-int processSymbol(int* globalBalance, char expected);
+int processSymbol(int position, int* globalBalance, char *expected);
 // int processSymbol(int depth, int remainingDepth, int* globalBalance);
 
 // task entry points
@@ -66,22 +69,36 @@ int main() {
 			   "6. Exit\n");
 		
 		int input = scanf(" %d", &task);
-		if (input != 1 || task < 1 || task > 6) {
-			if (input == EOF) {
-				break;
+		
+		//////////
+		if (input != 1) {
+			if (input != EOF) {
+				printf("Please choose a task number from the list.\n");
+				continue;
 			}
-			if (scanf("%*c") == EOF) {
-				break;
-			}
-			task = -1;
+			break;
+		}
+		
+		if (task < 1) {
 			printf("Please choose a task number from the list.\n");
 			continue;
 		}
-		if (scanf("%*c") == EOF) {
+		
+		if (task > 5) {
+			printf("Please choose a task number from the list.\n");
+			continue;
+		}
+
+		if (task == 6) {
 			break;
 		}
+
+		// if (scanf("%*c") == EOF) {
+		// 	break;
+		// }
 		switch (task) {
 			case 1:
+			
 				task1_robot_paths();
 				break;
 			case 2:
@@ -100,11 +117,11 @@ int main() {
 			case 6:
 				break;
 			default:
-				if (scanf("%*c") == EOF) {
-					task = 6;
-					break;
-				}
-				scanf("%*c");
+				// if (scanf("%*c") == EOF) {
+				// 	task = 6;
+				// 	break;
+				// }
+				// scanf("%*c");
 				printf("Please choose a task number from the list.\n");
 				break;
 		}
@@ -113,6 +130,70 @@ int main() {
 	return 0;
 }
 
+
+// TASK 1 VALIDATE X
+long long x_1(int *valid) {
+	long long x, xget;
+	if ((xget = scanf(" %lld", &x)) != 1) {
+		*valid = 0;
+		if (xget == EOF) {
+			task = 6;
+		}
+		return -1;
+	}
+	*valid = 1;
+	return x;
+}
+
+// TASK 1 VALIDATE Y
+long long y_1(int *valid) {
+	long long y, yget;
+	if ((yget = scanf(" %lld", &y)) != 1) {
+		*valid = 0;
+		if (yget == EOF) {
+			task = 6;
+		}
+		return -1;
+	}
+	*valid = 1;
+	return y;
+}
+
+
+void task1_robot_paths() {
+	int valid = 0;
+	printf("Please enter the coordinates of the robot (column, row):\n");
+	long long x = x_1(&valid);
+	if (!x || !valid) return;
+	long long y = y_1(&valid);
+	if (!y || !valid) return;
+	task1(x, y);
+}
+
+
+void validateInput_2(){
+
+
+
+}
+
+void validateInput_3(){
+
+
+}
+
+void validateInput_4(){
+
+
+}
+
+void validateInput_5(){
+
+
+}
+
+
+/////
 
 // TASK 1 robot paths
 unsigned long long factorial(long long n) {
@@ -199,44 +280,22 @@ unsigned long long compute_paths(long long x, long long y) {
 }
 
 
-void task1_robot_paths() {
+void task1(long long x, long long y) {
 	unsigned long long totalDistinctPaths = 0;
-	long long x = -1, y = -1;
-	int validCoordinates = 0;
-
-	// protects against number input longer than long long limit
-	// x: charsRead <= 20, y: charsRead <= 20
-	// x+y: charsRead <= 40
-	// int charsRead = 0;
-
-	while (validCoordinates != 2) {
-		printf("Please enter the coordinates of the robot (column, row):\n");
-
-		validCoordinates = scanf(" %lld %lld", &x, &y);
-
-		if (validCoordinates != 2) {
-			if (scanf("%*[^\n]") == EOF || validCoordinates == EOF) {
-				task = 6;
-				return;
-			}
-			scanf("%*c");
-			continue;
+	if (x < 0 || y < 0) {
+		totalDistinctPaths = 0;
+	} else if (x == 0 || y == 0) {
+		totalDistinctPaths = 1;
+	} else {
+		if (x >= 0 && x < LARGE && y >= 0 && y < LARGE && x + y < LARGE){
+			totalDistinctPaths = compute_paths(x, y);
 		}
-
-		if (x < 0 || y < 0) {
+		else {
+			// placeholder overflow protection
 			totalDistinctPaths = 0;
-		} else if (x == 0 || y == 0) {
-			totalDistinctPaths = 1;
-		} else {
-			if (x >= 0 && x < LARGE && y >= 0 && y < LARGE && x + y < LARGE){
-				totalDistinctPaths = compute_paths(x, y);
-			}
-			else {
-				// placeholder overflow protection
-				totalDistinctPaths = 0;
-			}
 		}
 	}
+	// }
 	printf("The total number of paths the robot can take to reach home is: %llu\n", totalDistinctPaths);
 	return;
 }
@@ -285,7 +344,7 @@ int getWeight() {
 			int input = scanf(" %lf", &nextWeight);
 
 			if (input == EOF) {
-				// task = 6 exits main while-loop
+				// task is 6 exits main while-loop
 				task = 6;
 				return 0;
 			}
@@ -353,19 +412,19 @@ void task2_human_pyramid() {
 
 
 // TASK 3 parenthesis validation
-const char validSymbols[8] = {
+char validSymbols[8] = {
 	'(', ')',    // 0x01, 0x80
 	'[', ']',    // 0x02, 0x40
 	'{', '}',    // 0x04, 0x20
 	'<', '>'     // 0x08, 0x10
 };
 
-const int symbolBitmask[8] = {
-	0x01, 0x80,    // '(', ')'
-	0x02, 0x40,    // '[', ']'
-	0x04, 0x20,    // '{', '}'
-	0x08, 0x10     // '<', '>'
-};
+// const int symbolBitmask[8] = {
+// 	0x01, 0x80,    // '(', ')'
+// 	0x02, 0x40,    // '[', ']'
+// 	0x04, 0x20,    // '{', '}'
+// 	0x08, 0x10     // '<', '>'
+// };
 
 // const int symbolMirrormask[8] = {
 // 	0x80, 0x01,    // ')', '('
@@ -385,22 +444,26 @@ int findIndex(char symbol) {
 }
 
 
+// int isOpenParenthesis(char symbol) {
+
+// }
+
 // recursively extract parentheses
 // 0: unbalanced
 // 1: balanced
-int processSymbol(int* globalBalance, char expected) {
+int processSymbol(int position, int* globalBalance, char *expected) {
 	char symbol;
 	int input = scanf("%c", &symbol);
 
 	if (input == EOF) {
-		// task = 6 exits main while-loop
+		// task is 6 exits main while-loop
 		task = 6;
 		return 0;
 	}
 	if (symbol == '\n') {
 		// 0: unbalanced
 		// 1: balanced
-		return (*globalBalance == 0 && expected == '\0');
+		return (*globalBalance == 0);
 	}
 
 	// char validation, identification in validSymbols
@@ -408,30 +471,34 @@ int processSymbol(int* globalBalance, char expected) {
 
 	// skip invalid chars
 	if (index == -1) {
-		return processSymbol(globalBalance, expected);
+		return processSymbol(position, globalBalance, expected);
 	}
 
 	// handle opening parentheses
-	if (symbolBitmask[index] <= 0x08) {
+	if (index % 2 == 0) {
+	// if (symbolBitmask[index] <= 0x08) {
 		(*globalBalance)++;
 		// increase global balance for opening parentheses
-
-		if (!processSymbol(globalBalance, validSymbols[index ^ 1]))
-            // unbalanced
-			{return 0;}
+		char newExpected = validSymbols[index + 1];
+		if (!processSymbol(position + 1, globalBalance, &newExpected)) {
+			// scanf("%*[^\n]");
+            return 0;
+		}
 	}
+
 	// handle closing parentheses
 	else {
-		if (*globalBalance <= 0 || symbol != expected
-			|| !processSymbol(globalBalance, validSymbols[index ^ 1]))
-				// unbalanced
-				{return 0;}
-		
-		// balanced
+		if (*globalBalance <= 0 || symbol != *expected) {
+			// unbalanced
+			// scanf("%*[^\n]");
+			// scanf("%*c");
+			return 0;
+		}
+		// balanced thusfar
 		(*globalBalance)--;
 		// decrease global balance for closing parentheses
 	}
-	return processSymbol(globalBalance, expected);
+	return processSymbol(position + 1, globalBalance, expected);
 }
 
 
@@ -442,6 +509,9 @@ void task3_parenthesis_validator() {
 	// initialize globalBalance
 	int globalBalance = 0;
 
+	// initialize expected
+	char expected = '\0';
+
 	printf("Please enter a term for validation:\n");
 	
 	if (scanf("%*[^\n]") == EOF || scanf("%*c") == EOF) {
@@ -449,18 +519,20 @@ void task3_parenthesis_validator() {
 		return;
 	}
 	
-	if (processSymbol(&globalBalance, '\0')) {
-		printf("The parentheses are balanced correctly.\n");
-	} else {
-		// task = 6 exits main while-loop
+	if (!processSymbol(0, &globalBalance, &expected)) {
+		// task is 6 exits main while-loop
 		if (task != 6) {
 			printf("The parentheses are not balanced correctly.\n");
 		}
+	} else {
+		if (globalBalance == 0) {
+			printf("The parentheses are balanced correctly.\n");
+		}
 	}
-	if (scanf("%*[^\n]") == EOF || scanf("%*c") == EOF) {
-		task = 6;
-		return;
-	}
+	// if (scanf("%*[^\n]") == EOF || scanf("%*c") == EOF) {
+	// 	task = 6;
+	// 	return;
+	// }
 }
 
 
