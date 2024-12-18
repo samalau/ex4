@@ -70,15 +70,14 @@ int main() {
 			if (input == EOF) {
 				break;
 			}
-			if (scanf("%*[^\n]") == EOF) {
+			if (scanf("%*c") == EOF) {
 				break;
 			}
 			task = -1;
-			scanf("%*c");
 			printf("Please choose a task number from the list.\n");
 			continue;
 		}
-		if (scanf("%*[^\n]") == EOF) {
+		if (scanf("%*c") == EOF) {
 			break;
 		}
 		switch (task) {
@@ -101,7 +100,7 @@ int main() {
 			case 6:
 				break;
 			default:
-				if (scanf("%*[^\n]") == EOF) {
+				if (scanf("%*c") == EOF) {
 					task = 6;
 					break;
 				}
@@ -257,9 +256,6 @@ void setupPyramid() {
 	// ensures pointers are initialized once
 	static int initialized = 0;
 
-	// track when needs reset
-    // static int pyramidNeedsReset = 1;
-
     if (!initialized) {
         // one-time pointer setup
         dataPyramid[0] = level_1;
@@ -270,15 +266,12 @@ void setupPyramid() {
         initialized = 1;
     }
 
-    // if (pyramidNeedsReset) {
 	for (int i = 0; i < 5; i++) {
 		for (int j = 0; j <= i; j++) {
 			dataPyramid[i][j] = -1.00;
 		}
 	}
-        // pyramidNeedsReset = 0;
-		// pyramid is now reset
-    // }
+	// pyramid is now reset
 }
 
 
@@ -291,14 +284,18 @@ int getWeight() {
 			double nextWeight = -1.00;
 			int input = scanf(" %lf", &nextWeight);
 
-			if (input == EOF || scanf("%*[^\n]") == EOF) {
+			if (input == EOF) {
 				// task = 6 exits main while-loop
 				task = 6;
 				return 0;
 			}
 
 			if (input != 1 || nextWeight < 0) {
-				scanf("%*c");
+				scanf("%*[^\n]");
+				if (scanf("%*c") == EOF) {
+					task = 6;
+					return 0;
+				}
 				printf("Negative weights are not supported.\n");
 				// return to main
 				return 0;
@@ -306,9 +303,6 @@ int getWeight() {
 
 			// valid weight
 			dataPyramid[i][j] = nextWeight;
-			if (i == 0) {
-				static int pyramidNeedsReset = 1;
-			}
 		}
 	}
 	return 1;
@@ -339,11 +333,14 @@ void task2_human_pyramid() {
 					weightUpRight = (i_alt > 0 && j_alt < i_alt) ? dataPyramid[i_alt - 1][j_alt] : 0;
 
 				if (j == 0) {
-					weightLoad += weightUpRight / 2;
+					weightLoad += weightUpRight;
+					weightLoad /= 2;
 				} else if (j == i) {
-					weightLoad += weightUpLeft / 2;
+					weightLoad += weightUpLeft;
+					weightLoad /= 2;
 				} else {
-					weightLoad += (weightUpLeft + weightUpRight) / 2;
+					weightLoad += (weightUpLeft + weightUpRight);
+					weightLoad /= 2;
 				}
 				dataPyramid[i][j] = weightLoad;
 			}
@@ -389,19 +386,20 @@ int findIndex(char symbol) {
 
 
 // recursively extract parentheses
-// balanced is 1, unbalanced is 0
+// 0: unbalanced
+// 1: balanced
 int processSymbol(int* globalBalance, char expected) {
-
 	char symbol;
 	int input = scanf("%c", &symbol);
 
-	if (input != 1 || symbol == '\n') {
+	if (input == EOF) {
 		// task = 6 exits main while-loop
-		if (input == EOF || scanf("%*[^\n]") == EOF) {
-			task = 6;
-		}
-		scanf("%*c");
-		// if balanced: (*globalBalance == 0) == 1
+		task = 6;
+		return 0;
+	}
+	if (symbol == '\n') {
+		// 0: unbalanced
+		// 1: balanced
 		return (*globalBalance == 0 && expected == '\0');
 	}
 
@@ -409,30 +407,31 @@ int processSymbol(int* globalBalance, char expected) {
 	int index = findIndex(symbol);
 
 	// skip invalid chars
-	if (symbol == ' ' || index == -1) {
+	if (index == -1) {
 		return processSymbol(globalBalance, expected);
 	}
 
 	// handle opening parentheses
 	if (symbolBitmask[index] <= 0x08) {
-		// increase global balance for opening parentheses
 		(*globalBalance)++;
-		if (!processSymbol(globalBalance, validSymbols[index ^ 1])) {
-            // unbalanced
-			return 0;
-        }
-		return processSymbol(globalBalance, expected);
-	}
+		// increase global balance for opening parentheses
 
-	// handle closing parentheses
-	if (*globalBalance > 0 && symbol == expected) {
-		// balanced
-		// decrease global balance for closing parentheses
-		(*globalBalance)--;
-		return processSymbol(globalBalance, '\0');
+		if (!processSymbol(globalBalance, validSymbols[index ^ 1]))
+            // unbalanced
+			{return 0;}
 	}
-	// unbalanced
-	return 0;
+	// handle closing parentheses
+	else {
+		if (*globalBalance <= 0 || symbol != expected
+			|| !processSymbol(globalBalance, validSymbols[index ^ 1]))
+				// unbalanced
+				{return 0;}
+		
+		// balanced
+		(*globalBalance)--;
+		// decrease global balance for closing parentheses
+	}
+	return processSymbol(globalBalance, expected);
 }
 
 
@@ -445,8 +444,9 @@ void task3_parenthesis_validator() {
 
 	printf("Please enter a term for validation:\n");
 	
-	if (scanf("%*[^\n]") != 0) {
-		scanf("%*c");
+	if (scanf("%*[^\n]") == EOF || scanf("%*c") == EOF) {
+		task = 6;
+		return;
 	}
 	
 	if (processSymbol(&globalBalance, '\0')) {
@@ -454,9 +454,12 @@ void task3_parenthesis_validator() {
 	} else {
 		// task = 6 exits main while-loop
 		if (task != 6) {
-			scanf("%*c");
 			printf("The parentheses are not balanced correctly.\n");
 		}
+	}
+	if (scanf("%*[^\n]") == EOF || scanf("%*c") == EOF) {
+		task = 6;
+		return;
 	}
 }
 
