@@ -401,10 +401,9 @@ int processSymbol(int* globalBalance, char expected) {
 			task = 6;
 		}
 		scanf("%*c");
-		return (*globalBalance == 0);
+		// if balanced: (*globalBalance == 0) == 1
+		return (*globalBalance == 0 && expected == '\0');
 	}
-
-	
 
 	// char validation, identification in validSymbols
 	int index = findIndex(symbol);
@@ -419,21 +418,21 @@ int processSymbol(int* globalBalance, char expected) {
 		// increase global balance for opening parentheses
 		(*globalBalance)++;
 		if (!processSymbol(globalBalance, validSymbols[index ^ 1])) {
-            return 0;
+            // unbalanced
+			return 0;
         }
+		return processSymbol(globalBalance, expected);
 	}
 
 	// handle closing parentheses
-	else {
-		if (*globalBalance <= 0 || symbol != expected) {
-			// unbalanced
-			return 0;
-		}
+	if (*globalBalance > 0 && symbol == expected) {
+		// balanced
 		// decrease global balance for closing parentheses
 		(*globalBalance)--;
+		return processSymbol(globalBalance, '\0');
 	}
-
-	return processSymbol(globalBalance, expected);
+	// unbalanced
+	return 0;
 }
 
 
