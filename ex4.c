@@ -6,7 +6,6 @@ Assignment: 4
 #include <stdio.h>
 #include <string.h>
 
-
 // task 1 macro -- overflow protection
 #define LARGE 0x8000  // 0x10000
 #define M 1000000007
@@ -15,50 +14,60 @@ Assignment: 4
 #define MAX_DEPTH 128  // placeholder (consider 64)
 
 // task 1 helper
-void task1(long long x, long long y);
-long long x_1(int *valid);
-long long y_1(int *valid);
-void cacheInitialize();
-unsigned long long factorial(long long n);
-unsigned long long modMult(unsigned long long a, unsigned long long b);
-unsigned long long compute_paths(long long x, long long y);
+// void task1(long long x, long long y);
+// long long x_1(int *valid);
+// long long y_1(int *valid);
+// void cacheInitialize();
+// unsigned long long factorial(long long n);
+// unsigned long long modMult(unsigned long long a, unsigned long long b);
+// unsigned long long compute_paths(long long x, long long y);
 
 // task 1 cache
-unsigned long long cacheFactorial[171] = {0};
-unsigned long long cacheTask1Flag0[21][21] = {0};
-unsigned long long cacheTask1Flag2x[LARGE] = {0};
-unsigned long long cacheTask1Flag2y[LARGE] = {0};
-unsigned long long cacheTask1Flag2Result[LARGE] = {0};
+// unsigned long long cacheFactorial[171] = {0};
+// unsigned long long cacheTask1Flag0[21][21] = {0};
+// unsigned long long cacheTask1Flag2x[LARGE] = {0};
+// unsigned long long cacheTask1Flag2y[LARGE] = {0};
+// unsigned long long cacheTask1Flag2Result[LARGE] = {0};
 
 // task 2 helper
-void setupPyramid();
-int getWeight();
+// void setupPyramid();
+// int getWeight();
 
 // task 3 helper
-int findIndex(char symbol);
-int processSymbol(int position, int* globalBalance, char *expected);
+// int findIndex(char symbol);
+// int processSymbol(int position, int* globalBalance, char *expected);
 // int processSymbol(int depth, int remainingDepth, int* globalBalance);
 
 // task entry points
-void task1_robot_paths();
-void task2_human_pyramid();
-void task3_parenthesis_validator();
-void task4_queens_battle();
-void task5_crossword_generator();
+// void task1_robot_paths();
+// void task2_human_pyramid();
+// void task3_parenthesis_validator();
+// void task4_queens_battle();
+// void task5_crossword_generator();
 
 // initialize cache
-void cacheInitialize() {
-	cacheFactorial[0] = 1;
-	cacheFactorial[1] = 1;
-	cacheTask1Flag0[1][1] = 2;
-}
+// void cacheInitialize() {
+// 	cacheFactorial[0] = 1;
+// 	cacheFactorial[1] = 1;
+// 	cacheTask1Flag0[1][1] = 2;
+// }
 
-// initialize task
-int task = -1;
+// initialize pointers
+int *task = 0;
+int *sizeRemainder = 0;
+char *nextMainTask = 0;
+char *bufferExtract = {0};
 
 int main() {
 	cacheInitialize();
 	setupPyramid();
+
+	///////////////////////////////////////////////////////////////////////////
+	
+	char *remainderOfExtract[] = {0};
+
+	manageContinuousBuffer(nextMainTask);
+
 	do {
 		printf("Choose an option:\n"
 			   "1. Robot Paths\n"
@@ -67,40 +76,34 @@ int main() {
 			   "4. Queens Battle\n"
 			   "5. Crossword Generator\n"
 			   "6. Exit\n");
-		
-		int input = scanf(" %d", &task);
-		
-		//////////
-		if (input != 1) {
-			if (input != EOF) {
-				printf("Please choose a task number from the list.\n");
-				continue;
+
+		if (nextMainTask)
+		{	*task = (int)nextMainTask;
+			if (task < '1' || task > '6')
+			{	if (*sizeRemainder == 1) {*task = 0;}
+				else
+				{	*nextMainTask = remainderOfExtract[0];
+					*sizeRemainder = sizeof(remainderOfExtract) / sizeof(remainderOfExtract[0]);
+					for (int i = 0 ; i < sizeRemainder - 1; i++){
+						*remainderOfExtract[i] = remainderOfExtract[i + 1];
+					}
+				}
 			}
-			break;
 		}
 		
-		if (task < 1) {
-			printf("Please choose a task number from the list.\n");
-			continue;
-		}
-		
-		if (task > 5) {
-			printf("Please choose a task number from the list.\n");
-			continue;
+		else
+		{	*nextMainTask = scanf(" %d", &task);
+			if (nextMainTask == EOF) {break;}
+			if (nextMainTask != 1 || task < '1' || task > '6') {*task = 0;}
 		}
 
-		if (task == 6) {
-			break;
-		}
-
-		// if (scanf("%*c") == EOF) {
-		// 	break;
-		// }
-		switch (task) {
+		switch (*task)
+		{
 			case 1:
-			
 				task1_robot_paths();
 				break;
+			///////////////////////////////////////////////////////////////////////////
+			
 			case 2:
 				task2_human_pyramid();
 				setupPyramid();
@@ -114,14 +117,11 @@ int main() {
 			case 5:
 				task5_crossword_generator();
 				break;
-			case 6:
-				break;
+			
+			///////////////////////////////////////////////////////////////////////////
+
+			case 6: break;
 			default:
-				// if (scanf("%*c") == EOF) {
-				// 	task = 6;
-				// 	break;
-				// }
-				// scanf("%*c");
 				printf("Please choose a task number from the list.\n");
 				break;
 		}
@@ -145,13 +145,14 @@ long long x_1(int *valid) {
 	return x;
 }
 
+
 // TASK 1 VALIDATE Y
 long long y_1(int *valid) {
 	long long y, yget;
 	if ((yget = scanf(" %lld", &y)) != 1) {
 		*valid = 0;
 		if (yget == EOF) {
-			task = 6;
+			*task = 6;
 		}
 		return -1;
 	}
@@ -160,16 +161,60 @@ long long y_1(int *valid) {
 }
 
 
+void manageContinuousBuffer(int *nextMainTask) {
+
+	if ((scanf(" %[^1-6]", &bufferExtract)) == 1) {
+		*sizeRemainder = (sizeof(bufferExtract) / sizeof(bufferExtract[0]));
+		if (sizeRemainder > 1) {
+			*nextMainTask = bufferExtract[0];
+			if (sizeRemainder > 2) {
+				char *remainderOfExtract[] = {0};
+				for (int i = 1; i < sizeRemainder ; i++) {
+					*remainderOfExtract[i] = bufferExtract[i];
+				}
+			}
+		}
+
+		switch (*nextMainTask) {
+			default:
+				break;
+			case 1:
+
+				break;
+			case 2:
+
+				break;
+			case 3:
+			
+				break;
+			case 4:
+			
+				break;
+			case 5:
+			
+				break;
+			case 6:
+				*task = 6;
+				break;
+		}
+
+
+	}
+	
+}
+
+
 void task1_robot_paths() {
 	int valid = 0;
 	printf("Please enter the coordinates of the robot (column, row):\n");
 	long long x = x_1(&valid);
-	if (!x || !valid) return;
+	if (!x || !valid) {return;}
 	long long y = y_1(&valid);
-	if (!y || !valid) return;
+	if (!y || !valid) {return;}
 	task1(x, y);
 }
 
+///////////////////////////////////////////////////////////////////////////
 
 void validateInput_2(){
 
