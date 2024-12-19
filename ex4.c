@@ -374,12 +374,16 @@ void task3_parenthesis_validator() {
     char expected = '\0';
 
     printf("Please enter a term for validation:\n");
-    
-    if (scanf("%*[^\n]") == EOF || scanf("%*c") == EOF) {
-        return;
-    }
-    
-    if (!processSymbol(0, &globalBalance, &expected)) {
+
+	// if (scanf("%*[^\n]") == EOF || scanf("%*c") == EOF) {
+	// 	return;
+	// }
+
+	int isBalanced = processSymbol(0, &globalBalance, &expected);
+
+    // scanf("%*c");
+
+    if (!isBalanced) {
         printf("The parentheses are not balanced correctly.\n");
     } else {
         printf("The parentheses are balanced correctly.\n");
