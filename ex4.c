@@ -36,9 +36,8 @@ void setupPyramid();
 int getWeight();
 
 // task 3 helper
-// int findIndex(char symbol);
-// int processSymbol(int position, int* globalBalance, char *expected);
-// int processSymbol(int depth, int remainingDepth, int* globalBalance);
+int findIndex(char symbol);
+int processSymbol(int position, int* globalBalance, char *expected);
 
 // task entry points
 void task1_robot_paths();
@@ -49,9 +48,9 @@ void task5_crossword_generator();
 
 // initialize cache
 void cacheInitialize() {
-	cacheFactorial[0] = 1;
-	cacheFactorial[1] = 1;
-	cacheTask1Flag0[1][1] = 2;
+    cacheFactorial[0] = 1;
+    cacheFactorial[1] = 1;
+    cacheTask1Flag0[1][1] = 2;
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -75,20 +74,6 @@ int main() {
 ///////////////////////////////////////////////////////////////////////////
 
 	do {
-		// scanf(" %[^1-6]", &bufferExtract);
-		// sizeRemainder = (sizeof(bufferExtract) / sizeof(bufferExtract[0]));
-		// if (sizeRemainder > 1) {
-		// 	nextMainTask = bufferExtract[0];
-		// 	if (sizeRemainder > 2) {
-		// 		for (int i = 1; i < sizeRemainder ; i++) {
-		// 			remainderOfExtract[i] = (int)bufferExtract[i];
-		// 		}
-		// 	}
-		// }
-		// if (nextMainTask >= '1' || nextMainTask <= '6')
-		// 	{task = (int)nextMainTask;}
-		// else
-		// 	{task = 0;}
 
 ///////////////////////////////////////////////////////////////////////////
 
@@ -102,33 +87,19 @@ int main() {
 
 ///////////////////////////////////////////////////////////////////////////
 
-		// if (nextMainTask != '\0') {	
-		// 	if (task < '1' || task > '6') {
-		// 		if (sizeRemainder == 1) {
-		// 			task = 0;
-		// 		} else {
-		// 			nextMainTask = remainderOfExtract[0];
-		// 			sizeRemainder = sizeof(remainderOfExtract) / sizeof(remainderOfExtract[0]);
-		// 			for (int i = 0 ; i < sizeRemainder - 1; i++) {
-		// 				remainderOfExtract[i] = remainderOfExtract[i + 1];
-		// 			}
-		// 		}
-		// 	}
-		// } else {
-		// 	nextMainTask = scanf(" %d", &task);
-		// 	if (nextMainTask == EOF)
-		// 		{break;}
-		// 	if (nextMainTask != 1 || task < '1' || task > '6')
-		// 		{task = 0;}
-		// }
+		nextMainTask = scanf("%d", &task);
+        if (nextMainTask == EOF) {
+            break;
+        }
+        if (nextMainTask != 1 || task < 1 || task > 6) {
+            task = 0;
+        }
+
 
 ///////////////////////////////////////////////////////////////////////////
 
-		nextMainTask = scanf(" %d", &task);
-		if (nextMainTask == EOF)
-			{break;}
-		if (nextMainTask != 1 || task < '1' || task > '6')
-			{task = 0;}
+		scanf("%*[^\n]");
+        scanf("%*c");
 
 ///////////////////////////////////////////////////////////////////////////
 
@@ -136,12 +107,8 @@ int main() {
 			case 1:
 				task1_robot_paths();
 				break;
-
-///////////////////////////////////////////////////////////////////////////
-			
 			case 2:
 				task2_human_pyramid();
-				setupPyramid();
 				break;
 			case 3:
 				task3_parenthesis_validator();
@@ -152,10 +119,8 @@ int main() {
 			case 5:
 				task5_crossword_generator();
 				break;
-			
-///////////////////////////////////////////////////////////////////////////
-
-			case 6: break;
+			case 6:
+				break;
 			default:
 				printf("Please choose a task number from the list.\n");
 				break;
@@ -168,46 +133,44 @@ int main() {
 
 ///////////////////////////////////////////////////////////////////////////
 
-
 // TASK 1: VALIDATE: X
 long long x_1(int *valid) {
-	long long x, xget;
-	if ((xget = scanf(" %lld", &x)) != 1) {
-		*valid = 0;
-		if (xget == EOF) {
-			task = 6;
-		}
-		return -1;
-	}
-	*valid = 1;
-	return x;
+    long long x;
+    int result = scanf(" %lld", &x);
+
+    if (result != 1) {
+        *valid = 0;
+        return 0;
+    }
+
+    *valid = 1;
+    return x;
 }
 
 // TASK 1: VALIDATE: Y
 long long y_1(int *valid) {
-	long long y, yget;
-	if ((yget = scanf(" %lld", &y)) != 1) {
-		*valid = 0;
-		if (yget == EOF) {
-			task = 6;
-		}
-		return -1;
-	}
-	*valid = 1;
-	return y;
+    long long y;
+    int result = scanf(" %lld", &y);
+
+    if (result != 1) {
+        *valid = 0;
+        return 0;
+    }
+
+    *valid = 1;
+    return y;
 }
 
 // TASK 1: ENTRY
 void task1_robot_paths() {
-	int valid = 0;
-	printf("Please enter the coordinates of the robot (column, row):\n");
-	long long x = x_1(&valid);
-	if (!x || !valid) {return;}
-	long long y = y_1(&valid);
-	if (!y || !valid) {return;}
-	task1(x, y);
+    int valid = 0;
+    printf("Please enter the coordinates of the robot (column, row):\n");
+    long long x = x_1(&valid);
+    if (!valid) { return; }
+    long long y = y_1(&valid);
+    if (!valid) { return; }
+    task1(x, y);
 }
-
 
 ///////////////////////////////////////////////////////////////////////////
 
@@ -220,112 +183,68 @@ void validateInput_4() {}
 void validateInput_5() {}
 
 
-///////////////////////////////////////////////////////////////////////////
-
-
 // TASK 1 robot paths
 unsigned long long factorial(long long n) {
-	if (n < 0) {
-		return 0;
-	}
-	if (n == 0) {
-		return 1;
-	}
-	if (cacheFactorial[n] != 0) {
-		return cacheFactorial[n];
-	}
-	return cacheFactorial[n] = modMult(n, factorial(n - 1));
+    if (n < 0) { return 0; }
+    if (n == 0) { return 1; }
+    if (cacheFactorial[n] != 0) { return cacheFactorial[n]; }
+    return cacheFactorial[n] = modMult(n, factorial(n - 1));
 }
 
 unsigned long long modMult(unsigned long long a, unsigned long long b) {
-	return ((a % M) * (b % M)) % M;
+    return ((a % M) * (b % M)) % M;
 }
 
 unsigned long long compute_paths(long long x, long long y) {
-	if (x < 0 || y < 0) return 0;
-	if (x == 0 || y == 0) return 1;
+    if (x < 0 || y < 0) return 0;
+    if (x == 0 || y == 0) return 1;
 
-	int flag = (x + y <= 20) ? 0 : ((x + y < 170) ? 1 : 2);
+    int flag = (x + y <= 20) ? 0 : ((x + y < 170) ? 1 : 2);
 
-	// x + y <= 20
-	if (flag == 0) {
-		if (cacheTask1Flag0[x][y] != 0) {
-			return cacheTask1Flag0[x][y];
-		}
-		cacheTask1Flag0[x][y] = compute_paths(x - 1, y) + compute_paths(x, y - 1);
-		return cacheTask1Flag0[x][y] ;
-	}
+    // x + y <= 20
+    if (flag == 0) {
+        if (cacheTask1Flag0[x][y] != 0) return cacheTask1Flag0[x][y];
+        return cacheTask1Flag0[x][y] = modMult(factorial(x + y), modMult(factorial(x), factorial(y)));
+    }
 
-	// x + y < 170
-	if (flag == 1) {
-		unsigned long long
-			numerator = -1,
-			denominator1 = -1,
-			denominator2 = -1;
-		
-		// NUMERATOR
-		numerator = factorial(x + y);
+    // x + y < 170
+    if (flag == 1) {
+        return modMult(factorial(x + y), modMult(factorial(x), factorial(y)));
+    }
 
-		// DENOMINATOR
-		denominator1 = factorial(x);
-		denominator2 = factorial(y);
-		unsigned long long denominator = modMult(denominator1, denominator2);
-
-		unsigned long long
-			inverse = 1,
-			base = denominator,
-			exp = M - 2;
-		
-		while (exp > 0) {
-			if (exp % 2 == 1) {
-				inverse = modMult(inverse, base);
-			}
-			base = modMult(base, base);
-			exp /= 2;
-		}
-		return modMult(numerator, inverse);
-	}
-
-	// x + y >= 170
-	if (flag == 2) {
-		int index = (x + y) % LARGE;
-		if (cacheTask1Flag2x[index] == x && cacheTask1Flag2y[index] == y) {
-			return cacheTask1Flag2Result[index];
-		}
-
-		cacheTask1Flag2x[index] = x;
-		cacheTask1Flag2y[index] = y;
-
-		if (x > y) {
-			// x-dimension segmentation to reduce recursion depth
-			return cacheTask1Flag2Result[index] = modMult(compute_paths(x / 2, y), compute_paths(x - x / 2, y));
-		} else {
-			// y-dimension segmentation to reduce recursion depth
-			return cacheTask1Flag2Result[index] = modMult(compute_paths(x, y / 2), compute_paths(x, y - y / 2));
-		}
-	}
-	return 0;
+    // x + y >= 170
+    if (flag == 2) {
+        for (int i = 0; i < LARGE; i++) {
+            if (cacheTask1Flag2x[i] == x && cacheTask1Flag2y[i] == y) {
+                return cacheTask1Flag2Result[i];
+            }
+        }
+        unsigned long long result = modMult(factorial(x + y), modMult(factorial(x), factorial(y)));
+        for (int i = 0; i < LARGE; i++) {
+            if (cacheTask1Flag2x[i] == 0 && cacheTask1Flag2y[i] == 0) {
+                cacheTask1Flag2x[i] = x;
+                cacheTask1Flag2y[i] = y;
+                cacheTask1Flag2Result[i] = result;
+                break;
+            }
+        }
+        return result;
+    }
+    return 0;
 }
 
 
 void task1(long long x, long long y) {
-	unsigned long long totalDistinctPaths = 0;
-	if (x < 0 || y < 0) {
-		totalDistinctPaths = 0;
-	} else if (x == 0 || y == 0) {
-		totalDistinctPaths = 1;
-	} else {
-		if (x >= 0 && x < LARGE && y >= 0 && y < LARGE && x + y < LARGE){
-			totalDistinctPaths = compute_paths(x, y);
-		}
-		else {
-			// placeholder overflow protection
-			totalDistinctPaths = 0;
-		}
-	}
-	// }
-	printf("The total number of paths the robot can take to reach home is: %llu\n", totalDistinctPaths);
-	return;
+    unsigned long long totalDistinctPaths = compute_paths(x, y);
+    printf("The total number of paths the robot can take to reach home is: %llu\n", totalDistinctPaths);
+    return;
+}
+
+
+void task1(long long x, long long y) {
+    unsigned long long totalDistinctPaths = compute_paths(x, y);
+    printf("The total number of paths the robot can take to reach home is: %llu\n", totalDistinctPaths);
+    return;
 }
 
 
@@ -334,20 +253,18 @@ void task1(long long x, long long y) {
 
 // TASK 2 human pyramid
 double *dataPyramid[5];
-double
-	level_1[1] = {0.00},
-	level_2[2] = {0.00},
-	level_3[3] = {0.00},
-	level_4[4] = {0.00},
-	level_5[5] = {0.00};
+double level_1[1];
+double level_2[2];
+double level_3[3];
+double level_4[4];
+double level_5[5];
 
 
 void setupPyramid() {
-	// ensures pointers are initialized once
-	static int initialized = 0;
+    // ensures pointers are initialized once
+    static int initialized = 0;
 
     if (!initialized) {
-        // one-time pointer setup
         dataPyramid[0] = level_1;
         dataPyramid[1] = level_2;
         dataPyramid[2] = level_3;
@@ -356,89 +273,71 @@ void setupPyramid() {
         initialized = 1;
     }
 
-	for (int i = 0; i < 5; i++) {
-		for (int j = 0; j <= i; j++) {
-			dataPyramid[i][j] = -1.00;
-		}
-	}
-	// pyramid is now reset
+    for (int i = 0; i < 5; i++) {
+        for (int j = 0; j <= i; j++) {
+            dataPyramid[i][j] = 0.00;
+        }
+    }
+    // pyramid is now reset
 }
 
 
 int getWeight() {
-	printf("Please enter the weights of the cheerleaders:\n");
+    printf("Please enter the weights of the cheerleaders:\n");
 
-	for (int i = 0; i < 5; i++) {
-		for (int j = 0; j <= i; j++) {
+    for (int i = 0; i < 5; i++) {
+        for (int j = 0; j <= i; j++) {
+            double nextWeight = -1.00;
+            int input = scanf(" %lf", &nextWeight);
 
-			double nextWeight = -1.00;
-			int input = scanf(" %lf", &nextWeight);
+            if (input == EOF) {
+                // task is 6 exits main while-loop
+                task = 6;
+                return 0;
+            }
 
-			if (input == EOF) {
-				// task is 6 exits main while-loop
-				task = 6;
-				return 0;
-			}
+            if (input != 1 || nextWeight < 0) {
+                scanf("%*[^\n]");
+                if (scanf("%*c") == EOF) {
+                    task = 6;
+                    return 0;
+                }
+                printf("Negative weights are not supported.\n");
+                // return to main
+                return 0;
+            }
 
-			if (input != 1 || nextWeight < 0) {
-				scanf("%*[^\n]");
-				if (scanf("%*c") == EOF) {
-					task = 6;
-					return 0;
-				}
-				printf("Negative weights are not supported.\n");
-				// return to main
-				return 0;
-			}
-
-			// valid weight
-			dataPyramid[i][j] = nextWeight;
-		}
-	}
-	return 1;
+            // valid weight
+            dataPyramid[i][j] = nextWeight;
+        }
+    }
+    return 1;
 }
 
 
 void task2_human_pyramid() {
-	int fullData = getWeight();
+    int fullData = getWeight();
 
-	if (!fullData) return;
+    if (!fullData) return;
 
-	printf("The total weight on each cheerleader is:\n");
+    printf("The total weight on each cheerleader is:\n");
 
-	for (int i = 0; i < 5; i++) {
-		for (int j = 0; j <= i; j++) {
+    for (int i = 0; i < 5; i++) {
+        for (int j = 0; j <= i; j++) {
+            double weightLoad = dataPyramid[i][j];
 
-			int i_alt = i,
-				j_alt = j;
+            if (i > 0) {
+                double weightUpLeft = (j > 0) ? dataPyramid[i - 1][j - 1] / 2.0 : 0;
+                double weightUpRight = (j < i) ? dataPyramid[i - 1][j] / 2.0 : 0;
+                weightLoad += weightUpLeft + weightUpRight;
+            }
 
-			double weightOrigin = dataPyramid[i][j];
-			
-			// initialize weightLoad
-			double weightLoad = weightOrigin;
-
-			if (i > 0) {
-				double
-					weightUpLeft = (i_alt > 0 && j_alt > 0) ? dataPyramid[i_alt - 1][j_alt - 1] : 0,
-					weightUpRight = (i_alt > 0 && j_alt < i_alt) ? dataPyramid[i_alt - 1][j_alt] : 0;
-
-				if (j == 0) {
-					weightLoad += weightUpRight;
-					weightLoad /= 2;
-				} else if (j == i) {
-					weightLoad += weightUpLeft;
-					weightLoad /= 2;
-				} else {
-					weightLoad += (weightUpLeft + weightUpRight);
-					weightLoad /= 2;
-				}
-				dataPyramid[i][j] = weightLoad;
-			}
-			printf("%.2f ", weightLoad);
-		}
-		printf("\n");
-	}
-	return;
+            dataPyramid[i][j] = weightLoad;
+            printf("%.2f ", weightLoad);
+        }
+        printf("\n");
+    }
+    return;
 }
 
 
@@ -447,140 +346,90 @@ void task2_human_pyramid() {
 
 // TASK 3 parenthesis validation
 char validSymbols[8] = {
-	'(', ')',    // 0x01, 0x80
-	'[', ']',    // 0x02, 0x40
-	'{', '}',    // 0x04, 0x20
-	'<', '>'     // 0x08, 0x10
+	'(', ')',
+	'[', ']',
+	'{', '}',
+	'<', '>'
 };
 
-// const int symbolBitmask[8] = {
-// 	0x01, 0x80,    // '(', ')'
-// 	0x02, 0x40,    // '[', ']'
-// 	0x04, 0x20,    // '{', '}'
-// 	0x08, 0x10     // '<', '>'
-// };
-
-// const int symbolMirrormask[8] = {
-// 	0x80, 0x01,    // ')', '('
-// 	0x40, 0x02,    // ']', '['
-// 	0x20, 0x04,    // '}', '{'
-// 	0x10, 0x08     // '>', '<'
-// };
-
-
 int findIndex(char symbol) { 
-	for (int i = 0; i < 8; i++) {
-		if (validSymbols[i] == symbol) {
-			return i;
-		}
-	}
-	return -1;
+    for (int i = 0; i < 8; i++) {
+        if (validSymbols[i] == symbol) {
+            return i;
+        }
+    }
+    return -1;
 }
-
-
-// int isOpenParenthesis(char symbol) {
-
-// }
 
 // recursively extract parentheses
 // 0: unbalanced
 // 1: balanced
 int processSymbol(int position, int* globalBalance, char *expected) {
-	char symbol;
-	int input = scanf("%c", &symbol);
+    char symbol;
+    int input = scanf("%c", &symbol);
 
-	if (input == EOF) {
-		// task is 6 exits main while-loop
-		task = 6;
-		return 0;
-	}
-	if (symbol == '\n') {
-		// 0: unbalanced
-		// 1: balanced
-		return (*globalBalance == 0);
-	}
+    if (input == EOF) {
+        return 0;
+    }
+    if (symbol == '\n') {
+        return (*globalBalance == 0);
+    }
 
-	// char validation, identification in validSymbols
-	int index = findIndex(symbol);
+    // char validation, identification in validSymbols
+    int index = findIndex(symbol);
 
-	// skip invalid chars
-	if (index == -1) {
-		return processSymbol(position, globalBalance, expected);
-	}
+    // skip invalid chars
+    if (index == -1) {
+        return processSymbol(position + 1, globalBalance, expected);
+    }
 
-	// handle opening parentheses
-	if (index % 2 == 0) {
-	// if (symbolBitmask[index] <= 0x08) {
-		(*globalBalance)++;
-		// increase global balance for opening parentheses
-		char newExpected = validSymbols[index + 1];
-		if (!processSymbol(position + 1, globalBalance, &newExpected)) {
-			// scanf("%*[^\n]");
+    // handle opening parentheses
+    if (index % 2 == 0) {
+        (*globalBalance)++;
+        *expected = validSymbols[index + 1];
+        return processSymbol(position + 1, globalBalance, expected);
+    }
+
+    // handle closing parentheses
+    else {
+        if (*globalBalance == 0 || symbol != *expected) {
             return 0;
-		}
-	}
-
-	// handle closing parentheses
-	else {
-		if (*globalBalance <= 0 || symbol != *expected) {
-			// unbalanced
-			// scanf("%*[^\n]");
-			// scanf("%*c");
-			return 0;
-		}
-		// balanced thusfar
-		(*globalBalance)--;
-		// decrease global balance for closing parentheses
-	}
-	return processSymbol(position + 1, globalBalance, expected);
+        }
+        (*globalBalance)--;
+        return processSymbol(position + 1, globalBalance, expected);
+    }
 }
-
 
 void task3_parenthesis_validator() {
-	// initialize remainingDepth
-	// int remainingDepth = MAX_DEPTH;
+    // initialize globalBalance
+    int globalBalance = 0;
 
-	// initialize globalBalance
-	int globalBalance = 0;
+    // initialize expected
+    char expected = '\0';
 
-	// initialize expected
-	char expected = '\0';
-
-	printf("Please enter a term for validation:\n");
-	
-	if (scanf("%*[^\n]") == EOF || scanf("%*c") == EOF) {
-		task = 6;
-		return;
-	}
-	
-	if (!processSymbol(0, &globalBalance, &expected)) {
-		// task is 6 exits main while-loop
-		if (task != 6) {
-			printf("The parentheses are not balanced correctly.\n");
-		}
-	} else {
-		if (globalBalance == 0) {
-			printf("The parentheses are balanced correctly.\n");
-		}
-	}
+    printf("Please enter a term for validation:\n");
+    
+    if (scanf("%*[^\n]") == EOF || scanf("%*c") == EOF) {
+        return;
+    }
+    
+    if (!processSymbol(0, &globalBalance, &expected)) {
+        printf("The parentheses are not balanced correctly.\n");
+    } else {
+        printf("The parentheses are balanced correctly.\n");
+    }
 }
 
-
 ///////////////////////////////////////////////////////////////////////////
-
 
 // TASK 4 QUEEN BATTLE
-void task4_queens_battle()
-{
-	// Todo
+void task4_queens_battle() {
+    // Implementation for task 4
 }
-
 
 ///////////////////////////////////////////////////////////////////////////
 
-
 // TASK 5 CROSSWORD
-void task5_crossword_generator()
-{
-	// Todo
+void task5_crossword_generator() {
+    // Implementation for task 5
 }
