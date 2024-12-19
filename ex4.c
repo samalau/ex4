@@ -216,9 +216,6 @@ void task1(long long x, long long y) {
 
 ///////////////////////////////////////////////////////////////////////////
 
-
-void validateInput_2() {}
-
 // TASK 2 human pyramid
 double *dataPyramid[5];
 double level_1[1];
@@ -310,9 +307,6 @@ void task2_human_pyramid() {
 
 ///////////////////////////////////////////////////////////////////////////
 
-
-void validateInput_3() {}
-
 // TASK 3 parenthesis validation
 char validSymbols[8] = {
 	'(', ')',
@@ -400,7 +394,6 @@ void task3_parenthesis_validator() {
 
 ///////////////////////////////////////////////////////////////////////////
 
-void validateInput_4() {}
 
 // TASK 4 QUEEN BATTLE
 void task4_queens_battle() {
@@ -409,7 +402,6 @@ void task4_queens_battle() {
 
 ///////////////////////////////////////////////////////////////////////////
 
-void validateInput_5() {}
 
 // TASK 5 CROSSWORD
 void task5_crossword_generator() {
