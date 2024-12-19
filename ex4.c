@@ -53,8 +53,6 @@ void cacheInitialize() {
     cacheTask1Flag0[1][1] = 2;
 }
 
-///////////////////////////////////////////////////////////////////////////
-
 // initialize pointers
 int task = 0;
 int sizeRemainder = 0;
@@ -62,21 +60,11 @@ char bufferExtract[] = {0};
 char nextMainTask = 0;
 char remainderOfExtract[] = {0};
 
-///////////////////////////////////////////////////////////////////////////
 
 int main() {
-
-///////////////////////////////////////////////////////////////////////////
-
 	cacheInitialize();
 	setupPyramid();
-
-///////////////////////////////////////////////////////////////////////////
-
 	do {
-
-///////////////////////////////////////////////////////////////////////////
-
 		printf("Choose an option:\n"
 			   "1. Robot Paths\n"
 			   "2. The Human Pyramid\n"
@@ -84,9 +72,6 @@ int main() {
 			   "4. Queens Battle\n"
 			   "5. Crossword Generator\n"
 			   "6. Exit\n");
-
-///////////////////////////////////////////////////////////////////////////
-
 		nextMainTask = scanf("%d", &task);
         if (nextMainTask == EOF) {
             break;
@@ -94,15 +79,8 @@ int main() {
         if (nextMainTask != 1 || task < 1 || task > 6) {
             task = 0;
         }
-
-
-///////////////////////////////////////////////////////////////////////////
-
 		scanf("%*[^\n]");
         scanf("%*c");
-
-///////////////////////////////////////////////////////////////////////////
-
 		switch (task) {
 			case 1:
 				task1_robot_paths();
@@ -132,6 +110,7 @@ int main() {
 
 
 ///////////////////////////////////////////////////////////////////////////
+
 
 // TASK 1: VALIDATE: X
 long long x_1(int *valid) {
@@ -171,16 +150,6 @@ void task1_robot_paths() {
     if (!valid) { return; }
     task1(x, y);
 }
-
-///////////////////////////////////////////////////////////////////////////
-
-void validateInput_2() {}
-
-void validateInput_3() {}
-
-void validateInput_4() {}
-
-void validateInput_5() {}
 
 
 // TASK 1 robot paths
@@ -241,15 +210,10 @@ void task1(long long x, long long y) {
 }
 
 
-void task1(long long x, long long y) {
-    unsigned long long totalDistinctPaths = compute_paths(x, y);
-    printf("The total number of paths the robot can take to reach home is: %llu\n", totalDistinctPaths);
-    return;
-}
-
-
 ///////////////////////////////////////////////////////////////////////////
 
+
+void validateInput_2() {}
 
 // TASK 2 human pyramid
 double *dataPyramid[5];
@@ -344,6 +308,8 @@ void task2_human_pyramid() {
 ///////////////////////////////////////////////////////////////////////////
 
 
+void validateInput_3() {}
+
 // TASK 3 parenthesis validation
 char validSymbols[8] = {
 	'(', ')',
@@ -422,12 +388,16 @@ void task3_parenthesis_validator() {
 
 ///////////////////////////////////////////////////////////////////////////
 
+void validateInput_4() {}
+
 // TASK 4 QUEEN BATTLE
 void task4_queens_battle() {
     // Implementation for task 4
 }
 
 ///////////////////////////////////////////////////////////////////////////
+
+void validateInput_5() {}
 
 // TASK 5 CROSSWORD
 void task5_crossword_generator() {
