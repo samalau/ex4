@@ -72,15 +72,16 @@ int main() {
 			   "4. Queens Battle\n"
 			   "5. Crossword Generator\n"
 			   "6. Exit\n");
-		nextMainTask = scanf("%d", &task);
+		nextMainTask = scanf(" %d", &task);
         if (nextMainTask == EOF) {
             break;
         }
         if (nextMainTask != 1 || task < 1 || task > 6) {
             task = 0;
         }
-		scanf("%*[^\n]");
-        scanf("%*c");
+		// scanf("%*[^\n]");
+		// scanf("%*[^ ]");
+		// scanf("%*c");
 		switch (task) {
 			case 1:
 				task1_robot_paths();
@@ -331,21 +332,27 @@ int findIndex(char symbol) {
 // 0: unbalanced
 // 1: balanced
 int processSymbol(int position, int* globalBalance, char *expected) {
+	static int reachedNewline = -1;
     char symbol;
     int input = scanf("%c", &symbol);
 
     if (input == EOF) {
         return 0;
     }
+
     if (symbol == '\n') {
+		++reachedNewline;
+		if (!reachedNewline) {
+			return processSymbol(position + 1, globalBalance, expected);
+		}
+		reachedNewline = -1;
         return (*globalBalance == 0);
     }
 
-    // char validation, identification in validSymbols
-    int index = findIndex(symbol);
-
+	int index = findIndex(symbol);
+	
     // skip invalid chars
-    if (index == -1) {
+    if (symbol == ' ' || index == -1) {
         return processSymbol(position + 1, globalBalance, expected);
     }
 
@@ -359,6 +366,8 @@ int processSymbol(int position, int* globalBalance, char *expected) {
     // handle closing parentheses
     else {
         if (*globalBalance == 0 || symbol != *expected) {
+			scanf("%*[^\n]");
+			scanf("%*c");
             return 0;
         }
         (*globalBalance)--;
@@ -381,7 +390,8 @@ void task3_parenthesis_validator() {
 
 	int isBalanced = processSymbol(0, &globalBalance, &expected);
 
-    // scanf("%*c");
+	// scanf("%*[^\n]");
+	// scanf("%*c");
 
     if (!isBalanced) {
         printf("The parentheses are not balanced correctly.\n");
