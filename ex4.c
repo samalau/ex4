@@ -59,7 +59,7 @@ void cacheInitialize() {
 // initialize pointers
 int task = 0;
 int sizeRemainder = 0;
-char bufferExtract[256] = {0};
+char bufferExtract[] = {0};
 char nextMainTask = 0;
 char remainderOfExtract[] = {0};
 
@@ -75,20 +75,20 @@ int main() {
 ///////////////////////////////////////////////////////////////////////////
 
 	do {
-		scanf(" %255[^1-6]", &bufferExtract);
-		sizeRemainder = (sizeof(bufferExtract) / sizeof(bufferExtract[0]));
-		if (sizeRemainder > 1) {
-			nextMainTask = bufferExtract[0];
-			if (sizeRemainder > 2) {
-				for (int i = 1; i < sizeRemainder ; i++) {
-					remainderOfExtract[i] = (int)bufferExtract[i];
-				}
-			}
-		}
-		if (nextMainTask >= '1' || nextMainTask <= '6')
-			{task = (int)nextMainTask;}
-		else
-			{task = 0;}
+		// scanf(" %[^1-6]", &bufferExtract);
+		// sizeRemainder = (sizeof(bufferExtract) / sizeof(bufferExtract[0]));
+		// if (sizeRemainder > 1) {
+		// 	nextMainTask = bufferExtract[0];
+		// 	if (sizeRemainder > 2) {
+		// 		for (int i = 1; i < sizeRemainder ; i++) {
+		// 			remainderOfExtract[i] = (int)bufferExtract[i];
+		// 		}
+		// 	}
+		// }
+		// if (nextMainTask >= '1' || nextMainTask <= '6')
+		// 	{task = (int)nextMainTask;}
+		// else
+		// 	{task = 0;}
 
 ///////////////////////////////////////////////////////////////////////////
 
@@ -102,25 +102,33 @@ int main() {
 
 ///////////////////////////////////////////////////////////////////////////
 
-		if (nextMainTask != '\0') {	
-			if (task < '1' || task > '6') {
-				if (sizeRemainder == 1) {
-					task = 0;
-				} else {
-					nextMainTask = remainderOfExtract[0];
-					sizeRemainder = sizeof(remainderOfExtract) / sizeof(remainderOfExtract[0]);
-					for (int i = 0 ; i < sizeRemainder - 1; i++) {
-						remainderOfExtract[i] = remainderOfExtract[i + 1];
-					}
-				}
-			}
-		} else {
-			nextMainTask = scanf(" %d", &task);
-			if (nextMainTask == EOF)
-				{break;}
-			if (nextMainTask != 1 || task < '1' || task > '6')
-				{task = 0;}
-		}
+		// if (nextMainTask != '\0') {	
+		// 	if (task < '1' || task > '6') {
+		// 		if (sizeRemainder == 1) {
+		// 			task = 0;
+		// 		} else {
+		// 			nextMainTask = remainderOfExtract[0];
+		// 			sizeRemainder = sizeof(remainderOfExtract) / sizeof(remainderOfExtract[0]);
+		// 			for (int i = 0 ; i < sizeRemainder - 1; i++) {
+		// 				remainderOfExtract[i] = remainderOfExtract[i + 1];
+		// 			}
+		// 		}
+		// 	}
+		// } else {
+		// 	nextMainTask = scanf(" %d", &task);
+		// 	if (nextMainTask == EOF)
+		// 		{break;}
+		// 	if (nextMainTask != 1 || task < '1' || task > '6')
+		// 		{task = 0;}
+		// }
+
+///////////////////////////////////////////////////////////////////////////
+
+		nextMainTask = scanf(" %d", &task);
+		if (nextMainTask == EOF)
+			{break;}
+		if (nextMainTask != 1 || task < '1' || task > '6')
+			{task = 0;}
 
 ///////////////////////////////////////////////////////////////////////////
 
