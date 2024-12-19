@@ -8,6 +8,8 @@ Assignment: 4
 
 ///////////////////////////////////////////////////////////////////////////
 
+#define EXIT 6
+
 // task 1 macro -- overflow protection
 #define LARGE 0x8000  // 0x10000
 #define M 1000000007
@@ -60,6 +62,9 @@ char bufferExtract[] = {0};
 char nextMainTask = 0;
 char remainderOfExtract[] = {0};
 
+void full_terminate() {
+	task = EXIT;
+}
 
 int main() {
 	cacheInitialize();
@@ -76,12 +81,10 @@ int main() {
         if (nextMainTask == EOF) {
             break;
         }
-        if (nextMainTask != 1 || task < 1 || task > 6) {
+        if (nextMainTask != 1 || task < 1 || task > EXIT) {
             task = 0;
+			scanf("%*[^ 1-6]");
         }
-		// scanf("%*[^\n]");
-		// scanf("%*[^ ]");
-		// scanf("%*c");
 		switch (task) {
 			case 1:
 				task1_robot_paths();
@@ -98,13 +101,13 @@ int main() {
 			case 5:
 				task5_crossword_generator();
 				break;
-			case 6:
+			case EXIT:
 				break;
 			default:
 				printf("Please choose a task number from the list.\n");
 				break;
 		}
-	} while (task != 6);
+	} while (task != EXIT);
 	printf("Goodbye!\n");
 	return 0;
 }
@@ -256,15 +259,14 @@ int getWeight() {
             int input = scanf(" %lf", &nextWeight);
 
             if (input == EOF) {
-                // task is 6 exits main while-loop
-                task = 6;
+                full_terminate();
                 return 0;
             }
 
             if (input != 1 || nextWeight < 0) {
                 scanf("%*[^\n]");
                 if (scanf("%*c") == EOF) {
-                    task = 6;
+					full_terminate();
                     return 0;
                 }
                 printf("Negative weights are not supported.\n");
@@ -332,7 +334,6 @@ int findIndex(char symbol) {
 // 0: unbalanced
 // 1: balanced
 int processSymbol(int position, int* globalBalance, char *expected) {
-	static int reachedNewline = -1;
     char symbol;
     int input = scanf("%c", &symbol);
 
@@ -341,11 +342,6 @@ int processSymbol(int position, int* globalBalance, char *expected) {
     }
 
     if (symbol == '\n') {
-		++reachedNewline;
-		if (!reachedNewline) {
-			return processSymbol(position + 1, globalBalance, expected);
-		}
-		reachedNewline = -1;
         return (*globalBalance == 0);
     }
 
@@ -394,7 +390,9 @@ void task3_parenthesis_validator() {
 	// scanf("%*c");
 
     if (!isBalanced) {
-        printf("The parentheses are not balanced correctly.\n");
+		if (task != EXIT) {
+        	printf("The parentheses are not balanced correctly.\n");
+		}
     } else {
         printf("The parentheses are balanced correctly.\n");
     }
