@@ -16,13 +16,13 @@ Assignment: 4
 #define MAX_DEPTH 128  // placeholder (consider 64)
 
 // task 1 helper
-// void task1(long long x, long long y);
-// long long x_1(int *valid);
-// long long y_1(int *valid);
-// void cacheInitialize();
-// unsigned long long factorial(long long n);
-// unsigned long long modMult(unsigned long long a, unsigned long long b);
-// unsigned long long compute_paths(long long x, long long y);
+void task1(long long x, long long y);
+long long x_1(int *valid);
+long long y_1(int *valid);
+void cacheInitialize();
+unsigned long long factorial(long long n);
+unsigned long long modMult(unsigned long long a, unsigned long long b);
+unsigned long long compute_paths(long long x, long long y);
 
 // task 1 cache
 unsigned long long cacheFactorial[171] = {0};
@@ -32,8 +32,8 @@ unsigned long long cacheTask1Flag2y[LARGE] = {0};
 unsigned long long cacheTask1Flag2Result[LARGE] = {0};
 
 // task 2 helper
-// void setupPyramid();
-// int getWeight();
+void setupPyramid();
+int getWeight();
 
 // task 3 helper
 // int findIndex(char symbol);
@@ -41,11 +41,11 @@ unsigned long long cacheTask1Flag2Result[LARGE] = {0};
 // int processSymbol(int depth, int remainingDepth, int* globalBalance);
 
 // task entry points
-// void task1_robot_paths();
-// void task2_human_pyramid();
-// void task3_parenthesis_validator();
-// void task4_queens_battle();
-// void task5_crossword_generator();
+void task1_robot_paths();
+void task2_human_pyramid();
+void task3_parenthesis_validator();
+void task4_queens_battle();
+void task5_crossword_generator();
 
 // initialize cache
 void cacheInitialize() {
@@ -57,11 +57,11 @@ void cacheInitialize() {
 ///////////////////////////////////////////////////////////////////////////
 
 // initialize pointers
-int *task = 0;
-int *sizeRemainder = 0;
-char *bufferExtract[] = {0};
-char *nextMainTask = 0;
-char *remainderOfExtract[] = {0};
+int task = 0;
+int sizeRemainder = 0;
+char bufferExtract[256] = {0};
+char nextMainTask = 0;
+char remainderOfExtract[] = {0};
 
 ///////////////////////////////////////////////////////////////////////////
 
@@ -75,21 +75,20 @@ int main() {
 ///////////////////////////////////////////////////////////////////////////
 
 	do {
-		if ((scanf(" %[^1-6]", &bufferExtract)) < 1) {
-			*sizeRemainder = (sizeof(bufferExtract) / sizeof(bufferExtract[0]));
-			if (sizeRemainder > 1) {
-				*nextMainTask = bufferExtract[0];
-				if (sizeRemainder > 2) {
-					for (int i = 1; i < sizeRemainder ; i++) {
-						*remainderOfExtract[i] = bufferExtract[i];
-					}
+		scanf(" %255[^1-6]", &bufferExtract);
+		sizeRemainder = (sizeof(bufferExtract) / sizeof(bufferExtract[0]));
+		if (sizeRemainder > 1) {
+			nextMainTask = bufferExtract[0];
+			if (sizeRemainder > 2) {
+				for (int i = 1; i < sizeRemainder ; i++) {
+					remainderOfExtract[i] = (int)bufferExtract[i];
 				}
 			}
-			if (nextMainTask >= '1' || nextMainTask <= '6')
-				{*task = (int)nextMainTask;}
-			else
-				{*task = 0;}
 		}
+		if (nextMainTask >= '1' || nextMainTask <= '6')
+			{task = (int)nextMainTask;}
+		else
+			{task = 0;}
 
 ///////////////////////////////////////////////////////////////////////////
 
@@ -103,29 +102,29 @@ int main() {
 
 ///////////////////////////////////////////////////////////////////////////
 
-		if (nextMainTask[0] != '\0') {	
+		if (nextMainTask != '\0') {	
 			if (task < '1' || task > '6') {
-				if (*sizeRemainder == 1) {
-					*task = 0;
+				if (sizeRemainder == 1) {
+					task = 0;
 				} else {
-					*nextMainTask = remainderOfExtract[0];
-					*sizeRemainder = sizeof(remainderOfExtract) / sizeof(remainderOfExtract[0]);
+					nextMainTask = remainderOfExtract[0];
+					sizeRemainder = sizeof(remainderOfExtract) / sizeof(remainderOfExtract[0]);
 					for (int i = 0 ; i < sizeRemainder - 1; i++) {
-						*remainderOfExtract[i] = remainderOfExtract[i + 1];
+						remainderOfExtract[i] = remainderOfExtract[i + 1];
 					}
 				}
 			}
 		} else {
-			*nextMainTask = scanf(" %d", &task);
+			nextMainTask = scanf(" %d", &task);
 			if (nextMainTask == EOF)
 				{break;}
 			if (nextMainTask != 1 || task < '1' || task > '6')
-				{*task = 0;}
+				{task = 0;}
 		}
 
 ///////////////////////////////////////////////////////////////////////////
 
-		switch (*task) {
+		switch (task) {
 			case 1:
 				task1_robot_paths();
 				break;
@@ -168,7 +167,7 @@ long long x_1(int *valid) {
 	if ((xget = scanf(" %lld", &x)) != 1) {
 		*valid = 0;
 		if (xget == EOF) {
-			*task = 6;
+			task = 6;
 		}
 		return -1;
 	}
@@ -182,7 +181,7 @@ long long y_1(int *valid) {
 	if ((yget = scanf(" %lld", &y)) != 1) {
 		*valid = 0;
 		if (yget == EOF) {
-			*task = 6;
+			task = 6;
 		}
 		return -1;
 	}
@@ -556,10 +555,6 @@ void task3_parenthesis_validator() {
 			printf("The parentheses are balanced correctly.\n");
 		}
 	}
-	// if (scanf("%*[^\n]") == EOF || scanf("%*c") == EOF) {
-	// 	task = 6;
-	// 	return;
-	// }
 }
 
 
