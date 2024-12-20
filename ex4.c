@@ -405,28 +405,51 @@ void task3_parenthesis_validator() {
 
 void declareQueen(int N, int board[N][N], int row, int column) {
     if (row >= MIN_GRID_DIMENSION
-            && row <= MAX_GRID_DIMENSION
-            && column >= MIN_GRID_DIMENSION
-            && column <= MAX_GRID_DIMENSION)
-    { board[row][column] = 1;
-    } else { full_terminate(); }
+        && row <= MAX_GRID_DIMENSION
+        && column >= MIN_GRID_DIMENSION
+        && column <= MAX_GRID_DIMENSION) {
+    board[row][column] = 1;
+    } else {
+        full_terminate();
+        return;
+    }
 }
 
-// void findPositions() {
-//     analyzeGrid();
-//     declareQueen(board, N, row, column);
-// }
+
+
 
 
 int analyzeGrid() {}
 
-void setupBoardAreas(int N, int board[N][N]) {
+void setupBoardAreas(int N, int board[N][N], char positions[N * N]) {
 
-printf("Please enter the %d*%d puzzle board\n", N, N);
-scanf("");
+    // initialize
+    char
+        element = 0,
+        getElement = 0;
+    
+    int totalElements = N * N;
+    positions[totalElements];
+    positions[0] = 0;
+    
+    printf("Please enter the %d*%d puzzle board\n", N, N);
 
+    for (int i = 0; i < totalElements; i++) {
 
+        getElement = scanf(" %c", &element);
+
+        if (getElement == EOF) {
+            full_terminate();
+            return;
+        }
+        if (getElement == 1) {
+            break;
+        }
+
+        positions[i] = element;
+    }
 }
+
 
 void setupBoardDimensions(int N, int board[N][N]) {
     for (int i = 0; i < N; i++) {
@@ -437,9 +460,10 @@ void setupBoardDimensions(int N, int board[N][N]) {
 }
 
 
-void setupBoard(int N, int board[N][N]) {
+void setupBoard(int N, int board[N][N], char positions[N * N]) {
     setupBoardDimensions(N, board);
-    setupBoardAreas(N, board);
+    setupBoardAreas(N, board, positions);
+
 }
 
 void task4_queens_battle() {
@@ -447,32 +471,34 @@ void task4_queens_battle() {
     // initialize
     int N = 1;
     int board[N][N];
-    int board[0][0] = 1,
-        row = -1,
+    board[0][0] = 1;
+
+    int row = -1,
         column = -1,
         attempt = 2;
+    
+    char positions[N * N];
+    positions[0] = 1;
 
     print("Please enter the dimensions of the board:\n");
 
-    while (attempt) { 
+    while (attempt) {
+
         int dimension = scanf(" %d", &N);
+
         if (dimension == EOF) {
             full_terminate();
+            return;
         }
         if (dimension != 1 || N < MIN_GRID_DIMENSION || N > MAX_GRID_DIMENSION) {
             attempt--;
             continue;
         }
+
         // valid dimensions
-        setupBoard(N, board);
+        setupBoard(N, board, positions);
         break;
     }
-
-    
-
-    
-    // findPositions();
-
 
 
 }
