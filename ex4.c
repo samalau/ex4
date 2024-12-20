@@ -397,7 +397,7 @@ void task3_parenthesis_validator() {
 
 // TASK 4 QUEEN BATTLE
 void task4_queens_battle() {
-    // Implementation for task 4
+    
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -405,5 +405,5 @@ void task4_queens_battle() {
 
 // TASK 5 CROSSWORD
 void task5_crossword_generator() {
-    // Implementation for task 5
+    
 }
