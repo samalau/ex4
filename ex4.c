@@ -17,6 +17,11 @@ Assignment: 4
 // task 3 macro
 #define MAX_DEPTH 128  // placeholder (consider 64)
 
+
+// task 4 macro
+#define MIN_GRID_DIMENSION 1
+#define MAX_GRID_DIMENSION 20
+
 // task 1 helper
 void task1(long long x, long long y);
 long long x_1(int *valid);
@@ -396,14 +401,65 @@ void task3_parenthesis_validator() {
 
 
 // TASK 4 QUEEN BATTLE
+
+
+void declareQueen (int N, int board[N][N], int row, int column) {
+    if (row >= MIN_GRID_DIMENSION
+            && row <= MAX_GRID_DIMENSION
+            && column >= MIN_GRID_DIMENSION
+            && column <= MAX_GRID_DIMENSION)
+    { board[row][column] = 1;
+    } else { full_terminate(); }
+}
+
+void findPositions() {
+    analyzeGrid();
+    declareQueen(board, N, row, column);
+}
+
+
+int analyzeGrid () {}
+
+
+void setupBoard (int N, int board[N][N]) {
+    for (int i = 0; i < N; i++) {
+        for (int j = 0; j < N; j++) {
+            board[i][j] = 0;
+        }
+    }
+}
+
+
 void task4_queens_battle() {
-    
+
+    int N = 1;
+    int board[N][N];
+    int board[0][0] = 1,
+        row = -1,
+        column = -1,
+        attempt = 2;
+
+    print("Please enter the dimensions of the board:\n");
+
+    while (attempt) { 
+        int dimension = scanf(" %d", &N);
+        if (dimension == EOF) { full_terminate(); }
+        if (dimension != 1 || N < MIN_GRID_DIMENSION || N > MAX_GRID_DIMENSION) {
+            attempt--;
+            continue;
+        }
+        setupBoard(N, board);
+        break;
+    }
+
+    findPositions();
+
+
+
 }
 
 ///////////////////////////////////////////////////////////////////////////
 
 
 // TASK 5 CROSSWORD
-void task5_crossword_generator() {
-    
-}
+void task5_crossword_generator() {}
