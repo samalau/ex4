@@ -429,7 +429,8 @@ void setupGridAreas(int dimension, int grid[dimension][dimension], char position
     
     printf("Please enter the %d*%d puzzle board\n", dimension, dimension);
 
-    for (int i = 0; i < dimension][dimension]; i++) {
+    for (int i = 0; i < dimension; i++) {
+        for (int j = 0; j < dimension; j++) {
 
         getElement = scanf(" %c", &element);
 
@@ -441,7 +442,7 @@ void setupGridAreas(int dimension, int grid[dimension][dimension], char position
             break;
         }
 
-        position[i] = element;
+        position[i][j] = element;
     }
 }
 
