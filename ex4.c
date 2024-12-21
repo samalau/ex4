@@ -452,7 +452,6 @@ void initializeGrid(int dimension, int grid[dimension][dimension], char position
             grid[i][j] = 0;
         }
     }
-    // make zones
 }
 
 
@@ -498,6 +497,9 @@ int configureQueens(int col, int dimension, int grid[dimension][dimension], char
                 return 0;
             }
             grid[row][col] = 0;
+        } else {
+            printf("This puzzle cannot be solved.\n");
+            return 0;
         }
     }
     return 1;
