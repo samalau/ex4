@@ -167,7 +167,7 @@ long long y_1(int *valid) {
 // TASK 1: ENTRY
 void task1_robot_paths() {
     int valid = 0;
-    printf("Please enter the coordinates of the robot (column, row):\n");
+    printf("Please enter the coordinates of the robot (col, row):\n");
     long long x = x_1(&valid);
     if (!valid) { return; }
     long long y = y_1(&valid);
@@ -420,18 +420,13 @@ void task3_parenthesis_validator() {
 
 int getDimension(int *dimension) {
     printf("Please enter the dimensions of the board:\n");
-    scanf(" %d", dimension);
-    int attempt = 2;
-    while (attempt) {
-        if (*dimension == EOF) {
-            full_terminate();
-            return 0;
-        }
-        if (*dimension < MIN_GRID_DIMENSION || *dimension > MAX_GRID_DIMENSION) {
-            attempt--;
-            continue;
-        }
-        break;
+    int inputDimension = scanf(" %d", dimension);
+    if (inputDimension == EOF) {
+        full_terminate();
+        return 0;
+    }
+    if (inputDimension != 1 || *dimension < MIN_GRID_DIMENSION || *dimension > MAX_GRID_DIMENSION) {
+        return 0;
     }
     return 1;
 }
@@ -442,8 +437,8 @@ int getZone(int dimension, char position[dimension][dimension]) {
         element = 0,
         getElement = 0;
     printf("Please enter the %d*%d puzzle board\n", dimension, dimension);
-    for (int i = 0; i < dimension; i++) {
-        for (int j = 0; j < dimension; j++) {
+    for (int row = 0; row < dimension; row++) {
+        for (int col = 0; col < dimension; col++) {
             getElement = scanf(" %c", &element);
             if (getElement == EOF) {
                 full_terminate();
@@ -452,7 +447,7 @@ int getZone(int dimension, char position[dimension][dimension]) {
             if (getElement != 1) {
                 return 0;
             }
-            position[i][j] = element;
+            position[row][col] = element;
         }
     }
     return 1;
@@ -460,9 +455,9 @@ int getZone(int dimension, char position[dimension][dimension]) {
 
 
 void initializeGrid(int dimension, int grid[dimension][dimension]) {
-    for (int i = 0; i < dimension; i++) {
-        for (int j = 0; j < dimension; j++) {
-            grid[i][j] = 0;
+    for (int row = 0; row < dimension; row++) {
+        for (int col = 0; col < dimension; col++) {
+            grid[row][col] = 0;
         }
     }
 }
@@ -471,8 +466,8 @@ void initializeGrid(int dimension, int grid[dimension][dimension]) {
 void placeQueen(int dimension, int grid[dimension][dimension]) {
     printf("Solution:\n");
     for (int row = 0; row < dimension; row++) {
-        for (int column = 0; column < dimension; column++) {
-            if (grid[row][column] == 1) {
+        for (int col = 0; col < dimension; col++) {
+            if (grid[row][col] == 1) {
                 printf("X ");
             } else {
                 printf("* ");
