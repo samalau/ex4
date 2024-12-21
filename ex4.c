@@ -497,9 +497,6 @@ int configureQueens(int col, int dimension, int grid[dimension][dimension], char
                 return 0;
             }
             grid[row][col] = 0;
-        } else {
-            printf("This puzzle cannot be solved.\n");
-            return 0;
         }
     }
     return 1;
@@ -524,6 +521,8 @@ void task4_queens_battle() {
         int existQueens = configureQueens(0, dimension, grid, position);
         if (existQueens) {
             placeQueen(dimension, grid);
+        } else {
+            printf("This puzzle cannot be solved.\n");
         }
     }
     // scanf("%*[^\n]");
