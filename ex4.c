@@ -432,17 +432,18 @@ void setupGridAreas(int dimension, int grid[dimension][dimension], char position
     for (int i = 0; i < dimension; i++) {
         for (int j = 0; j < dimension; j++) {
 
-        getElement = scanf(" %c", &element);
+            getElement = scanf(" %c", &element);
 
-        if (getElement == EOF) {
-            full_terminate();
-            return;
-        }
-        if (getElement == 1) {
-            break;
-        }
-
-        position[i][j] = element;
+            if (getElement == EOF) {
+                full_terminate();
+                return;
+            }
+            if (getElement == 1) {
+                break;
+            }
+            
+            position[i][j] = element;
+        }    
     }
 }
 
