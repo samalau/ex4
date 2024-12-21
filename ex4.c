@@ -526,6 +526,11 @@ void task4_queens_battle() {
             placeQueen(&dimension, grid);
         }
     }
+    // scanf("%*[^\n]");
+    // if (scanf("%*c") == EOF) {
+    //     full_terminate();
+    //     return;
+    // }
 }
 
 
