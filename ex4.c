@@ -19,15 +19,18 @@ Assignment: 4
 // task 3 macro
 #define MAX_DEPTH 128  // placeholder (consider 64)
 
+// task 4 macro
+#define MIN_GRID_DIMENSION 1
+#define MAX_GRID_DIMENSION 20
 
 // task 1 helper
-void task1(long long x, long long y);
 long long x_1(int *valid);
 long long y_1(int *valid);
 void cacheInitialize();
-unsigned long long factorial(long long n);
+void task1(long long leftMoves, long long downMoves);
+unsigned long long compute_paths(long long leftMoves, long long downMoves);
 unsigned long long modMult(unsigned long long a, unsigned long long b);
-unsigned long long compute_paths(long long x, long long y);
+unsigned long long factorial(long long n);
 
 
 // task 1 cache
@@ -37,15 +40,23 @@ unsigned long long cacheT1F2x[CACHE_MAX] = {0};
 unsigned long long cacheT1F2y[CACHE_MAX] = {0};
 unsigned long long cacheT1F2Result[CACHE_MAX] = {0};
 
-
 // task 2 helper
 void setupPyramid();
 int getWeight();
 
-
 // task 3 helper
 int findIndex(char symbol);
 int processSymbol(int position, int* globalBalance, char *expected);
+void task3_parenthesis_validator();
+
+// task 4 helper
+int setupGrid(int *dimension, int grid[*dimension][*dimension], char position[*dimension][*dimension]);
+int configureQueens(int col, int dimension, int grid[dimension][dimension], char position[dimension][dimension]);
+int analyzeGrid(int row, int col, int dimension, int grid[dimension][dimension]);
+void placeQueen(int dimension, int grid[dimension][dimension]);
+void initializeGrid(int dimension, int grid[dimension][dimension]);
+int getZone(int dimension, char position[dimension][dimension]);
+int getDimension(int *dimension);
 
 
 // task entry points
@@ -166,16 +177,23 @@ void task1_robot_paths() {
 
 
 // TASK 1 robot paths
+
 unsigned long long factorial(long long n) {
-    if (n < 0) { return 0; }
-    if (n == 0) { return 1; }
-    if (cacheFactorial[n] != 0) { return cacheFactorial[n]; }
+    if (n < 0) {
+        return 0;
+    }
+    if (n == 0) {
+        return 1;
+    }
+    if (cacheFactorial[n] != 0) {
+        return cacheFactorial[n];
+    }
     return cacheFactorial[n] = modMult(n, factorial(n - 1));
 }
 
 
 unsigned long long modMult(unsigned long long a, unsigned long long b) {
-    return ((a % M) * (b % M)) % M;
+    return (a % M) * (b % M) % M;
 }
 
 
@@ -201,7 +219,7 @@ unsigned long long compute_paths(long long leftMoves, long long downMoves) {
     // x + y >= 170
     if (flag == 2) {
         for (int i = 0; i < CACHE_MAX; i++) {
-            if (cacheT1F2x[i] == leftMoves && cacheT1F2y[i] == downMoves) {
+            if (cacheT1F2x[i] == (unsigned long long)leftMoves && cacheT1F2y[i] == (unsigned long long)downMoves) {
                 return cacheT1F2Result[i];
             }
         }
@@ -400,11 +418,6 @@ void task3_parenthesis_validator() {
 
 // TASK 4 QUEEN BATTLE
 
-// task 4 macro
-#define MIN_GRID_DIMENSION 1
-#define MAX_GRID_DIMENSION 20
-
-
 int getDimension(int *dimension) {
     printf("Please enter the dimensions of the board:\n");
     scanf(" %d", dimension);
@@ -446,7 +459,7 @@ int getZone(int dimension, char position[dimension][dimension]) {
 }
 
 
-void initializeGrid(int dimension, int grid[dimension][dimension], char position[dimension][dimension]) {
+void initializeGrid(int dimension, int grid[dimension][dimension]) {
     for (int i = 0; i < dimension; i++) {
         for (int j = 0; j < dimension; j++) {
             grid[i][j] = 0;
@@ -469,20 +482,20 @@ void placeQueen(int dimension, int grid[dimension][dimension]) {
 }
 
 
-int analyzeGrid(int row, int col, int dimension, int grid[dimension][dimension], char position[dimension][dimension]) {
+int analyzeGrid(int row, int col, int dimension, int grid[dimension][dimension]) {
     for (int i = 0; i < col; i++) {
-        if (grid[row][i] == 1) return 1;
+        if (grid[row][i] == 1) return 0;
     }
     for (int i = 0; i < row; i++) {
-        if (grid[i][col] == 1) return 1;
+        if (grid[i][col] == 1) return 0;
     }
     for (int i = 1; row - i >= 0 && col - i >= 0; i++) {
-        if (grid[row - i][col - i] == 1) return 1;
+        if (grid[row - i][col - i] == 1) return 0;
     }
     for (int i = 1; row - i >= 0 && col + i < dimension; i++) {
-        if (grid[row - i][col + i] == 1) return 1;
+        if (grid[row - i][col + i] == 1) return 0;
     }
-    return 0;
+    return 1;
 }
 
 
@@ -491,7 +504,7 @@ int configureQueens(int col, int dimension, int grid[dimension][dimension], char
         return 0;
     }
     for (int row = 0; row < dimension; row++) {
-        if (analyzeGrid(row, col, dimension, grid, position)) {
+        if (analyzeGrid(row, col, dimension, grid)) {
             grid[row][col] = 1;
             if (configureQueens(col + 1, dimension, grid, position)) {
                 return 0;
@@ -505,7 +518,7 @@ int configureQueens(int col, int dimension, int grid[dimension][dimension], char
 
 int setupGrid(int *dimension, int grid[*dimension][*dimension], char position[*dimension][*dimension]) {
     if (getDimension(dimension) && getZone(*dimension, position)) {
-        initializeGrid(*dimension, grid, position);
+        initializeGrid(*dimension, grid);
         return 1;
     }
     return 0;
