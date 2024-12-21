@@ -441,7 +441,7 @@ void setupGridAreas(int dimension, int grid[dimension][dimension], char position
             if (getElement == 1) {
                 break;
             }
-            
+
             position[i][j] = element;
         }    
     }
@@ -485,6 +485,8 @@ void getDimension(int dimension) {
             attempt--;
             continue;
         }
+        break;
+    }
 }
 
 
@@ -499,7 +501,7 @@ void task4_queens_battle() {
 
     int row = -1, column = -1;
 
-    data[4] = {
+    int data[4] = {
         dimension, 
         grid,
         row,
@@ -511,7 +513,6 @@ void task4_queens_battle() {
 
     // printf result
 
-    break;
 
 
 }
