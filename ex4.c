@@ -11,7 +11,9 @@ Assignment: 4
 #define EXIT 6
 
 // task 1 macro -- overflow protection
-#define LARGE 0x8000  // 0x10000
+#define FACTORIAL_MAX 171
+#define SMALL_COORDINATE_MAX 21
+#define CACHE_MAX 0x8000  // 0x10000
 #define M 1000000007
 
 // task 3 macro
@@ -30,11 +32,11 @@ unsigned long long modMult(unsigned long long a, unsigned long long b);
 unsigned long long compute_paths(long long x, long long y);
 
 // task 1 cache
-unsigned long long cacheFactorial[171] = {0};
-unsigned long long cacheTask1Flag0[21][21] = {0};
-unsigned long long cacheTask1Flag2x[LARGE] = {0};
-unsigned long long cacheTask1Flag2y[LARGE] = {0};
-unsigned long long cacheTask1Flag2Result[LARGE] = {0};
+unsigned long long cacheFactorial[FACTORIAL_MAX] = {0};
+unsigned long long cacheT1F0[SMALL_COORDINATE_MAX][SMALL_COORDINATE_MAX] = {0};
+unsigned long long cacheT1F2x[CACHE_MAX] = {0};
+unsigned long long cacheT1F2y[CACHE_MAX] = {0};
+unsigned long long cacheT1F2Result[CACHE_MAX] = {0};
 
 // task 2 helper
 void setupPyramid();
@@ -55,7 +57,7 @@ void task5_crossword_generator();
 void cacheInitialize() {
     cacheFactorial[0] = 1;
     cacheFactorial[1] = 1;
-    cacheTask1Flag0[1][1] = 2;
+    cacheT1F0[1][1] = 2;
 }
 
 // initialize pointers
@@ -171,36 +173,38 @@ unsigned long long modMult(unsigned long long a, unsigned long long b) {
     return ((a % M) * (b % M)) % M;
 }
 
-unsigned long long compute_paths(long long x, long long y) {
-    if (x < 0 || y < 0) return 0;
-    if (x == 0 || y == 0) return 1;
+unsigned long long compute_paths(long long leftMoves, long long downMoves) {
+    if (leftMoves < 0 || downMoves < 0) return 0;
+    if (leftMoves == 0 || downMoves == 0) return 1;
 
-    int flag = (x + y <= 20) ? 0 : ((x + y < 170) ? 1 : 2);
+    int flag = (leftMoves + downMoves <= 20) ? 0 : ((leftMoves + downMoves < 170) ? 1 : 2);
 
     // x + y <= 20
     if (flag == 0) {
-        if (cacheTask1Flag0[x][y] != 0) return cacheTask1Flag0[x][y];
-        return cacheTask1Flag0[x][y] = modMult(factorial(x + y), modMult(factorial(x), factorial(y)));
+        if (cacheT1F0[leftMoves][downMoves] != 0){
+            return cacheT1F0[leftMoves][downMoves];
+        }
+        return cacheT1F0[leftMoves][downMoves] = modMult(factorial(leftMoves + downMoves), modMult(factorial(leftMoves), factorial(downMoves)));
     }
 
     // x + y < 170
     if (flag == 1) {
-        return modMult(factorial(x + y), modMult(factorial(x), factorial(y)));
+        return modMult(factorial(leftMoves + downMoves), modMult(factorial(leftMoves), factorial(downMoves)));
     }
 
     // x + y >= 170
     if (flag == 2) {
-        for (int i = 0; i < LARGE; i++) {
-            if (cacheTask1Flag2x[i] == x && cacheTask1Flag2y[i] == y) {
-                return cacheTask1Flag2Result[i];
+        for (int i = 0; i < CACHE_MAX; i++) {
+            if (cacheT1F2x[i] == leftMoves && cacheT1F2y[i] == downMoves) {
+                return cacheT1F2Result[i];
             }
         }
-        unsigned long long result = modMult(factorial(x + y), modMult(factorial(x), factorial(y)));
-        for (int i = 0; i < LARGE; i++) {
-            if (cacheTask1Flag2x[i] == 0 && cacheTask1Flag2y[i] == 0) {
-                cacheTask1Flag2x[i] = x;
-                cacheTask1Flag2y[i] = y;
-                cacheTask1Flag2Result[i] = result;
+        unsigned long long result = modMult(factorial(leftMoves + downMoves), modMult(factorial(leftMoves), factorial(downMoves)));
+        for (int i = 0; i < CACHE_MAX; i++) {
+            if (cacheT1F2x[i] == 0 && cacheT1F2y[i] == 0) {
+                cacheT1F2x[i] = leftMoves;
+                cacheT1F2y[i] = downMoves;
+                cacheT1F2Result[i] = result;
                 break;
             }
         }
@@ -210,8 +214,8 @@ unsigned long long compute_paths(long long x, long long y) {
 }
 
 
-void task1(long long x, long long y) {
-    unsigned long long totalDistinctPaths = compute_paths(x, y);
+void task1(long long leftMoves, long long downMoves) {
+    unsigned long long totalDistinctPaths = compute_paths(leftMoves, downMoves);
     printf("The total number of paths the robot can take to reach home is: %llu\n", totalDistinctPaths);
     return;
 }
@@ -294,8 +298,8 @@ void task2_human_pyramid() {
             double weightLoad = dataPyramid[i][j];
 
             if (i > 0) {
-                double weightUpLeft = (j > 0) ? dataPyramid[i - 1][j - 1] / 2.0 : 0;
-                double weightUpRight = (j < i) ? dataPyramid[i - 1][j] / 2.0 : 0;
+                double weightUpLeft = (j > 0) ? (double)dataPyramid[i - 1][j - 1] / 2.0 : 0;
+                double weightUpRight = (j < i) ? (double)dataPyramid[i - 1][j] / 2.0 : 0;
                 weightLoad += weightUpLeft + weightUpRight;
             }
 
@@ -495,7 +499,7 @@ void task4_queens_battle() {
     int *row = 0, *column = 0;
     int existGrid = setupGrid(&dimension, &grid);
     if (existGrid) {
-        int existQueens = configureQueens(&row, &column, &grid);
+        int existQueens = configureQueens(&dimension, &row, &column, &grid);
         if (existQueens) {
             // printf result
         }
@@ -507,4 +511,7 @@ void task4_queens_battle() {
 
 
 // TASK 5 CROSSWORD
-void task5_crossword_generator() {}
+void task5_crossword_generator() {
+
+    
+}
