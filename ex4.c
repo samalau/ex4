@@ -403,12 +403,14 @@ void task3_parenthesis_validator() {
 // TASK 4 QUEEN BATTLE
 
 
-void declareQueen(int N, int board[N][N], int row, int column) {
+
+
+void placeQueen(int dimension, int grid[dimension][dimension], int row, int column) {
     if (row >= MIN_GRID_DIMENSION
         && row <= MAX_GRID_DIMENSION
         && column >= MIN_GRID_DIMENSION
         && column <= MAX_GRID_DIMENSION) {
-    board[row][column] = 1;
+    grid[row][column] = 1;
     } else {
         full_terminate();
         return;
@@ -416,25 +418,18 @@ void declareQueen(int N, int board[N][N], int row, int column) {
 }
 
 
-
-
-
 int analyzeGrid() {}
 
-void setupBoardAreas(int N, int board[N][N], char positions[N * N]) {
 
-    // initialize
+void setupGridAreas(int dimension, int grid[dimension][dimension], char position[dimension][dimension]) {
+
     char
         element = 0,
         getElement = 0;
     
-    int totalElements = N * N;
-    positions[totalElements];
-    positions[0] = 0;
-    
-    printf("Please enter the %d*%d puzzle board\n", N, N);
+    printf("Please enter the %d*%d puzzle board\n", dimension, dimension);
 
-    for (int i = 0; i < totalElements; i++) {
+    for (int i = 0; i < dimension][dimension]; i++) {
 
         getElement = scanf(" %c", &element);
 
@@ -446,59 +441,75 @@ void setupBoardAreas(int N, int board[N][N], char positions[N * N]) {
             break;
         }
 
-        positions[i] = element;
+        position[i] = element;
     }
 }
 
 
-void setupBoardDimensions(int N, int board[N][N]) {
-    for (int i = 0; i < N; i++) {
-        for (int j = 0; j < N; j++) {
-            board[i][j] = 0;
+void setupGridDimensions(int dimension, int grid[dimension][dimension]) {
+    for (int i = 0; i < dimension; i++) {
+        for (int j = 0; j < dimension; j++) {
+            grid[i][j] = 0;
         }
     }
 }
 
 
-void setupBoard(int N, int board[N][N], char positions[N * N]) {
-    setupBoardDimensions(N, board);
-    setupBoardAreas(N, board, positions);
-
+void setupGrid(int dimension, int grid[dimension][dimension], char position[dimension][dimension]) {
+    getDimension(dimension);
+    setupGridDimensions(dimension, grid);
+    setupGridAreas(dimension, grid, position);
 }
 
-void task4_queens_battle() {
 
-    // initialize
-    int N = 1;
-    int board[N][N];
-    board[0][0] = 1;
+void positionQueens(int dimension, int grid[dimension][dimension], char position[dimension][dimension]) {
+    setupGrid(dimension, grid, position);
+    setupGridDimensions(dimension, grid);
+}
 
-    int row = -1,
-        column = -1,
-        attempt = 2;
-    
-    char positions[N * N];
-    positions[0] = 1;
+
+void getDimension(int dimension) {
 
     print("Please enter the dimensions of the board:\n");
+    scanf(" %d", &dimension);
 
+    int attempt = 2;
     while (attempt) {
-
-        int dimension = scanf(" %d", &N);
-
         if (dimension == EOF) {
             full_terminate();
             return;
         }
-        if (dimension != 1 || N < MIN_GRID_DIMENSION || N > MAX_GRID_DIMENSION) {
+        if (dimension != 1 || dimension < MIN_GRID_DIMENSION || dimension > MAX_GRID_DIMENSION) {
             attempt--;
             continue;
         }
+}
 
-        // valid dimensions
-        setupBoard(N, board, positions);
-        break;
-    }
+
+void task4_queens_battle() {
+
+    int dimension;
+
+    int grid[dimension][dimension];
+    char position[dimension][dimension];
+
+    setupGrid(dimension, grid, position);
+
+    int row = -1, column = -1;
+
+    data[4] = {
+        dimension, 
+        grid,
+        row,
+        column
+    };
+
+    placeQueen(dimension, grid, row, column);
+
+
+    // printf result
+
+    break;
 
 
 }
