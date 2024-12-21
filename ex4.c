@@ -455,9 +455,9 @@ void initializeGrid(int dimension, int grid[dimension][dimension], char position
 }
 
 
-void placeQueen(int *dimension, int grid[*dimension][*dimension]) {
-    for (int row = 0; row < *dimension; row++) {
-        for (int column = 0; column < *dimension; column++) {
+void placeQueen(int dimension, int grid[dimension][dimension]) {
+    for (int row = 0; row < dimension; row++) {
+        for (int column = 0; column < dimension; column++) {
             if (grid[row][column] == 1) {
                 printf("X ");
             } else {
@@ -523,7 +523,7 @@ void task4_queens_battle() {
     if (existGrid) {
         int existQueens = configureQueens(0, dimension, grid, position);
         if (existQueens) {
-            placeQueen(&dimension, grid);
+            placeQueen(dimension, grid);
         }
     }
     // scanf("%*[^\n]");
