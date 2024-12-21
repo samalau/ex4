@@ -437,7 +437,7 @@ int getZone(int dimension, char position[dimension][dimension]) {
                 return 0;
             }
             if (getElement != 1) {
-                break;
+                return 0;
             }
             position[i][j] = element;
         }
