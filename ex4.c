@@ -20,8 +20,6 @@ Assignment: 4
 #define MAX_DEPTH 128  // placeholder (consider 64)
 
 
-
-
 // task 1 helper
 void task1(long long x, long long y);
 long long x_1(int *valid);
@@ -31,6 +29,7 @@ unsigned long long factorial(long long n);
 unsigned long long modMult(unsigned long long a, unsigned long long b);
 unsigned long long compute_paths(long long x, long long y);
 
+
 // task 1 cache
 unsigned long long cacheFactorial[FACTORIAL_MAX] = {0};
 unsigned long long cacheT1F0[SMALL_COORDINATE_MAX][SMALL_COORDINATE_MAX] = {0};
@@ -38,13 +37,16 @@ unsigned long long cacheT1F2x[CACHE_MAX] = {0};
 unsigned long long cacheT1F2y[CACHE_MAX] = {0};
 unsigned long long cacheT1F2Result[CACHE_MAX] = {0};
 
+
 // task 2 helper
 void setupPyramid();
 int getWeight();
 
+
 // task 3 helper
 int findIndex(char symbol);
 int processSymbol(int position, int* globalBalance, char *expected);
+
 
 // task entry points
 void task1_robot_paths();
@@ -53,12 +55,14 @@ void task3_parenthesis_validator();
 void task4_queens_battle();
 void task5_crossword_generator();
 
+
 // initialize cache
 void cacheInitialize() {
     cacheFactorial[0] = 1;
     cacheFactorial[1] = 1;
     cacheT1F0[1][1] = 2;
 }
+
 
 // initialize pointers
 int task = 0;
@@ -67,9 +71,11 @@ char bufferExtract[] = {0};
 char nextMainTask = 0;
 char remainderOfExtract[] = {0};
 
+
 void full_terminate() {
 	task = EXIT;
 }
+
 
 int main() {
 	cacheInitialize();
@@ -125,29 +131,27 @@ int main() {
 long long x_1(int *valid) {
     long long x;
     int result = scanf(" %lld", &x);
-
     if (result != 1) {
         *valid = 0;
         return 0;
     }
-
     *valid = 1;
     return x;
 }
+
 
 // TASK 1: VALIDATE: Y
 long long y_1(int *valid) {
     long long y;
     int result = scanf(" %lld", &y);
-
     if (result != 1) {
         *valid = 0;
         return 0;
     }
-
     *valid = 1;
     return y;
 }
+
 
 // TASK 1: ENTRY
 void task1_robot_paths() {
@@ -169,9 +173,11 @@ unsigned long long factorial(long long n) {
     return cacheFactorial[n] = modMult(n, factorial(n - 1));
 }
 
+
 unsigned long long modMult(unsigned long long a, unsigned long long b) {
     return ((a % M) * (b % M)) % M;
 }
+
 
 unsigned long long compute_paths(long long leftMoves, long long downMoves) {
     if (leftMoves < 0 || downMoves < 0) return 0;
@@ -220,8 +226,8 @@ void task1(long long leftMoves, long long downMoves) {
     return;
 }
 
-
 ///////////////////////////////////////////////////////////////////////////
+
 
 // TASK 2 human pyramid
 double *dataPyramid[5];
@@ -233,17 +239,12 @@ double level_5[5];
 
 
 void setupPyramid() {
-    // ensures pointers are initialized once
-    static int initialized = 0;
 
-    if (!initialized) {
-        dataPyramid[0] = level_1;
-        dataPyramid[1] = level_2;
-        dataPyramid[2] = level_3;
-        dataPyramid[3] = level_4;
-        dataPyramid[4] = level_5;
-        initialized = 1;
-    }
+    dataPyramid[0] = level_1;
+    dataPyramid[1] = level_2;
+    dataPyramid[2] = level_3;
+    dataPyramid[3] = level_4;
+    dataPyramid[4] = level_5;
 
     for (int i = 0; i < 5; i++) {
         for (int j = 0; j <= i; j++) {
@@ -260,6 +261,7 @@ int getWeight() {
     for (int i = 0; i < 5; i++) {
         for (int j = 0; j <= i; j++) {
             double nextWeight = -1.00;
+
             int input = scanf(" %lf", &nextWeight);
 
             if (input == EOF) {
@@ -315,12 +317,15 @@ void task2_human_pyramid() {
 ///////////////////////////////////////////////////////////////////////////
 
 // TASK 3 parenthesis validation
+
+
 char validSymbols[8] = {
 	'(', ')',
 	'[', ']',
 	'{', '}',
 	'<', '>'
 };
+
 
 int findIndex(char symbol) { 
     for (int i = 0; i < 8; i++) {
@@ -330,6 +335,7 @@ int findIndex(char symbol) {
     }
     return -1;
 }
+
 
 // recursively extract parentheses
 // 0: unbalanced
@@ -372,24 +378,14 @@ int processSymbol(int position, int* globalBalance, char *expected) {
     }
 }
 
+
 void task3_parenthesis_validator() {
     // initialize globalBalance
     int globalBalance = 0;
-
     // initialize expected
     char expected = '\0';
-
     printf("Please enter a term for validation:\n");
-
-	// if (scanf("%*[^\n]") == EOF || scanf("%*c") == EOF) {
-	// 	return;
-	// }
-
 	int isBalanced = processSymbol(0, &globalBalance, &expected);
-
-	// scanf("%*[^\n]");
-	// scanf("%*c");
-
     if (!isBalanced) {
 		if (task != EXIT) {
         	printf("The parentheses are not balanced correctly.\n");
@@ -408,16 +404,17 @@ void task3_parenthesis_validator() {
 #define MIN_GRID_DIMENSION 1
 #define MAX_GRID_DIMENSION 20
 
+
 int getDimension(int *dimension) {
-    print("Please enter the *dimensions of the board:\n");
-    scanf(" %d", &dimension);
+    printf("Please enter the dimensions of the board:\n");
+    scanf(" %d", dimension);
     int attempt = 2;
     while (attempt) {
         if (*dimension == EOF) {
             full_terminate();
             return 0;
         }
-        if (*dimension != 1 || *dimension < MIN_GRID_DIMENSION || *dimension > MAX_GRID_DIMENSION) {
+        if (*dimension < MIN_GRID_DIMENSION || *dimension > MAX_GRID_DIMENSION) {
             attempt--;
             continue;
         }
@@ -426,19 +423,20 @@ int getDimension(int *dimension) {
     return 1;
 }
 
-void getZone(int *dimension, char (*position)[*dimension]) {
+
+void getZone(int dimension, char position[dimension][dimension]) {
     char
         element = 0,
         getElement = 0;
-    printf("Please enter the %d*%d puzzle board\n", *dimension, *dimension);
-    for (int i = 0; i < *dimension; i++) {
-        for (int j = 0; j < *dimension; j++) {
+    printf("Please enter the %d*%d puzzle board\n", dimension, dimension);
+    for (int i = 0; i < dimension; i++) {
+        for (int j = 0; j < dimension; j++) {
             getElement = scanf(" %c", &element);
             if (getElement == EOF) {
                 full_terminate();
                 return;
             }
-            if (getElement == 1) {
+            if (getElement != 1) {
                 break;
             }
             position[i][j] = element;
@@ -446,21 +444,21 @@ void getZone(int *dimension, char (*position)[*dimension]) {
     }
 }
 
-void initializeGrid(int *dimension, int (*grid)[*dimension], char (*position)[*dimension]) {
-    for (int i = 0; i < *dimension; i++) {
-        for (int j = 0; j < *dimension; j++) {
+
+void initializeGrid(int dimension, int grid[dimension][dimension], char position[dimension][dimension]) {
+    for (int i = 0; i < dimension; i++) {
+        for (int j = 0; j < dimension; j++) {
             grid[i][j] = 0;
         }
     }
     // make zones
 }
 
-int placeQueen(int *row, int *column, int grid[*row][*column]) {
-    if (*row >= MIN_GRID_DIMENSION
-            && *row <= MAX_GRID_DIMENSION
-            && *column >= MIN_GRID_DIMENSION
-            && *column <= MAX_GRID_DIMENSION) {
-        grid[*row][*column] = 1;
+
+int placeQueen(int row, int column, int dimension, int grid[dimension][dimension]) {
+    if (row >= MIN_GRID_DIMENSION && row <= MAX_GRID_DIMENSION
+        && column >= MIN_GRID_DIMENSION && column <= MAX_GRID_DIMENSION) {
+        grid[row][column] = 1;
         return 1;
     } else {
         full_terminate();
@@ -468,13 +466,15 @@ int placeQueen(int *row, int *column, int grid[*row][*column]) {
     }
 }
 
-int analyzeGrid() {}
 
-int configureQueens(int *dimension, int *row, int *column, int grid[*row][*column]) {
+int analyzeGrid() {return 1;}
+
+
+int configureQueens(int dimension, int grid[dimension][dimension]) {
     for (int i = 0; i < dimension; i++) {
         for (int j = 0; j < dimension; j++) {
             if (analyzeGrid()) {
-                if (!placeQueen(&row, &column, &grid)) {
+                if (!placeQueen(i, j, dimension, grid)) {
                     return 0;
                 }
             }
@@ -483,23 +483,24 @@ int configureQueens(int *dimension, int *row, int *column, int grid[*row][*colum
     return 1; // make return 0 if no arrangements
 }
 
-int setupGrid(int *dimension, int (*grid)[*dimension]) {
-    char (*position)[*dimension];
-    if (getDimension(&dimension)) {
-        getZone(&dimension, &position);
-        initializeGrid(&dimension, &grid, &position);
+
+int setupGrid(int *dimension, int grid[*dimension][*dimension]) {
+    char position[*dimension][*dimension];
+    if (getDimension(dimension)) {
+        getZone(*dimension, position);
+        initializeGrid(*dimension, grid, position);
         return 1;
     }
     return 0;
 }
 
+
 void task4_queens_battle() {
-    int *dimension;
-    int (*grid)[*dimension];
-    int *row = 0, *column = 0;
-    int existGrid = setupGrid(&dimension, &grid);
+    int dimension;
+    int grid[MAX_GRID_DIMENSION][MAX_GRID_DIMENSION];
+    int existGrid = setupGrid(&dimension, grid);
     if (existGrid) {
-        int existQueens = configureQueens(&dimension, &row, &column, &grid);
+        int existQueens = configureQueens(dimension, grid);
         if (existQueens) {
             // printf result
         }
