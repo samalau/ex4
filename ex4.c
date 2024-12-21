@@ -404,32 +404,6 @@ void task3_parenthesis_validator() {
 #define MIN_GRID_DIMENSION 1
 #define MAX_GRID_DIMENSION 20
 
-
-void task4_queens_battle() {
-    int *dimension;
-    int (*grid)[*dimension];
-    int *row = 0, *column = 0;
-    int existGrid = setupGrid(&dimension, &grid);
-    if (existGrid) {
-        int existQueens = configureQueens(&row, &column, &grid);
-        if (existQueens) {
-            // printf result
-        }
-    }
-}
-
-
-int setupGrid(int *dimension, int (*grid)[*dimension]) {
-    char (*position)[*dimension];
-    if (getDimension(&dimension)) {
-        createGrid(&dimension, &grid);
-        getZone(&dimension, &position);
-        return 1;
-    }
-    return 0;
-}
-
-
 int getDimension(int *dimension) {
     print("Please enter the *dimensions of the board:\n");
     scanf(" %d", &dimension);
@@ -447,16 +421,6 @@ int getDimension(int *dimension) {
     }
     return 1;
 }
-
-
-void createGrid(int *dimension, int (*grid)[*dimension]) {
-    for (int i = 0; i < *dimension; i++) {
-        for (int j = 0; j < *dimension; j++) {
-            grid[i][j] = 0;
-        }
-    }
-}
-
 
 void getZone(int *dimension, char (*position)[*dimension]) {
     char
@@ -478,6 +442,29 @@ void getZone(int *dimension, char (*position)[*dimension]) {
     }
 }
 
+void initializeGrid(int *dimension, int (*grid)[*dimension], char (*position)[*dimension]) {
+    for (int i = 0; i < *dimension; i++) {
+        for (int j = 0; j < *dimension; j++) {
+            grid[i][j] = 0;
+        }
+    }
+    // make zones
+}
+
+int placeQueen(int *row, int *column, int grid[*row][*column]) {
+    if (*row >= MIN_GRID_DIMENSION
+            && *row <= MAX_GRID_DIMENSION
+            && *column >= MIN_GRID_DIMENSION
+            && *column <= MAX_GRID_DIMENSION) {
+        grid[*row][*column] = 1;
+        return 1;
+    } else {
+        full_terminate();
+        return 0;
+    }
+}
+
+int analyzeGrid() {}
 
 int configureQueens(int *dimension, int *row, int *column, int grid[*row][*column]) {
     for (int i = 0; i < dimension; i++) {
@@ -492,20 +479,26 @@ int configureQueens(int *dimension, int *row, int *column, int grid[*row][*colum
     return 1; // make return 0 if no arrangements
 }
 
-
-int analyzeGrid() {}
-
-
-int placeQueen(int *row, int *column, int grid[*row][*column]) {
-    if (*row >= MIN_GRID_DIMENSION
-            && *row <= MAX_GRID_DIMENSION
-            && *column >= MIN_GRID_DIMENSION
-            && *column <= MAX_GRID_DIMENSION) {
-        grid[*row][*column] = 1;
+int setupGrid(int *dimension, int (*grid)[*dimension]) {
+    char (*position)[*dimension];
+    if (getDimension(&dimension)) {
+        getZone(&dimension, &position);
+        initializeGrid(&dimension, &grid, &position);
         return 1;
-    } else {
-        full_terminate();
-        return 0;
+    }
+    return 0;
+}
+
+void task4_queens_battle() {
+    int *dimension;
+    int (*grid)[*dimension];
+    int *row = 0, *column = 0;
+    int existGrid = setupGrid(&dimension, &grid);
+    if (existGrid) {
+        int existQueens = configureQueens(&row, &column, &grid);
+        if (existQueens) {
+            // printf result
+        }
     }
 }
 
