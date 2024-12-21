@@ -424,7 +424,7 @@ int getDimension(int *dimension) {
 }
 
 
-void getZone(int dimension, char position[dimension][dimension]) {
+int getZone(int dimension, char position[dimension][dimension]) {
     char
         element = 0,
         getElement = 0;
@@ -434,7 +434,7 @@ void getZone(int dimension, char position[dimension][dimension]) {
             getElement = scanf(" %c", &element);
             if (getElement == EOF) {
                 full_terminate();
-                return;
+                return 0;
             }
             if (getElement != 1) {
                 break;
@@ -442,6 +442,7 @@ void getZone(int dimension, char position[dimension][dimension]) {
             position[i][j] = element;
         }
     }
+    return 1;
 }
 
 
@@ -455,39 +456,56 @@ void initializeGrid(int dimension, int grid[dimension][dimension], char position
 }
 
 
-int placeQueen(int row, int column, int dimension, int grid[dimension][dimension]) {
-    if (row >= MIN_GRID_DIMENSION && row <= MAX_GRID_DIMENSION
-        && column >= MIN_GRID_DIMENSION && column <= MAX_GRID_DIMENSION) {
-        grid[row][column] = 1;
-        return 1;
-    } else {
-        full_terminate();
-        return 0;
-    }
-}
-
-
-int analyzeGrid() {return 1;}
-
-
-int configureQueens(int dimension, int grid[dimension][dimension]) {
-    for (int i = 0; i < dimension; i++) {
-        for (int j = 0; j < dimension; j++) {
-            if (analyzeGrid()) {
-                if (!placeQueen(i, j, dimension, grid)) {
-                    return 0;
-                }
+void placeQueen(int *dimension, int grid[*dimension][*dimension]) {
+    for (int row = 0; row < *dimension; row++) {
+        for (int column = 0; column < *dimension; column++) {
+            if (grid[row][column] == 1) {
+                printf("X ");
+            } else {
+                printf("* ");
             }
         }
+        printf("\n");
     }
-    return 1; // make return 0 if no arrangements
 }
 
 
-int setupGrid(int *dimension, int grid[*dimension][*dimension]) {
-    char position[*dimension][*dimension];
-    if (getDimension(dimension)) {
-        getZone(*dimension, position);
+int analyzeGrid(int row, int col, int dimension, int grid[dimension][dimension], char position[dimension][dimension]) {
+    for (int i = 0; i < col; i++) {
+        if (grid[row][i] == 1) return 1;
+    }
+    for (int i = 0; i < row; i++) {
+        if (grid[i][col] == 1) return 1;
+    }
+    for (int i = 1; row - i >= 0 && col - i >= 0; i++) {
+        if (grid[row - i][col - i] == 1) return 1;
+    }
+    for (int i = 1; row - i >= 0 && col + i < dimension; i++) {
+        if (grid[row - i][col + i] == 1) return 1;
+    }
+    return 0;
+}
+
+
+int configureQueens(int col, int dimension, int grid[dimension][dimension], char position[dimension][dimension]) {
+    if (col >= dimension) {
+        return 0;
+    }
+    for (int row = 0; row < dimension; row++) {
+        if (analyzeGrid(row, col, dimension, grid, position)) {
+            grid[row][col] = 1;
+            if (configureQueens(col + 1, dimension, grid, position)) {
+                return 0;
+            }
+            grid[row][col] = 0;
+        }
+    }
+    return 1;
+}
+
+
+int setupGrid(int *dimension, int grid[*dimension][*dimension], char position[*dimension][*dimension]) {
+    if (getDimension(dimension) && getZone(*dimension, position)) {
         initializeGrid(*dimension, grid, position);
         return 1;
     }
@@ -497,12 +515,13 @@ int setupGrid(int *dimension, int grid[*dimension][*dimension]) {
 
 void task4_queens_battle() {
     int dimension;
+    char position[MAX_GRID_DIMENSION][MAX_GRID_DIMENSION];
     int grid[MAX_GRID_DIMENSION][MAX_GRID_DIMENSION];
-    int existGrid = setupGrid(&dimension, grid);
+    int existGrid = setupGrid(&dimension, grid, position);
     if (existGrid) {
-        int existQueens = configureQueens(dimension, grid);
+        int existQueens = configureQueens(0, dimension, grid, position);
         if (existQueens) {
-            // printf result
+            placeQueen(&dimension, grid);
         }
     }
 }
