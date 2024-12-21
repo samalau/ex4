@@ -469,6 +469,7 @@ void initializeGrid(int dimension, int grid[dimension][dimension]) {
 
 
 void placeQueen(int dimension, int grid[dimension][dimension]) {
+    printf("Solution:\n");
     for (int row = 0; row < dimension; row++) {
         for (int column = 0; column < dimension; column++) {
             if (grid[row][column] == 1) {
@@ -501,18 +502,18 @@ int analyzeGrid(int row, int col, int dimension, int grid[dimension][dimension])
 
 int configureQueens(int col, int dimension, int grid[dimension][dimension], char position[dimension][dimension]) {
     if (col >= dimension) {
-        return 0;
+        return 1;
     }
     for (int row = 0; row < dimension; row++) {
         if (analyzeGrid(row, col, dimension, grid)) {
             grid[row][col] = 1;
             if (configureQueens(col + 1, dimension, grid, position)) {
-                return 0;
+                return 1;
             }
             grid[row][col] = 0;
         }
     }
-    return 1;
+    return 0;
 }
 
 
