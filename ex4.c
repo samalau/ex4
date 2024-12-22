@@ -51,7 +51,7 @@ void task3_parenthesis_validator();
 
 // task 4 helper
 int setupGrid(int *dimension, int grid[*dimension][*dimension], char position[*dimension][*dimension]);
-int configureQueens(int col, int dimension, int grid[dimension][dimension], char position[dimension][dimension]);
+int configureQueens(int col, int dimension, int grid[dimension][dimension]);
 int analyzeGrid(int row, int col, int dimension, int grid[dimension][dimension]);
 void placeQueen(int dimension, int grid[dimension][dimension]);
 void initializeGrid(int dimension, int grid[dimension][dimension]);
@@ -75,7 +75,7 @@ void cacheInitialize() {
 }
 
 
-// initialize pointers
+// initialize
 int task = 0;
 int sizeRemainder = 0;
 char bufferExtract[] = {0};
@@ -495,14 +495,14 @@ int analyzeGrid(int row, int col, int dimension, int grid[dimension][dimension])
 }
 
 
-int configureQueens(int col, int dimension, int grid[dimension][dimension], char position[dimension][dimension]) {
+int configureQueens(int col, int dimension, int grid[dimension][dimension]) {
     if (col >= dimension) {
         return 1;
     }
     for (int row = 0; row < dimension; row++) {
         if (analyzeGrid(row, col, dimension, grid)) {
             grid[row][col] = 1;
-            if (configureQueens(col + 1, dimension, grid, position)) {
+            if (configureQueens(col + 1, dimension, grid)) {
                 return 1;
             }
             grid[row][col] = 0;
@@ -527,7 +527,7 @@ void task4_queens_battle() {
     int grid[MAX_GRID_DIMENSION][MAX_GRID_DIMENSION];
     int existGrid = setupGrid(&dimension, grid, position);
     if (existGrid) {
-        int existQueens = configureQueens(0, dimension, grid, position);
+        int existQueens = configureQueens(0, dimension, grid);
         if (existQueens) {
             placeQueen(dimension, grid);
         } else {
