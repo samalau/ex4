@@ -563,7 +563,16 @@ void display_board(int size, Cell board[][size]) {
 void task4QueensBattle() {
     int size;
     printf("Please enter the dimensions of the board:\n");
-    scanf(" %d", &size);
+    int inputSize = scanf(" %d", &size);
+    if (inputSize == EOF) {
+        full_terminate();
+        return;
+    }
+
+    if(inputSize != 1) {
+        scanf("%*[^\n]");
+        return;
+    }
 
     if (size < MIN_BOARD_SIZE || size > MAX_BOARD_SIZE) {
         printf("This puzzle cannot be solved.\n");
@@ -577,7 +586,15 @@ void task4QueensBattle() {
     printf("Please enter the %d*%d puzzle board:\n", size, size);
     for (int i = 0; i < size; i++) {
         for (int j = 0; j < size; j++) {
-            scanf(" %c", &board[i][j].color);
+            int input_zone = scanf(" %c", &board[i][j].color);
+            if (input_zone == EOF) {
+                full_terminate();
+                return;
+            }
+            if (input_zone != 1) {
+                scanf("%*[^\n]");
+                return;
+            }
             board[i][j].has_queen = 0;
         }
     }
