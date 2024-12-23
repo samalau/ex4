@@ -404,8 +404,8 @@ void task3ParenthesisValidator() {
 // TASK 4 QUEEN BATTLE
 
 int validate_color_zones(int size, Cell board[][size], char mapped_colors[], int *unique_colors) {
-    int color_count[size];  // Count occurrences of each color
-    *unique_colors = 0;     // Track the number of unique colors
+    int color_count[MAX_BOARD_SIZE];  // count occurrences of each color
+    *unique_colors = 0;     // track number of unique colors
 
     // Initialize color_count
     for (int i = 0; i < size; i++) {
@@ -415,8 +415,6 @@ int validate_color_zones(int size, Cell board[][size], char mapped_colors[], int
     for (int i = 0; i < size; i++) {
         for (int j = 0; j < size; j++) {
             char color = board[i][j].color;
-
-            // Check if the color is already mapped
             int mapped_index = -1;
             for (int k = 0; k < *unique_colors; k++) {
                 if (mapped_colors[k] == color) {
@@ -425,66 +423,21 @@ int validate_color_zones(int size, Cell board[][size], char mapped_colors[], int
                 }
             }
 
-            // If the color is not mapped, map it to the next index
             if (mapped_index == -1) {
                 if (*unique_colors >= size) {
-                    // Too many unique colors for the board size
+                    // too many unique colors for the board size
                     return 0;
                 }
                 mapped_index = (*unique_colors)++;
                 mapped_colors[mapped_index] = color;
             }
 
-            // Increment the count for this color
             color_count[mapped_index]++;
         }
     }
 
-    // Ensure exactly `size` unique colors are present
     return *unique_colors == size;
 }
-
-// int validate_color_zones(int size, Cell board[][size]) {
-//     char mapped_colors[size];  // Track distinct colors
-//     int color_count[size];     // Count occurrences of each color
-//     int unique_colors = 0;     // Track the number of unique colors
-
-//     // Initialize color_count
-//     for (int i = 0; i < size; i++) {
-//         color_count[i] = 0;
-//     }
-
-//     for (int i = 0; i < size; i++) {
-//         for (int j = 0; j < size; j++) {
-//             char color = board[i][j].color;
-
-//             // Check if the color is already mapped
-//             int mapped_index = -1;
-//             for (int k = 0; k < unique_colors; k++) {
-//                 if (mapped_colors[k] == color) {
-//                     mapped_index = k;
-//                     break;
-//                 }
-//             }
-
-//             // If the color is not mapped, map it to the next index
-//             if (mapped_index == -1) {
-//                 if (unique_colors >= size) {
-//                     // Too many unique colors for the board size
-//                     return 0;
-//                 }
-//                 mapped_index = unique_colors++;
-//                 mapped_colors[mapped_index] = color;
-//             }
-
-//             // Increment the count for this color
-//             color_count[mapped_index]++;
-//         }
-//     }
-
-//     // Ensure exactly `size` unique colors are present
-//     return unique_colors == size;
-// }
 
 int queen_in_row(int size, Cell board[][size], int row) {
     for (int col = 0; col < size; col++) {
@@ -541,7 +494,7 @@ void mark_queen(int size, Cell board[][size], int row, int col, int *color_with_
     board[row][col].has_queen = 1;
     char color = board[row][col].color;
 
-    // Find the mapped index for the color
+    // find mapped index for color
     int index = -1;
     for (int i = 0; i < size; i++) {
         if (mapped_colors[i] == color) {
@@ -559,7 +512,7 @@ void mark_not_queen(int size, Cell board[][size], int row, int col, int *color_w
     board[row][col].has_queen = 0;
     char color = board[row][col].color;
 
-    // Find the mapped index for the color
+    // find mapped index for color
     int index = -1;
     for (int i = 0; i < size; i++) {
         if (mapped_colors[i] == color) {
@@ -572,16 +525,6 @@ void mark_not_queen(int size, Cell board[][size], int row, int col, int *color_w
         color_with_queen[index] = 0;
     }
 }
-
-// void mark_queen(int size, Cell board[][size], int row, int col, int *color_with_queen) {
-//     board[row][col].has_queen = 1;
-//     color_with_queen[board[row][col].color - 'A'] = 1;
-// }
-
-// void mark_not_queen(int size, Cell board[][size], int row, int col, int *color_with_queen) {
-//     board[row][col].has_queen = 0;
-//     color_with_queen[board[row][col].color - 'A'] = 0;
-// }
 
 int queens_solver(int size, Cell board[][size], int assigned_queens, int start, int *color_with_queen, char mapped_colors[]) {
     if (assigned_queens == size) {
@@ -621,8 +564,8 @@ void task4QueensBattle() {
         return;
     }
 
-    Cell board[size][size];
-    char mapped_colors[size];
+    Cell board[MAX_BOARD_SIZE][MAX_BOARD_SIZE];
+    char mapped_colors[MAX_BOARD_SIZE];
     int unique_colors;
 
     printf("Please enter the %d*%d puzzle board:\n", size, size);
@@ -638,10 +581,8 @@ void task4QueensBattle() {
         return;
     }
 
-    int color_with_queen[size];
-    for (int i = 0; i < size; i++) {
-        color_with_queen[i] = 0;
-    }
+      // Initialize to 0
+    int color_with_queen[MAX_BOARD_SIZE] = {0};
 
     if (queens_solver(size, board, 0, 0, color_with_queen, mapped_colors)) {
         display_board(size, board);
