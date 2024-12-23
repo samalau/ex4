@@ -14,11 +14,12 @@ Assignment: 4
 // task 1 macros -- overflow protection
 #define FACTORIAL_MAX 171
 #define SMALL_COORDINATE_MAX 21
-#define CACHE_MAX 0x8000  // 0x10000
+#define CACHE_MAX 0x8000
 #define M 1000000007
 
 // task 3 macro
-#define MAX_DEPTH 128  // placeholder (consider 64)
+// placeholder (consider 64)
+#define MAX_DEPTH 128
 
 // task 4 macros
 #define MIN_BOARD_SIZE 1
@@ -53,8 +54,9 @@ void task3ParenthesisValidator();
 
 // task 4 helpers
 typedef struct {
-    char color;  // Represents the cell's color
-    int has_queen;  // Whether the cell has a queen
+    // color zone
+    char color;
+    int has_queen;
 } Cell;
 int validate_color_zones(int size, Cell board[][size], char mapped_colors[], int *unique_colors);
 int queen_in_row(int size, Cell board[][size], int row);
@@ -404,10 +406,13 @@ void task3ParenthesisValidator() {
 // TASK 4 QUEEN BATTLE
 
 int validate_color_zones(int size, Cell board[][size], char mapped_colors[], int *unique_colors) {
-    int color_count[MAX_BOARD_SIZE];  // count occurrences of each color
-    *unique_colors = 0;     // track number of unique colors
+      // count occurrences of each color
+    int color_count[MAX_BOARD_SIZE];
 
-    // Initialize color_count
+    // track number of unique colors
+    *unique_colors = 0;
+
+    // initialize color_count
     for (int i = 0; i < size; i++) {
         color_count[i] = 0;
     }
@@ -470,14 +475,15 @@ int queen_in_direct_diagonal(int size, Cell board[][size], int row, int col) {
 }
 
 int is_valid_queen(int size, Cell board[][size], int row, int col, int *color_with_queen) {
-    int color_map[size];  // Initialize only once
+    // initialize
+    int color_map[size];
     for (int i = 0; i < size; i++) {
         color_map[i] = -1;
     }
 
     char color = board[row][col].color;
 
-    // Map character to index dynamically
+    // map character to index
     if (color_map[(unsigned char)color] == -1) {
         static int next_index = 0;
         color_map[(unsigned char)color] = next_index++;
@@ -538,8 +544,8 @@ int queens_solver(int size, Cell board[][size], int assigned_queens, int start, 
             if (queens_solver(size, board, assigned_queens + 1, start + 1, color_with_queen, mapped_colors)) {
                 return 1;
             }
-
-            mark_not_queen(size, board, start, i, color_with_queen, mapped_colors);  // Backtrack
+            // backtrack
+            mark_not_queen(size, board, start, i, color_with_queen, mapped_colors);
         }
     }
     return 0;
@@ -581,7 +587,7 @@ void task4QueensBattle() {
         return;
     }
 
-      // Initialize to 0
+    // Initialize to 0
     int color_with_queen[MAX_BOARD_SIZE] = {0};
 
     if (queens_solver(size, board, 0, 0, color_with_queen, mapped_colors)) {
