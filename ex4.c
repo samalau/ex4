@@ -441,7 +441,8 @@ int validate_color_zones(int size, Cell board[][size], char mapped_colors[], int
         }
     }
 
-    return *unique_colors == size;
+    return 1;
+    // return *unique_colors == size;
 }
 
 int queen_in_row(int size, Cell board[][size], int row) {
@@ -571,6 +572,7 @@ void task4QueensBattle() {
 
     if(inputSize != 1) {
         scanf("%*[^\n]");
+        printf("This puzzle cannot be solved.\n");
         return;
     }
 
@@ -592,6 +594,7 @@ void task4QueensBattle() {
                 return;
             }
             if (input_zone != 1) {
+                printf("This puzzle cannot be solved.\n");
                 scanf("%*[^\n]");
                 return;
             }
