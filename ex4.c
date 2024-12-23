@@ -413,7 +413,7 @@ int validate_color_zones(int size, Cell board[][size], char mapped_colors[], int
     *unique_colors = 0;
 
     // initialize color_count
-    for (int i = 0; i < size; i++) {
+    for (int i = 0; i < MAX_BOARD_SIZE; i++) {
         color_count[i] = 0;
     }
 
@@ -429,7 +429,7 @@ int validate_color_zones(int size, Cell board[][size], char mapped_colors[], int
             }
 
             if (mapped_index == -1) {
-                if (*unique_colors >= size) {
+                if (*unique_colors >= MAX_BOARD_SIZE) {
                     // too many unique colors for the board size
                     return 0;
                 }
@@ -570,17 +570,12 @@ void task4QueensBattle() {
         return;
     }
 
-    if(inputSize != 1) {
-        scanf("%*[^\n]");
+    if (inputSize != 1 || size < MIN_BOARD_SIZE || size > MAX_BOARD_SIZE) {
+        // scanf("%*[^\n]");
         printf("This puzzle cannot be solved.\n");
         return;
     }
-
-    if (size < MIN_BOARD_SIZE || size > MAX_BOARD_SIZE) {
-        printf("This puzzle cannot be solved.\n");
-        return;
-    }
-
+    
     Cell board[MAX_BOARD_SIZE][MAX_BOARD_SIZE];
     char mapped_colors[MAX_BOARD_SIZE];
     int unique_colors;
