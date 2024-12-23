@@ -406,10 +406,10 @@ void task3ParenthesisValidator() {
 // TASK 4 QUEEN BATTLE
 
 int validate_color_zones(int size, Cell board[][size], char mapped_colors[], int *unique_colors) {
-      // count occurrences of each color
+    // track number of unique colors
     int color_count[MAX_BOARD_SIZE];
 
-    // track number of unique colors
+    // initialize/reset count
     *unique_colors = 0;
 
     // initialize color_count
