@@ -8,9 +8,10 @@ Assignment: 4
 
 ///////////////////////////////////////////////////////////////////////////
 
+// main macro
 #define EXIT 6
 
-// task 1 macro -- overflow protection
+// task 1 macros -- overflow protection
 #define FACTORIAL_MAX 171
 #define SMALL_COORDINATE_MAX 21
 #define CACHE_MAX 0x8000  // 0x10000
@@ -19,11 +20,13 @@ Assignment: 4
 // task 3 macro
 #define MAX_DEPTH 128  // placeholder (consider 64)
 
-// task 4 macro
-#define MIN_GRID_DIMENSION 1
-#define MAX_GRID_DIMENSION 20
+// task 4 macros
+#define MIN_BOARD_SIZE 1
+#define MAX_BOARD_SIZE 20
+#define EMPTY_CELL '*'
+#define QUEEN_CELL 'X'
 
-// task 1 helper
+// task 1 helpers
 long long x_1(int *valid);
 long long y_1(int *valid);
 void cacheInitialize();
@@ -32,7 +35,6 @@ unsigned long long compute_paths(long long leftMoves, long long downMoves);
 unsigned long long modMult(unsigned long long a, unsigned long long b);
 unsigned long long factorial(long long n);
 
-
 // task 1 cache
 unsigned long long cacheFactorial[FACTORIAL_MAX] = {0};
 unsigned long long cacheT1F0[SMALL_COORDINATE_MAX][SMALL_COORDINATE_MAX] = {0};
@@ -40,32 +42,36 @@ unsigned long long cacheT1F2x[CACHE_MAX] = {0};
 unsigned long long cacheT1F2y[CACHE_MAX] = {0};
 unsigned long long cacheT1F2Result[CACHE_MAX] = {0};
 
-// task 2 helper
+// task 2 helpers
 void setupPyramid();
 int getWeight();
 
-// task 3 helper
+// task 3 helpers
 int findIndex(char symbol);
 int processSymbol(int position, int* globalBalance, char *expected);
-void task3_parenthesis_validator();
+void task3ParenthesisValidator();
 
-// task 4 helper
-int setupGrid(int *dimension, int grid[*dimension][*dimension], char position[*dimension][*dimension]);
-int configureQueens(int col, int dimension, int grid[dimension][dimension]);
-int analyzeGrid(int row, int col, int dimension, int grid[dimension][dimension]);
-void placeQueen(int dimension, int grid[dimension][dimension]);
-void initializeGrid(int dimension, int grid[dimension][dimension]);
-int getZone(int dimension, char position[dimension][dimension]);
-int getDimension(int *dimension);
-
+// task 4 helpers
+typedef struct {
+    char color;  // Represents the cell's color
+    int has_queen;  // Whether the cell has a queen
+} Cell;
+int validate_color_zones(int size, Cell board[][size], char mapped_colors[], int *unique_colors);
+int queen_in_row(int size, Cell board[][size], int row);
+int queen_in_col(int size, Cell board[][size], int col);
+int queen_in_direct_diagonal(int size, Cell board[][size], int row, int col);
+int is_valid_queen(int size, Cell board[][size], int row, int col, int *color_with_queen);
+void mark_queen(int size, Cell board[][size], int row, int col, int *color_with_queen, char mapped_colors[]);
+void mark_not_queen(int size, Cell board[][size], int row, int col, int *color_with_queen, char mapped_colors[]);
+int queens_solver(int size, Cell board[][size], int assigned_queens, int start, int *color_with_queen, char mapped_colors[]);
+void display_board(int size, Cell board[][size]);
 
 // task entry points
-void task1_robot_paths();
-void task2_human_pyramid();
-void task3_parenthesis_validator();
-void task4_queens_battle();
-void task5_crossword_generator();
-
+void task1RobotPaths();
+void task2HumanPyramid();
+void task3ParenthesisValidator();
+void task4QueensBattle();
+void task5CrosswordGenerator();
 
 // initialize cache
 void cacheInitialize() {
@@ -74,7 +80,6 @@ void cacheInitialize() {
     cacheT1F0[1][1] = 2;
 }
 
-
 // initialize
 int task = 0;
 int sizeRemainder = 0;
@@ -82,11 +87,9 @@ char bufferExtract[] = {0};
 char nextMainTask = 0;
 char remainderOfExtract[] = {0};
 
-
 void full_terminate() {
 	task = EXIT;
 }
-
 
 int main() {
 	cacheInitialize();
@@ -109,19 +112,19 @@ int main() {
         }
 		switch (task) {
 			case 1:
-				task1_robot_paths();
+				task1RobotPaths();
 				break;
 			case 2:
-				task2_human_pyramid();
+				task2HumanPyramid();
 				break;
 			case 3:
-				task3_parenthesis_validator();
+				task3ParenthesisValidator();
 				break;
 			case 4:
-				task4_queens_battle();
+				task4QueensBattle();
 				break;
 			case 5:
-				task5_crossword_generator();
+				task5CrosswordGenerator();
 				break;
 			case EXIT:
 				break;
@@ -134,9 +137,7 @@ int main() {
 	return 0;
 }
 
-
 ///////////////////////////////////////////////////////////////////////////
-
 
 // TASK 1: VALIDATE: X
 long long x_1(int *valid) {
@@ -150,7 +151,6 @@ long long x_1(int *valid) {
     return x;
 }
 
-
 // TASK 1: VALIDATE: Y
 long long y_1(int *valid) {
     long long y;
@@ -163,9 +163,8 @@ long long y_1(int *valid) {
     return y;
 }
 
-
 // TASK 1: ENTRY
-void task1_robot_paths() {
+void task1RobotPaths() {
     int valid = 0;
     printf("Please enter the coordinates of the robot (col, row):\n");
     long long x = x_1(&valid);
@@ -175,8 +174,7 @@ void task1_robot_paths() {
     task1(x, y);
 }
 
-
-// TASK 1 robot paths
+// TASK 1 ROBOT PATHS
 
 unsigned long long factorial(long long n) {
     if (n < 0) {
@@ -191,11 +189,9 @@ unsigned long long factorial(long long n) {
     return cacheFactorial[n] = modMult(n, factorial(n - 1));
 }
 
-
 unsigned long long modMult(unsigned long long a, unsigned long long b) {
     return (a % M) * (b % M) % M;
 }
-
 
 unsigned long long compute_paths(long long leftMoves, long long downMoves) {
     if (leftMoves < 0 || downMoves < 0) return 0;
@@ -237,7 +233,6 @@ unsigned long long compute_paths(long long leftMoves, long long downMoves) {
     return 0;
 }
 
-
 void task1(long long leftMoves, long long downMoves) {
     unsigned long long totalDistinctPaths = compute_paths(leftMoves, downMoves);
     printf("The total number of paths the robot can take to reach home is: %llu\n", totalDistinctPaths);
@@ -246,15 +241,13 @@ void task1(long long leftMoves, long long downMoves) {
 
 ///////////////////////////////////////////////////////////////////////////
 
-
-// TASK 2 human pyramid
+// TASK 2 HUMAN PYRAMID
 double *dataPyramid[5];
 double level_1[1];
 double level_2[2];
 double level_3[3];
 double level_4[4];
 double level_5[5];
-
 
 void setupPyramid() {
 
@@ -271,7 +264,6 @@ void setupPyramid() {
     }
     // pyramid is now reset
 }
-
 
 int getWeight() {
     printf("Please enter the weights of the cheerleaders:\n");
@@ -305,8 +297,7 @@ int getWeight() {
     return 1;
 }
 
-
-void task2_human_pyramid() {
+void task2HumanPyramid() {
     int fullData = getWeight();
 
     if (!fullData) return;
@@ -331,11 +322,9 @@ void task2_human_pyramid() {
     return;
 }
 
-
 ///////////////////////////////////////////////////////////////////////////
 
-// TASK 3 parenthesis validation
-
+// TASK 3 PARENTHESIS VALIDATION
 
 char validSymbols[8] = {
 	'(', ')',
@@ -343,7 +332,6 @@ char validSymbols[8] = {
 	'{', '}',
 	'<', '>'
 };
-
 
 int findIndex(char symbol) { 
     for (int i = 0; i < 8; i++) {
@@ -353,7 +341,6 @@ int findIndex(char symbol) {
     }
     return -1;
 }
-
 
 // recursively extract parentheses
 // 0: unbalanced
@@ -396,8 +383,7 @@ int processSymbol(int position, int* globalBalance, char *expected) {
     }
 }
 
-
-void task3_parenthesis_validator() {
+void task3ParenthesisValidator() {
     // initialize globalBalance
     int globalBalance = 0;
     // initialize expected
@@ -415,138 +401,258 @@ void task3_parenthesis_validator() {
 
 ///////////////////////////////////////////////////////////////////////////
 
-
 // TASK 4 QUEEN BATTLE
 
-int getDimension(int *dimension) {
-    printf("Please enter the dimensions of the board:\n");
-    int inputDimension = scanf(" %d", dimension);
-    if (inputDimension == EOF) {
-        full_terminate();
-        return 0;
-    }
-    if (inputDimension != 1 || *dimension < MIN_GRID_DIMENSION || *dimension > MAX_GRID_DIMENSION) {
-        return 0;
-    }
-    return 1;
-}
+int validate_color_zones(int size, Cell board[][size], char mapped_colors[], int *unique_colors) {
+    int color_count[size];  // Count occurrences of each color
+    *unique_colors = 0;     // Track the number of unique colors
 
+    // Initialize color_count
+    for (int i = 0; i < size; i++) {
+        color_count[i] = 0;
+    }
 
-int getZone(int dimension, char position[dimension][dimension]) {
-    char
-        element = 0,
-        getElement = 0;
-    printf("Please enter the %d*%d puzzle board\n", dimension, dimension);
-    for (int row = 0; row < dimension; row++) {
-        for (int col = 0; col < dimension; col++) {
-            getElement = scanf(" %c", &element);
-            if (getElement == EOF) {
-                full_terminate();
-                return 0;
+    for (int i = 0; i < size; i++) {
+        for (int j = 0; j < size; j++) {
+            char color = board[i][j].color;
+
+            // Check if the color is already mapped
+            int mapped_index = -1;
+            for (int k = 0; k < *unique_colors; k++) {
+                if (mapped_colors[k] == color) {
+                    mapped_index = k;
+                    break;
+                }
             }
-            if (getElement != 1) {
-                return 0;
+
+            // If the color is not mapped, map it to the next index
+            if (mapped_index == -1) {
+                if (*unique_colors >= size) {
+                    // Too many unique colors for the board size
+                    return 0;
+                }
+                mapped_index = (*unique_colors)++;
+                mapped_colors[mapped_index] = color;
             }
-            position[row][col] = element;
+
+            // Increment the count for this color
+            color_count[mapped_index]++;
         }
     }
-    return 1;
+
+    // Ensure exactly `size` unique colors are present
+    return *unique_colors == size;
 }
 
+// int validate_color_zones(int size, Cell board[][size]) {
+//     char mapped_colors[size];  // Track distinct colors
+//     int color_count[size];     // Count occurrences of each color
+//     int unique_colors = 0;     // Track the number of unique colors
 
-void initializeGrid(int dimension, int grid[dimension][dimension]) {
-    for (int row = 0; row < dimension; row++) {
-        for (int col = 0; col < dimension; col++) {
-            grid[row][col] = 0;
+//     // Initialize color_count
+//     for (int i = 0; i < size; i++) {
+//         color_count[i] = 0;
+//     }
+
+//     for (int i = 0; i < size; i++) {
+//         for (int j = 0; j < size; j++) {
+//             char color = board[i][j].color;
+
+//             // Check if the color is already mapped
+//             int mapped_index = -1;
+//             for (int k = 0; k < unique_colors; k++) {
+//                 if (mapped_colors[k] == color) {
+//                     mapped_index = k;
+//                     break;
+//                 }
+//             }
+
+//             // If the color is not mapped, map it to the next index
+//             if (mapped_index == -1) {
+//                 if (unique_colors >= size) {
+//                     // Too many unique colors for the board size
+//                     return 0;
+//                 }
+//                 mapped_index = unique_colors++;
+//                 mapped_colors[mapped_index] = color;
+//             }
+
+//             // Increment the count for this color
+//             color_count[mapped_index]++;
+//         }
+//     }
+
+//     // Ensure exactly `size` unique colors are present
+//     return unique_colors == size;
+// }
+
+int queen_in_row(int size, Cell board[][size], int row) {
+    for (int col = 0; col < size; col++) {
+        if (board[row][col].has_queen) {
+            return 1;
         }
+    }
+    return 0;
+}
+
+int queen_in_col(int size, Cell board[][size], int col) {
+    for (int row = 0; row < size; row++) {
+        if (board[row][col].has_queen) {
+            return 1;
+        }
+    }
+    return 0;
+}
+
+int queen_in_direct_diagonal(int size, Cell board[][size], int row, int col) {
+    int directions[4][2] = {{-1, -1}, {-1, 1}, {1, -1}, {1, 1}};
+    for (int i = 0; i < 4; i++) {
+        int new_row = row + directions[i][0];
+        int new_col = col + directions[i][1];
+        if (new_row >= 0 && new_row < size && new_col >= 0 && new_col < size && board[new_row][new_col].has_queen) {
+             return 1;
+        }
+    }
+    return 0;
+}
+
+int is_valid_queen(int size, Cell board[][size], int row, int col, int *color_with_queen) {
+    int color_map[size];  // Initialize only once
+    for (int i = 0; i < size; i++) {
+        color_map[i] = -1;
+    }
+
+    char color = board[row][col].color;
+
+    // Map character to index dynamically
+    if (color_map[(unsigned char)color] == -1) {
+        static int next_index = 0;
+        color_map[(unsigned char)color] = next_index++;
+    }
+
+    int index = color_map[(unsigned char)color];
+    return !queen_in_row(size, board, row) &&
+           !queen_in_col(size, board, col) &&
+           !queen_in_direct_diagonal(size, board, row, col) &&
+           color_with_queen[index] == 0;
+}
+
+void mark_queen(int size, Cell board[][size], int row, int col, int *color_with_queen, char mapped_colors[]) {
+    board[row][col].has_queen = 1;
+    char color = board[row][col].color;
+
+    // Find the mapped index for the color
+    int index = -1;
+    for (int i = 0; i < size; i++) {
+        if (mapped_colors[i] == color) {
+            index = i;
+            break;
+        }
+    }
+
+    if (index != -1) {
+        color_with_queen[index] = 1;
     }
 }
 
+void mark_not_queen(int size, Cell board[][size], int row, int col, int *color_with_queen, char mapped_colors[]) {
+    board[row][col].has_queen = 0;
+    char color = board[row][col].color;
 
-void placeQueen(int dimension, int grid[dimension][dimension]) {
-    printf("Solution:\n");
-    for (int row = 0; row < dimension; row++) {
-        for (int col = 0; col < dimension; col++) {
-            if (grid[row][col] == 1) {
-                printf("X ");
-            } else {
-                printf("* ");
+    // Find the mapped index for the color
+    int index = -1;
+    for (int i = 0; i < size; i++) {
+        if (mapped_colors[i] == color) {
+            index = i;
+            break;
+        }
+    }
+
+    if (index != -1) {
+        color_with_queen[index] = 0;
+    }
+}
+
+// void mark_queen(int size, Cell board[][size], int row, int col, int *color_with_queen) {
+//     board[row][col].has_queen = 1;
+//     color_with_queen[board[row][col].color - 'A'] = 1;
+// }
+
+// void mark_not_queen(int size, Cell board[][size], int row, int col, int *color_with_queen) {
+//     board[row][col].has_queen = 0;
+//     color_with_queen[board[row][col].color - 'A'] = 0;
+// }
+
+int queens_solver(int size, Cell board[][size], int assigned_queens, int start, int *color_with_queen, char mapped_colors[]) {
+    if (assigned_queens == size) {
+        return 1;
+    }
+
+    for (int i = 0; i < size; i++) {
+        if (is_valid_queen(size, board, start, i, color_with_queen)) {
+            mark_queen(size, board, start, i, color_with_queen, mapped_colors);
+
+            if (queens_solver(size, board, assigned_queens + 1, start + 1, color_with_queen, mapped_colors)) {
+                return 1;
             }
+
+            mark_not_queen(size, board, start, i, color_with_queen, mapped_colors);  // Backtrack
+        }
+    }
+    return 0;
+}
+
+void display_board(int size, Cell board[][size]) {
+    for (int i = 0; i < size; i++) {
+        for (int j = 0; j < size; j++) {
+            printf("%c ", board[i][j].has_queen ? QUEEN_CELL : EMPTY_CELL);
         }
         printf("\n");
     }
 }
 
+void task4QueensBattle() {
+    int size;
+    printf("Please enter the dimensions of the board:\n");
+    scanf(" %d", &size);
 
-int analyzeGrid(int row, int col, int dimension, int grid[dimension][dimension]) {
-    for (int i = 0; i < col; i++) {
-        if (grid[row][i] == 1) return 0;
+    if (size < MIN_BOARD_SIZE || size > MAX_BOARD_SIZE) {
+        printf("This puzzle cannot be solved.\n");
+        return;
     }
-    for (int i = 0; i < row; i++) {
-        if (grid[i][col] == 1) return 0;
-    }
-    for (int i = 1; row - i >= 0 && col - i >= 0; i++) {
-        if (grid[row - i][col - i] == 1) return 0;
-    }
-    for (int i = 1; row - i >= 0 && col + i < dimension; i++) {
-        if (grid[row - i][col + i] == 1) return 0;
-    }
-    return 1;
-}
 
+    Cell board[size][size];
+    char mapped_colors[size];
+    int unique_colors;
 
-int configureQueens(int col, int dimension, int grid[dimension][dimension]) {
-    if (col >= dimension) {
-        return 1;
-    }
-    for (int row = 0; row < dimension; row++) {
-        if (analyzeGrid(row, col, dimension, grid)) {
-            grid[row][col] = 1;
-            if (configureQueens(col + 1, dimension, grid)) {
-                return 1;
-            }
-            grid[row][col] = 0;
+    printf("Please enter the %d*%d puzzle board:\n", size, size);
+    for (int i = 0; i < size; i++) {
+        for (int j = 0; j < size; j++) {
+            scanf(" %c", &board[i][j].color);
+            board[i][j].has_queen = 0;
         }
     }
-    return 0;
-}
 
-
-int setupGrid(int *dimension, int grid[*dimension][*dimension], char position[*dimension][*dimension]) {
-    if (getDimension(dimension) && getZone(*dimension, position)) {
-        initializeGrid(*dimension, grid);
-        return 1;
+    if (!validate_color_zones(size, board, mapped_colors, &unique_colors)) {
+        printf("This puzzle cannot be solved.\n");
+        return;
     }
-    return 0;
-}
 
-
-void task4_queens_battle() {
-    int dimension;
-    char position[MAX_GRID_DIMENSION][MAX_GRID_DIMENSION];
-    int grid[MAX_GRID_DIMENSION][MAX_GRID_DIMENSION];
-    int existGrid = setupGrid(&dimension, grid, position);
-    if (existGrid) {
-        int existQueens = configureQueens(0, dimension, grid);
-        if (existQueens) {
-            placeQueen(dimension, grid);
-        } else {
-            printf("This puzzle cannot be solved.\n");
-        }
+    int color_with_queen[size];
+    for (int i = 0; i < size; i++) {
+        color_with_queen[i] = 0;
     }
-    // scanf("%*[^\n]");
-    // if (scanf("%*c") == EOF) {
-    //     full_terminate();
-    //     return;
-    // }
-}
 
+    if (queens_solver(size, board, 0, 0, color_with_queen, mapped_colors)) {
+        display_board(size, board);
+    } else {
+        printf("This puzzle cannot be solved.\n");
+    }
+}
 
 ///////////////////////////////////////////////////////////////////////////
 
-
 // TASK 5 CROSSWORD
-void task5_crossword_generator() {
+void task5CrosswordGenerator() {
 
-    
 }
