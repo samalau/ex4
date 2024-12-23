@@ -429,7 +429,7 @@ int validate_color_zones(int size, Cell board[][size], char mapped_colors[], int
             }
 
             if (mapped_index == -1) {
-                if (*unique_colors >= MAX_BOARD_SIZE) {
+                if (*unique_colors > size) {
                     // too many unique colors for the board size
                     return 0;
                 }
@@ -565,6 +565,7 @@ void task4QueensBattle() {
     int size;
     printf("Please enter the dimensions of the board:\n");
     int inputSize = scanf(" %d", &size);
+
     if (inputSize == EOF) {
         full_terminate();
         return;
@@ -572,25 +573,27 @@ void task4QueensBattle() {
 
     if (inputSize != 1 || size < MIN_BOARD_SIZE || size > MAX_BOARD_SIZE) {
         // scanf("%*[^\n]");
+        printf("RRTERT This puzzle cannot be solved.\n");
         printf("This puzzle cannot be solved.\n");
         return;
     }
-    
+
     Cell board[MAX_BOARD_SIZE][MAX_BOARD_SIZE];
-    char mapped_colors[MAX_BOARD_SIZE];
-    int unique_colors;
+    char mapped_colors[MAX_BOARD_SIZE] = {0};
+    int unique_colors = 0;
 
     printf("Please enter the %d*%d puzzle board:\n", size, size);
     for (int i = 0; i < size; i++) {
         for (int j = 0; j < size; j++) {
             int input_zone = scanf(" %c", &board[i][j].color);
             if (input_zone == EOF) {
+                printf("NOOOO This puzzle cannot be solved.\n");
                 full_terminate();
                 return;
             }
             if (input_zone != 1) {
-                printf("This puzzle cannot be solved.\n");
-                scanf("%*[^\n]");
+                printf("AHHH This puzzle cannot be solved.\n");
+                // scanf("%*[^\n]");
                 return;
             }
             board[i][j].has_queen = 0;
@@ -598,6 +601,7 @@ void task4QueensBattle() {
     }
 
     if (!validate_color_zones(size, board, mapped_colors, &unique_colors)) {
+        printf("EEEEEEE This puzzle cannot be solved.\n");
         printf("This puzzle cannot be solved.\n");
         return;
     }
@@ -606,8 +610,10 @@ void task4QueensBattle() {
     int color_with_queen[MAX_BOARD_SIZE] = {0};
 
     if (queens_solver(size, board, 0, 0, color_with_queen, mapped_colors)) {
+        printf("HJSALGFHEL.\n");
         display_board(size, board);
     } else {
+        printf("OEOEOEOOEP This puzzle cannot be solved.\n");
         printf("This puzzle cannot be solved.\n");
     }
 }
