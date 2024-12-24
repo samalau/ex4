@@ -53,20 +53,15 @@ int processSymbol(int position, int* globalBalance, char *expected);
 void task3ParenthesisValidator();
 
 // task 4 helpers
-typedef struct {
-    // color zone
-    char color;
-    int has_queen;
-} Cell;
-int validate_color_zones(int size, Cell board[][size], char mapped_colors[], int *unique_colors);
-int queen_in_row(int size, Cell board[][size], int row);
-int queen_in_col(int size, Cell board[][size], int col);
-int queen_in_direct_diagonal(int size, Cell board[][size], int row, int col);
-int is_valid_queen(int size, Cell board[][size], int row, int col, int *color_with_queen);
-void mark_queen(int size, Cell board[][size], int row, int col, int *color_with_queen, char mapped_colors[]);
-void mark_not_queen(int size, Cell board[][size], int row, int col, int *color_with_queen, char mapped_colors[]);
-int queens_solver(int size, Cell board[][size], int assigned_queens, int start, int *color_with_queen, char mapped_colors[]);
-void display_board(int size, Cell board[][size]);
+int abs(int x);
+void markZoneCells(char zones[DIMENSION_MAX][DIMENSION_MAX], int n, int row, int col, int visited[DIMENSION_MAX][DIMENSION_MAX], int *foundQueen, int *board);
+int isZoneValidRec(char zones[DIMENSION_MAX][DIMENSION_MAX], int n, int zoneRow, int zoneCol, int *board);
+int isValidRec(int *board, int row, int col, char zones[DIMENSION_MAX][DIMENSION_MAX], int *usedZones, int i);
+int isValid(int *board, int row, int col, char zones[DIMENSION_MAX][DIMENSION_MAX], int *usedZones);
+int solveRec(int *board, int row, int n, int *usedColumns, int *usedZones, char zones[DIMENSION_MAX][DIMENSION_MAX], int col);
+int solve(int *board, int row, int n, int *usedColumns, int *usedZones, char zones[DIMENSION_MAX][DIMENSION_MAX]);
+void readZonesRec(char zones[DIMENSION_MAX][DIMENSION_MAX], int n, int filled);
+void readZones(char zones[DIMENSION_MAX][DIMENSION_MAX], int n);
 
 // task entry points
 void task1RobotPaths();
@@ -410,7 +405,42 @@ int abs(int x) {
     return x < 0 ? -x : x;
 }
 
-// Recursive function to validate a queen's placement
+void markZoneCells(char zones[DIMENSION_MAX][DIMENSION_MAX], int n, int row, int col, int visited[DIMENSION_MAX][DIMENSION_MAX], int *foundQueen, int *board) {
+    if (row < 0 || row >= n || col < 0 || col >= n) return; // Out of bounds
+    if (visited[row][col]) return; // Already visited
+
+    visited[row][col] = 1; // Mark this cell as visited
+
+    // Check if this cell has a queen
+    if (board[row] == col + 1) {
+        (*foundQueen)++;
+        // If more than one queen is found in the zone, return immediately
+        if (*foundQueen > 1) return;
+    }
+
+    // Recur for all 8 directions
+    markZoneCells(zones, n, row - 1, col, visited, foundQueen, board); // Up
+    markZoneCells(zones, n, row + 1, col, visited, foundQueen, board); // Down
+    markZoneCells(zones, n, row, col - 1, visited, foundQueen, board); // Left
+    markZoneCells(zones, n, row, col + 1, visited, foundQueen, board); // Right
+    markZoneCells(zones, n, row - 1, col - 1, visited, foundQueen, board); // Top-left diagonal
+    markZoneCells(zones, n, row - 1, col + 1, visited, foundQueen, board); // Top-right diagonal
+    markZoneCells(zones, n, row + 1, col - 1, visited, foundQueen, board); // Bottom-left diagonal
+    markZoneCells(zones, n, row + 1, col + 1, visited, foundQueen, board); // Bottom-right diagonal
+}
+
+// Updated function for validation
+int isZoneValidRec(char zones[DIMENSION_MAX][DIMENSION_MAX], int n, int zoneRow, int zoneCol, int *board) {
+    int visited[DIMENSION_MAX][DIMENSION_MAX] = {0}; // To keep track of visited cells
+    int foundQueen = 0; // To count the queens found in the zone
+
+    // Start DFS-like traversal from the current cell
+    markZoneCells(zones, n, zoneRow, zoneCol, visited, &foundQueen, board);
+
+    // If more than one queen is found in the zone, return invalid
+    return (foundQueen <= 1);
+}
+
 int isValidRec(int *board, int row, int col, char zones[DIMENSION_MAX][DIMENSION_MAX], int *usedZones, int i) {
     if (i >= row) {
         unsigned char zone = (unsigned char)zones[row][col];
@@ -435,10 +465,92 @@ int isValidRec(int *board, int row, int col, char zones[DIMENSION_MAX][DIMENSION
     return isValidRec(board, row, col, zones, usedZones, i + 1);
 }
 
-// Wrapper function for validation
+// Wrapper for zone validation
 int isValid(int *board, int row, int col, char zones[DIMENSION_MAX][DIMENSION_MAX], int *usedZones) {
-    return isValidRec(board, row, col, zones, usedZones, 0);
+    if (!isValidRec(board, row, col, zones, usedZones, 0)) return 0;
+
+    // Validate the current zone
+    return isZoneValidRec(zones, DIMENSION_MAX, row, col, board);
 }
+
+
+// // Recursive function to validate a queen's placement
+// // int isValidRecHybrid(int *board, int row, int col, char zones[DIMENSION_MAX][DIMENSION_MAX], int currentRow) {
+// //     if (currentRow >= row) {
+// //         // Validate the zone recursively
+// //         return isZoneValidRec(zones, DIMENSION_MAX, row, col, board, 0);
+// //     }
+
+// //     int x1 = currentRow + 1, y1 = board[currentRow];
+// //     int x2 = row + 1, y2 = col + 1;
+
+// //     // Check adjacency
+// //     if (abs(x2 - x1) <= 1 && abs(y2 - y1) <= 1) return 0;
+
+// //     // Check row/column exclusivity
+// //     if (y1 == y2) return 0;
+
+// //     // Check diagonal validity
+// //     if ((x2 - x1 == y2 - y1 || x2 - x1 == -(y2 - y1)) &&
+// //         (abs(x2 - x1) == 1 && abs(y2 - y1) == 1)) return 0;
+
+// //     // Recur for the next row
+// //     return isValidRecHybrid(board, row, col, zones, currentRow + 1);
+// // }
+
+
+// void markZoneCells(char zones[DIMENSION_MAX][DIMENSION_MAX], int n, int row, int col, int visited[DIMENSION_MAX][DIMENSION_MAX], int *foundQueen, int *board) {
+//     if (row < 0 || row >= n || col < 0 || col >= n) return; // Out of bounds
+//     if (visited[row][col]) return; // Already visited
+
+//     if (zones[row][col] != zones[row][col]) return; // Not the same zone
+
+//     visited[row][col] = 1; // Mark this cell as visited
+
+//     // Check if this cell has a queen
+//     if (board[row] == col + 1) (*foundQueen)++;
+
+//     // Recur for all 8 directions (adjacent cells)
+//     markZoneCells(zones, n, row - 1, col, visited, foundQueen, board); // Up
+//     markZoneCells(zones, n, row + 1, col, visited, foundQueen, board); // Down
+//     markZoneCells(zones, n, row, col - 1, visited, foundQueen, board); // Left
+//     markZoneCells(zones, n, row, col + 1, visited, foundQueen, board); // Right
+//     markZoneCells(zones, n, row - 1, col - 1, visited, foundQueen, board); // Top-left diagonal
+//     markZoneCells(zones, n, row - 1, col + 1, visited, foundQueen, board); // Top-right diagonal
+//     markZoneCells(zones, n, row + 1, col - 1, visited, foundQueen, board); // Bottom-left diagonal
+//     markZoneCells(zones, n, row + 1, col + 1, visited, foundQueen, board); // Bottom-right diagonal
+// }
+
+// int isZoneValidRec(char zones[DIMENSION_MAX][DIMENSION_MAX], int n, int zoneRow, int zoneCol, int *board) {
+//     int visited[DIMENSION_MAX][DIMENSION_MAX] = {0}; // To keep track of visited cells
+//     int foundQueen = 0; // To count the queens found in the zone
+
+//     // Start DFS-like traversal from the current cell
+//     markZoneCells(zones, n, zoneRow, zoneCol, visited, &foundQueen, board);
+
+//     // If more than one queen is found in the zone, return invalid
+//     return (foundQueen <= 1);
+// }
+
+// // Wrapper function for validation
+// int isValid(int *board, int row, int col, char zones[DIMENSION_MAX][DIMENSION_MAX], int *usedZones) {
+//     if (!isValidRec(board, row, col, zones, usedZones, 0)) return 0;
+
+//     // Validate the current zone
+//     return isZoneValidRec(zones, DIMENSION_MAX, row, col, board);
+// }
+// // int isValid(int *board, int row, int col, char zones[DIMENSION_MAX][DIMENSION_MAX], int *usedZones) {
+// //     return isValidRecHybrid(board, row, col, zones, 0);
+// // }
+// // int isValid(int *board, int row, int col, char zones[DIMENSION_MAX][DIMENSION_MAX], int *usedZones) {
+// //     if (!isValidRec(board, row, col, zones, usedZones, 0)) return 0;
+
+// //     // Validate the zone for disconnected parts
+// //     return isZoneValidRec(zones, DIMENSION_MAX, row, col, board, 0);
+// // }
+// // int isValid(int *board, int row, int col, char zones[DIMENSION_MAX][DIMENSION_MAX], int *usedZones) {
+// //     return isValidRec(board, row, col, zones, usedZones, 0);
+// // }
 
 int solveRec(int *board, int row, int n, int *usedColumns, int *usedZones, char zones[DIMENSION_MAX][DIMENSION_MAX], int col) {
     // Base case: all rows filled
