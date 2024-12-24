@@ -162,10 +162,11 @@ int numSlots;
 char dictionary[MAX_WORDS][MAX_WORD_LENGTH + 1];
 int numWords;
 int usedWords[MAX_WORDS];
+
 void task5CrosswordGenerator();
 void initializeGrid();
-void printGrid();
-int canPlaceWord(int slotIndex, const char* word);
+void displayGrid();
+int validPlaceWord(int slotIndex, const char* word);
 void placeWord(int slotIndex, const char* word);
 void removeWord(int slotIndex);
 int solveCrossword(int slotIndex);
@@ -795,7 +796,6 @@ void task4QueensBattle() {
 
 	// consume leftover newline from input buffer
 	scanf("%*c");
-
     printf("Please enter the %d*%d puzzle board:\n", n, n);
 
     char zones[DIMENSION_MAX][DIMENSION_MAX];
@@ -839,7 +839,7 @@ void initializeGrid() {
     }
 }
 
-void printGrid() {
+void displayGrid() {
     for (int i = 0; i < gridSize; i++) {
         for (int j = 0; j < gridSize; j++) {
             printf("| %c ", grid[i][j]);
@@ -848,7 +848,7 @@ void printGrid() {
     }
 }
 
-int canPlaceWord(int slotIndex, const char* word) {
+int validPlaceWord(int slotIndex, const char* word) {
     Slot slot = slots[slotIndex];
     if ((int)strlen(word) != slot.length) {
 		return 0;
@@ -893,7 +893,7 @@ int solveCrossword(int slotIndex) {
 		return 1;
 	}
     for (int i = 0; i < numWords; i++) {
-        if (!usedWords[i] && canPlaceWord(slotIndex, dictionary[i])) {
+        if (!usedWords[i] && validPlaceWord(slotIndex, dictionary[i])) {
 
             usedWords[i] = 1;
             placeWord(slotIndex, dictionary[i]);
@@ -910,73 +910,62 @@ int solveCrossword(int slotIndex) {
 
 void task5CrosswordGenerator() {
 	int input = 0;
+
     printf("Please enter the dimensions of the crossword grid:\n");
+
     input = scanf(" %d", &gridSize);
-	if (input != 1) {
-		if (input == EOF) {
-			fullTerminate();
-		} else {
-			scanf("%*c");
-		}
+	if (input == EOF) {
+		fullTerminate();
 		return;
 	}
+
     initializeGrid();
 
+	scanf("%*c");
     printf("Please enter the number of slots in the crossword:\n");
     input = scanf(" %d", &numSlots);
-	if (input != 1) {
-		if (input == EOF) {
-			fullTerminate();
-		} else {
-			scanf("%*c");
-		}
-		return;
+	if (input == EOF) {
+		fullTerminate();
+        return;
 	}
 
+	scanf("%*c");
     printf("Please enter the details for each slot (Row, Column, Length, Direction):\n");
-    for (int i = 0; i < numSlots; i++) {
-        input = (scanf(" %d %d %d %c", &slots[i].row, &slots[i].col, &slots[i].length, &slots[i].direction));
-		if (input != 1) {
-			if (input == EOF) {
-				fullTerminate();
-			} else {
-				scanf("%*c");
-			}
+	for  (int i = 0; i < numSlots; i++) {
+		input = (scanf(" %d %d %d %c", &slots[i].row, &slots[i].col, &slots[i].length, &slots[i].direction));
+		if (input == EOF) {
+			fullTerminate();
 			return;
 		}
-    }
+	}
 
+	scanf("%*c");
     printf("Please enter the number of words in the dictionary:\n");
     do {
 		input = scanf(" %d", &numWords);
-        if (input != 1) {
-			if (input == EOF) {
-				fullTerminate();
-			} else {
-				scanf("%*c");
-			}
+		if (input == EOF) {
+			fullTerminate();
 			return;
 		}
         if (numWords < numSlots) {
+			scanf("%*[^\n]");
+			scanf("%*c");
             printf("The dictionary must contain at least %d words. Please enter a valid dictionary size:\n", numSlots);
         }
     } while (numWords < numSlots);
 
+	scanf("%*c");
     printf("Please enter the words for the dictionary:\n");
     for (int i = 0; i < numWords; i++) {
         input = scanf(" %s", dictionary[i]);
-		if (input != 1) {
-			if (input == EOF) {
-				fullTerminate();
-			} else {
-				scanf("%*c");
-			}
+		if (input == EOF) {
+			full_termination();
 			return;
 		}
     }
 
     if (solveCrossword(0)) {
-        printGrid();
+        displayGrid();
     } else {
         printf("This crossword cannot be solved.\n");
     }
