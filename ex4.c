@@ -61,8 +61,8 @@ int isValidRec(int *board, int row, int col, char zones[DIMENSION_MAX][DIMENSION
 int isValid(int *board, int row, int col, char zones[DIMENSION_MAX][DIMENSION_MAX], int *usedZones);
 int solveRec(int *board, int row, int n, int *usedColumns, int *usedZones, char zones[DIMENSION_MAX][DIMENSION_MAX], int col);
 int solve(int *board, int row, int n, int *usedColumns, int *usedZones, char zones[DIMENSION_MAX][DIMENSION_MAX]);
-void readZonesRec(char zones[DIMENSION_MAX][DIMENSION_MAX], int n, int filled);
-void readZones(char zones[DIMENSION_MAX][DIMENSION_MAX], int n);
+void readZonesRec(char zones[DIMENSION_MAX][DIMENSION_MAX], int n, int filled, int *uniqueZones, int *usedZones);
+int readZones(char zones[DIMENSION_MAX][DIMENSION_MAX], int n);
 
 // task entry points
 void task1RobotPaths();
@@ -539,7 +539,7 @@ int solve(int *board, int row, int n, int *usedColumns, int *usedZones, char zon
 }
 
 // Recursive function to read the zones
-void readZonesRec(char zones[DIMENSION_MAX][DIMENSION_MAX], int n, int filled) {
+void readZonesRec(char zones[DIMENSION_MAX][DIMENSION_MAX], int n, int filled, int *uniqueZones, int *usedZones) {
     // Base case: all cells filled
 	if (filled >= n * n) {
         return;
@@ -554,18 +554,37 @@ void readZonesRec(char zones[DIMENSION_MAX][DIMENSION_MAX], int n, int filled) {
     }
     if (c == ' ' || c == '\n') {
         // Skip spaces and newlines
-        readZonesRec(zones, n, filled);
+        readZonesRec(zones, n, filled, uniqueZones, usedZones);
         return;
+    }
+    if (!usedZones[(unsigned char)c]) {
+        usedZones[(unsigned char)c] = 1;
+        (*uniqueZones)++;
     }
     // Fill the zones
     zones[filled / n][filled % n] = c;
-    readZonesRec(zones, n, filled + 1);
+    readZonesRec(zones, n, filled + 1, uniqueZones, usedZones);
 }
 
-// Wrapper for the zone reader
-void readZones(char zones[DIMENSION_MAX][DIMENSION_MAX], int n) {
-    readZonesRec(zones, n, 0);
+int readZones(char zones[DIMENSION_MAX][DIMENSION_MAX], int n) {
+    int usedZones[256] = {0}; // Tracks whether each ASCII character has been used as a zone label
+    int uniqueZones = 0;      // Counter for the number of unique zones
+
+    // Read zones from input
+    readZonesRec(zones, n, 0, &uniqueZones, usedZones);
+
+    // Validate the number of unique zones
+    if (uniqueZones != n || task == EXIT) {
+        return 0;
+    } else {
+        return 1;
+    }
 }
+
+// // Wrapper for the zone reader
+// void readZones(char zones[DIMENSION_MAX][DIMENSION_MAX], int n) {
+//     readZonesRec(zones, n, 0);
+// }
 
 void task4QueensBattle() {
     int n;
@@ -588,7 +607,10 @@ void task4QueensBattle() {
 
     // Create the zones 2D array (static allocation)
     char zones[DIMENSION_MAX][DIMENSION_MAX];
-    readZones(zones, n);
+    if (!readZones(zones, n)) {
+        printf("This puzzle cannot be solved.\n");
+        return;
+    }
 
     // Initialize board and tracking arrays (static allocation)
     int board[DIMENSION_MAX] = {0};
