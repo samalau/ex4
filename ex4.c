@@ -411,11 +411,11 @@ int abs(int x) {
 }
 
 // Recursive function to validate a queen's placement
-int isValidRec(int *board, int row, int col, char zones[DIMENSION_MAX][DIMENSION_MAX], int *usedZones, int i) {
+int isValidRec(int *board, int row, int col, char zones[DIMENSION_MAX][DIMENSION_MAX], int usedZones, int i) {
     if (i >= row) {
         unsigned char zone = (unsigned char)zones[row][col];
-		// Zone uniqueness
-        return !usedZones[zone];
+        // Zone uniqueness
+        return !(usedZones & (1 << zone));
     }
 
     int x1 = i + 1, y1 = board[i];
@@ -435,34 +435,55 @@ int isValidRec(int *board, int row, int col, char zones[DIMENSION_MAX][DIMENSION
 }
 
 // Wrapper function for validation
-int isValid(int *board, int row, int col, char zones[DIMENSION_MAX][DIMENSION_MAX], int *usedZones) {
+int isValid(int *board, int row, int col, char zones[DIMENSION_MAX][DIMENSION_MAX], int usedZones) {
     return isValidRec(board, row, col, zones, usedZones, 0);
 }
 
 // Recursive function to solve the board
-int solveRec(int *board, int row, int n, int *usedColumns, int *usedZones, char zones[DIMENSION_MAX][DIMENSION_MAX], int col) {
+int solveRec(int *board, int row, int n, int usedColumns, int usedZones, char zones[DIMENSION_MAX][DIMENSION_MAX], int col) {
     // Base case: all rows filled
-	if (row == n) return 1;
-	// No columns left
+    if (row == n) return 1;
+    // No columns left
     if (col >= n) return 0;
 
-    if (!usedColumns[col] && isValid(board, row, col, zones, usedZones)) {
+    if (!(usedColumns & (1 << col)) && isValid(board, row, col, zones, usedZones)) {
         board[row] = col + 1;
-        usedColumns[col] = 1;
+        usedColumns |= (1 << col);
         unsigned char zone = (unsigned char)zones[row][col];
-        usedZones[zone] = 1;
+        usedZones |= (1 << zone);
 
         if (solveRec(board, row + 1, n, usedColumns, usedZones, zones, 0)) return 1;
 
-        usedColumns[col] = 0;
-        usedZones[zone] = 0;
+        usedColumns &= ~(1 << col);
+        usedZones &= ~(1 << zone);
     }
 
     return solveRec(board, row, n, usedColumns, usedZones, zones, col + 1);
 }
 
+// int solveRec(int *board, int row, int n, int *usedColumns, int *usedZones, char zones[DIMENSION_MAX][DIMENSION_MAX], int col) {
+//     // Base case: all rows filled
+// 	if (row == n) return 1;
+// 	// No columns left
+//     if (col >= n) return 0;
+
+//     if (!usedColumns[col] && isValid(board, row, col, zones, usedZones)) {
+//         board[row] = col + 1;
+//         usedColumns[col] = 1;
+//         unsigned char zone = (unsigned char)zones[row][col];
+//         usedZones[zone] = 1;
+
+//         if (solveRec(board, row + 1, n, usedColumns, usedZones, zones, 0)) return 1;
+
+//         usedColumns[col] = 0;
+//         usedZones[zone] = 0;
+//     }
+
+//     return solveRec(board, row, n, usedColumns, usedZones, zones, col + 1);
+// }
+
 // Wrapper for the solve function
-int solve(int *board, int row, int n, int *usedColumns, int *usedZones, char zones[20][20]) {
+int solve(int *board, int row, int n, int usedColumns, int usedZones, char zones[DIMENSION_MAX][DIMENSION_MAX]) {
     return solveRec(board, row, n, usedColumns, usedZones, zones, 0);
 }
 
@@ -510,11 +531,16 @@ void task4QueensBattle() {
     char zones[DIMENSION_MAX][DIMENSION_MAX];
     readZones(zones, n);
 
-    // Initialize board and tracking arrays (static allocation)
+    // Initialize board and tracking variables
     int board[DIMENSION_MAX] = {0};
-    int usedColumns[DIMENSION_MAX] = {0};
-	// Allow all ASCII characters as zone labels
-    int usedZones[256] = {0};
+    int usedColumns = 0; // Bitmask for columns
+    int usedZones = 0;   // Bitmask for zones
+
+    // // Initialize board and tracking arrays (static allocation)
+    // int board[DIMENSION_MAX] = {0};
+    // int usedColumns[DIMENSION_MAX] = {0};
+	// // Allow all ASCII characters as zone labels
+    // int usedZones[256] = {0};
 
     if (solve(board, 0, n, usedColumns, usedZones, zones)) {
         printf("Solution:\n");
