@@ -6,8 +6,6 @@ Assignment: 4
 #include <stdio.h>
 #include <string.h>
 
-///////////////////////////////////////////////////////////////////////////
-
 // globally trigger exit main while loop to gracefully terminate the program
 #define EXIT 6
 
@@ -15,7 +13,7 @@ Assignment: 4
 #define FACTORIAL_MAX 171
 
 /**
-    Overflow Protection (Task 1):
+    Overflow Protection (Task 1)
     Three levels have been defined in order to mitigate the risk of improper handling of large input values.
     Each of these three levels has been designated a range of values and an identifier. These identifiers are A, B, and C.
     Coordinate pairs are designated to their respective levels based on the sums of their values.
@@ -31,7 +29,7 @@ Assignment: 4
 #define LEVEL_A_COORDINATE_MAX 21
 
 /**
-    Overflow Protection (Task 1):
+    Overflow Protection (Task 1)
     Three levels have been defined in order to mitigate the risk of improper handling of large input values.
     Each of these three levels has been designated a range of values and an identifier. These identifiers are A, B, and C.
     Coordinate pairs are designated to their respective levels based on the sums of their values.
@@ -46,7 +44,7 @@ Assignment: 4
 **/
 #define LEVEL_B_COORDINATE_MAX 170
 
-// overflow protection
+// more task 1 overflow protection
 #define CACHE_MAX 0x8000
 #define M 1000000007
 
@@ -57,42 +55,91 @@ Assignment: 4
 // task 4 macros
 #define DIMENSION_MIN 1
 #define DIMENSION_MAX 20
+
 #define QUEEN "X "
 #define EMPTY "* "
 
-// task 1 helpers
-long long x_1(int *valid);
-long long y_1(int *valid);
-unsigned long long factorial(unsigned long long n);
-unsigned long long modMult(unsigned long long a, unsigned long long b);
-unsigned long long compute_paths(unsigned long long goLeft, unsigned long long goDown);
-void task1(unsigned long long goLeft, unsigned long long goDown);
 
-// task 1 cache
+// task 1 helpers
+long long x1(int *valid);
+long long y1(int *valid);
+
+unsigned long long factorial(unsigned long long n);
+
+unsigned long long modMult(unsigned long long a,
+                                            unsigned long long b);
+
+unsigned long long compute_paths(unsigned long long goLeft,
+                                                    unsigned long long goDown);
+
+void task1(unsigned long long goLeft,
+                unsigned long long goDown);
+
+
+// task 1 cache (placeholder)
 unsigned long long cacheT1F0[LEVEL_A_COORDINATE_MAX][LEVEL_A_COORDINATE_MAX] = {0};
 unsigned long long cacheT1F2x[CACHE_MAX] = {0};
 unsigned long long cacheT1F2y[CACHE_MAX] = {0};
 unsigned long long cacheT1F2Result[CACHE_MAX] = {0};
 
+
 // task 2 helpers
 void setupPyramid();
 int getWeight();
 
+
 // task 3 helpers
 int findIndex(char symbol);
-int processSymbol(int position, int* globalBalance, char *expected);
+
+int processSymbol(int position,
+                            int* globalBalance,
+                            char *expected);
+
 void task3ParenthesisValidator();
+
 
 // task 4 helpers
 int abs(int x);
-void markZoneCells(char zones[DIMENSION_MAX][DIMENSION_MAX], int n, int row, int col, 
-                   int visited[DIMENSION_MAX][DIMENSION_MAX], int *foundQueen, int *board, char startZone);
-int isZoneValidRec(char zones[DIMENSION_MAX][DIMENSION_MAX], int n, int zoneRow, int zoneCol, int *board);
-int isValidRec(int *board, int row, int col, char zones[DIMENSION_MAX][DIMENSION_MAX], int *usedZones, int i);
-int isValid(int *board, int row, int col, char zones[DIMENSION_MAX][DIMENSION_MAX], int *usedZones);
-int solveRec(int *board, int row, int n, int *usedColumns, int *usedZones, char zones[DIMENSION_MAX][DIMENSION_MAX], int col);
-int solve(int *board, int row, int n, int *usedColumns, int *usedZones, char zones[DIMENSION_MAX][DIMENSION_MAX]);
-void readZonesRec(char zones[DIMENSION_MAX][DIMENSION_MAX], int n, int filled, int *uniqueZones, int *usedZones);
+
+void markZoneCells(char zones[DIMENSION_MAX][DIMENSION_MAX],
+                                int n,
+                                int row, int col, 
+                                int visited[DIMENSION_MAX][DIMENSION_MAX],
+                                int *foundQueen, int *board, char startZone);
+
+int isZoneValidRec(char zones[DIMENSION_MAX][DIMENSION_MAX],
+                                int n,
+                                int zoneRow, int zoneCol,
+                                int *board);
+
+int isValidRec(int *board,
+                        int row, int col,
+                        char zones[DIMENSION_MAX][DIMENSION_MAX],
+                        int *usedZones, int i);
+
+int isValid(int *board,
+                int row, int col,
+                char zones[DIMENSION_MAX][DIMENSION_MAX],
+                int *usedZones);
+
+int solveRec(int *board,
+                    int row,
+                    int n,
+                    int *usedColumns, int *usedZones,
+                    char zones[DIMENSION_MAX][DIMENSION_MAX],
+                    int col);
+
+int solve(int *board,
+                int row,
+                int n,
+                int *usedColumns, int *usedZones,
+                char zones[DIMENSION_MAX][DIMENSION_MAX]);
+
+void readZonesRec(char zones[DIMENSION_MAX][DIMENSION_MAX],
+                                int n,
+                                int filled,
+                                int *uniqueZones, int *usedZones);
+
 int readZones(char zones[DIMENSION_MAX][DIMENSION_MAX], int n);
 
 // task entry points
@@ -109,8 +156,8 @@ char bufferExtract[] = {0};
 char nextMainTask = 0;
 char remainderOfExtract[] = {0};
 
-// 'EXIT' for global clarity (main task = 6)
-void full_terminate() {
+// 'fullTerminate', 'EXIT' for global clarity (main task = 6)
+void fullTerminate() {
 	task = EXIT;
 }
 
@@ -160,12 +207,10 @@ int main() {
 	return 0;
 }
 
-///////////////////////////////////////////////////////////////////////////
-
 // TASK 1 ROBOT PATHS
 
-// TASK 1: VALIDATE: X
-long long x_1(int *valid) {
+// TASK 1: VALIDATE: X COORDINATE
+long long x1(int *valid) {
     long long x;
     int result = scanf(" %lld", &x);
     if (result != 1) {
@@ -176,8 +221,8 @@ long long x_1(int *valid) {
     return x;
 }
 
-// TASK 1: VALIDATE: Y
-long long y_1(int *valid) {
+// TASK 1: VALIDATE: Y COORDINATE
+long long y1(int *valid) {
     long long y;
     int result = scanf(" %lld", &y);
     if (result != 1) {
@@ -192,9 +237,9 @@ long long y_1(int *valid) {
 void task1RobotPaths() {
     int valid = 0;
     printf("Please enter the coordinates of the robot (col, row):\n");
-    long long x = x_1(&valid);
+    long long x = x1(&valid);
     if (!valid) { return; }
-    long long y = y_1(&valid);
+    long long y = y1(&valid);
     if (!valid) { return; }
     task1(x, y);
 }
@@ -224,7 +269,9 @@ CACHE_MAX: overflow protection
 **/
 unsigned long long cachePaths[CACHE_MAX][3] = {0};
 
-unsigned long long findInCache(unsigned long long goLeft, unsigned long long goDown, unsigned int index) {
+unsigned long long findInCache(unsigned long long goLeft,
+                                                unsigned long long goDown,
+                                                unsigned int index) {
     if (index >= CACHE_MAX) {
         return 0;
     }
@@ -234,7 +281,10 @@ unsigned long long findInCache(unsigned long long goLeft, unsigned long long goD
     return findInCache(goLeft, goDown, index + 1);
 }
 
-void saveToCache(unsigned long long goLeft, unsigned long long goDown, unsigned long long result, unsigned int index) {
+void saveToCache(unsigned long long goLeft,
+                            unsigned long long goDown,
+                            unsigned long long result,
+                            unsigned int index) {
     if (index >= CACHE_MAX) {
         return;
     }
@@ -247,7 +297,23 @@ void saveToCache(unsigned long long goLeft, unsigned long long goDown, unsigned 
     saveToCache(goLeft, goDown, result, index + 1);
 }
 
-unsigned long long compute_paths(unsigned long long goLeft, unsigned long long goDown) {
+/**
+    Overflow Protection (Task 1)
+    Three levels have been defined in order to mitigate the risk of improper handling of large input values.
+    Each of these three levels has been designated a range of values and an identifier. These identifiers are A, B, and C.
+    Coordinate pairs are designated to their respective levels based on the sums of their values.
+    As a result, if one value of a pair is significantly higher than the other of that pair,
+    the pathway taken will be that which has been optimized for the larger value,
+    unless one of such values is less than or equal to 0.
+    Any coordinate value being less than or equal to 0 results in that pair being handled prior to level assignment,
+    thereby not neccesitating its inclusion in the level conditions.
+        - Level A is the range of integers greater than 0 but less than 21 (0 < i && i < 21)
+        - Level B is the range of integers greater than or equal to 21 but less than 170 (21 <= i && i < 170)
+        - Level C is the range of integers greater than or equal to 170 (170 <= i)
+**/
+unsigned long long compute_paths(unsigned long long goLeft,
+                                                    unsigned long long goDown) {
+    
     if (goLeft < 0 || goDown < 0) {
         return 0;
     }
@@ -255,16 +321,20 @@ unsigned long long compute_paths(unsigned long long goLeft, unsigned long long g
         return 1;
     }
 
-    int level = (goLeft + goDown < LEVEL_A_COORDINATE_MAX) ? 0 : ((goLeft + goDown < LEVEL_B_COORDINATE_MAX) ? 1 : 2);
-
+    int level = (goLeft + goDown < LEVEL_A_COORDINATE_MAX) ? 0 : (
+                        (goLeft + goDown < LEVEL_B_COORDINATE_MAX) ? 1 : 2);
+    
+    // LEVEL A
     if (level == 0) {
         return compute_paths(goLeft - 1, goDown) + compute_paths(goLeft, goDown - 1);
     }
 
+    // LEVEL B
     if (level == 1) {
         return modMult(factorial(goLeft + goDown), modMult(factorial(goLeft), factorial(goDown)));
     }
 
+    // LEVEL C
     if (level == 2) {
         unsigned long long cachedResult = findInCache(goLeft, goDown, 0);
         if (cachedResult != 0) {
@@ -277,12 +347,12 @@ unsigned long long compute_paths(unsigned long long goLeft, unsigned long long g
     return 0;
 }
 
-void task1(unsigned long long goLeft, unsigned long long goDown) {
+void task1(unsigned long long goLeft,
+                unsigned long long goDown) {
     unsigned long long totalDistinctPaths = compute_paths(goLeft, goDown);
     printf("The total number of paths the robot can take to reach home is: %llu\n", totalDistinctPaths);
 }
 
-///////////////////////////////////////////////////////////////////////////
 
 // TASK 2 HUMAN PYRAMID
 double *dataPyramid[5];
@@ -318,14 +388,14 @@ int getWeight() {
             int input = scanf(" %lf", &nextWeight);
 
             if (input == EOF) {
-                full_terminate();
+                fullTerminate();
                 return 0;
             }
 
             if (input != 1 || nextWeight < 0) {
                 scanf("%*[^\n]");
                 if (scanf("%*c") == EOF) {
-					full_terminate();
+					fullTerminate();
                     return 0;
                 }
                 printf("Negative weights are not supported.\n");
@@ -343,7 +413,9 @@ int getWeight() {
 void task2HumanPyramid() {
     int fullData = getWeight();
 
-    if (!fullData) return;
+    if (!fullData) {
+        return;
+    }
 
     printf("The total weight on each cheerleader is:\n");
 
@@ -365,7 +437,6 @@ void task2HumanPyramid() {
     return;
 }
 
-///////////////////////////////////////////////////////////////////////////
 
 // TASK 3 PARENTHESIS VALIDATION
 
@@ -385,10 +456,14 @@ int findIndex(char symbol) {
     return -1;
 }
 
-// recursively extract parentheses
-// 0: unbalanced
-// 1: balanced
-int processSymbol(int position, int* globalBalance, char *expected) {
+/**
+extract parentheses
+0: unbalanced
+1: balanced
+**/
+int processSymbol(int position,
+                            int* globalBalance,
+                            char *expected) {
     char symbol;
     int input = scanf("%c", &symbol);
 
@@ -429,10 +504,14 @@ int processSymbol(int position, int* globalBalance, char *expected) {
 void task3ParenthesisValidator() {
     // initialize globalBalance
     int globalBalance = 0;
+
     // initialize expected
     char expected = '\0';
+
     printf("Please enter a term for validation:\n");
+
 	int isBalanced = processSymbol(0, &globalBalance, &expected);
+    
     if (!isBalanced) {
 		if (task != EXIT) {
         	printf("The parentheses are not balanced correctly.\n");
@@ -442,18 +521,22 @@ void task3ParenthesisValidator() {
     }
 }
 
-///////////////////////////////////////////////////////////////////////////
 
 // TASK 4 QUEEN BATTLE
 
-// Custom implementation of abs
+// compute absolute val
 int abs(int x) {
     return x < 0 ? -x : x;
 }
 
-void markZoneCells(char zones[DIMENSION_MAX][DIMENSION_MAX], int n, int row, int col, 
-                   int visited[DIMENSION_MAX][DIMENSION_MAX], int *foundQueen, int *board, char startZone) {
-    
+// check current cell's zone and adjacent cells for existing queens
+void markZoneCells(char zones[DIMENSION_MAX][DIMENSION_MAX],
+                                    int n,
+                                    int row, int col, 
+                                    int visited[DIMENSION_MAX][DIMENSION_MAX],
+                                    int *foundQueen,
+                                    int *board,
+                                    char startZone) {
     // out of bounds
     if (row < 0 || row >= n || col < 0 || col >= n) {
         return;
@@ -506,8 +589,10 @@ void markZoneCells(char zones[DIMENSION_MAX][DIMENSION_MAX], int n, int row, int
     markZoneCells(zones, n, row + 1, col + 1, visited, foundQueen, board, startZone);
 }
 
-int isZoneValidRec(char zones[DIMENSION_MAX][DIMENSION_MAX], int n, int zoneRow, int zoneCol, int *board) {
-    
+int isZoneValidRec(char zones[DIMENSION_MAX][DIMENSION_MAX],
+                                    int n,
+                                    int zoneRow, int zoneCol,
+                                    int *board) {
     // track the visited cells
     int visited[DIMENSION_MAX][DIMENSION_MAX] = {0};
 
@@ -518,13 +603,23 @@ int isZoneValidRec(char zones[DIMENSION_MAX][DIMENSION_MAX], int n, int zoneRow,
     char startZone = zones[zoneRow][zoneCol]; 
 
     // check current cell's zone and adjacent cells for existing queens
-    markZoneCells(zones, n, zoneRow, zoneCol, visited, &foundQueen, board, startZone);
+    markZoneCells(zones,
+                                n,
+                                zoneRow, zoneCol,
+                                visited, &foundQueen,
+                                board,
+                                startZone);
 
     // return invalid if more than one queen found in zone
     return (foundQueen <= 1);
 }
 
-int isValidRec(int *board, int row, int col, char zones[DIMENSION_MAX][DIMENSION_MAX], int *usedZones, int i) {
+// check current cell's zone and adjacent cells for existing queens
+int isValidRec(int *board,
+                            int row, int col,
+                            char zones[DIMENSION_MAX][DIMENSION_MAX],
+                            int *usedZones,
+                            int i) {
     if (i >= row) {
         unsigned char zone = (unsigned char)zones[row][col];
         // zone uniqueness
@@ -548,14 +643,25 @@ int isValidRec(int *board, int row, int col, char zones[DIMENSION_MAX][DIMENSION
 }
 
 // wrapper for zone validation
-int isValid(int *board, int row, int col, char zones[DIMENSION_MAX][DIMENSION_MAX], int *usedZones) {
-    if (!isValidRec(board, row, col, zones, usedZones, 0)) return 0;
+int isValid(int *board,
+                        int row, int col,
+                        char zones[DIMENSION_MAX][DIMENSION_MAX],
+                        int *usedZones) {
+    if (!isValidRec(board, row, col, zones, usedZones, 0)) {
+        return 0;
+    }
 
     // validate current zone
     return isZoneValidRec(zones, DIMENSION_MAX, row, col, board);
 }
 
-int solveRec(int *board, int row, int n, int *usedColumns, int *usedZones, char zones[DIMENSION_MAX][DIMENSION_MAX], int col) {
+int solveRec(int *board,
+                        int row,
+                        int n,
+                        int *usedColumns,
+                        int *usedZones,
+                        char zones[DIMENSION_MAX][DIMENSION_MAX],
+                        int col) {
     // all rows filled
 	if (row == n) {
         return 1;
@@ -570,25 +676,29 @@ int solveRec(int *board, int row, int n, int *usedColumns, int *usedZones, char 
         usedColumns[col] = 1;
         unsigned char zone = (unsigned char)zones[row][col];
         usedZones[zone] = 1;
-
         if (solveRec(board, row + 1, n, usedColumns, usedZones, zones, 0)) {
             return 1;
         }
-
         usedColumns[col] = 0;
         usedZones[zone] = 0;
     }
-
     return solveRec(board, row, n, usedColumns, usedZones, zones, col + 1);
 }
 
 // wrapper for the solve function
-int solve(int *board, int row, int n, int *usedColumns, int *usedZones, char zones[DIMENSION_MAX][DIMENSION_MAX]) {
+int solve(int *board,
+                    int row,
+                    int n,
+                    int *usedColumns, int *usedZones,
+                    char zones[DIMENSION_MAX][DIMENSION_MAX]) {
     return solveRec(board, row, n, usedColumns, usedZones, zones, 0);
 }
 
 // scan zones
-void readZonesRec(char zones[DIMENSION_MAX][DIMENSION_MAX], int n, int filled, int *uniqueZones, int *usedZones) {
+void readZonesRec(char zones[DIMENSION_MAX][DIMENSION_MAX],
+                                    int n,
+                                    int filled,
+                                    int *uniqueZones, int *usedZones) {
     // all cells filled
 	if (filled >= n * n) {
         return;
@@ -597,13 +707,17 @@ void readZonesRec(char zones[DIMENSION_MAX][DIMENSION_MAX], int n, int filled, i
     int getC = scanf("%c", &c);
     if (getC != 1) {
         if (getC == EOF) {
-            full_terminate();
+            fullTerminate();
         }
         return;
     }
     if (c == ' ' || c == '\n') {
         // skip spaces and newlines
-        readZonesRec(zones, n, filled, uniqueZones, usedZones);
+        readZonesRec(zones,
+                                n,
+                                filled,
+                                uniqueZones,
+                                usedZones);
         return;
     }
     if (!usedZones[(unsigned char)c]) {
@@ -612,7 +726,11 @@ void readZonesRec(char zones[DIMENSION_MAX][DIMENSION_MAX], int n, int filled, i
     }
     // fill the zones
     zones[filled / n][filled % n] = c;
-    readZonesRec(zones, n, filled + 1, uniqueZones, usedZones);
+    readZonesRec(zones,
+                            n,
+                            filled + 1,
+                            uniqueZones,
+                            usedZones);
 }
 
 int readZones(char zones[DIMENSION_MAX][DIMENSION_MAX], int n) {
@@ -640,7 +758,7 @@ void task4QueensBattle() {
 
     if (!getSize || n < DIMENSION_MIN || n > DIMENSION_MAX) {
 		if (getSize == EOF) {
-			full_terminate();
+			fullTerminate();
 		} else {
 			printf("This puzzle cannot be solved.\n");
 		}
@@ -664,7 +782,11 @@ void task4QueensBattle() {
 	// allow all ASCII characters as zone labels (empty char will be skipped upon scan)
     int usedZones[256] = {0};
 
-    if (solve(board, 0, n, usedColumns, usedZones, zones)) {
+    if (solve(board,
+                    0,
+                    n,
+                    usedColumns, usedZones,
+                    zones)) {
         printf("Solution:\n");
         for (int i = 0; i < n; i++) {
             for (int j = 1; j <= n; j++) {
