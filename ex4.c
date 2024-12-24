@@ -8,12 +8,45 @@ Assignment: 4
 
 ///////////////////////////////////////////////////////////////////////////
 
-// main macro
+// gracefully exit main while loop to terminate the program
 #define EXIT 6
 
 // task 1 macros -- overflow protection
 #define FACTORIAL_MAX 171
-#define SMALL_COORDINATE_MAX 21
+
+/**
+    Overflow Protection (Task 1):
+    Three levels have been defined in order to mitigate the risk of improper handling of large input values.
+    Each of these three levels has been designated a range of values and an identifier. These identifiers are A, B, and C.
+    Coordinate pairs are designated to their respective levels based on the sums of their values.
+    As a result, if one value of a pair is significantly higher than the other of that pair,
+    the pathway taken will be that which has been optimized for the larger value,
+    unless one of such values is less than or equal to 0.
+    Any coordinate value being less than or equal to 0 results in that pair being handled prior to level assignment,
+    thereby not neccesitating its inclusion in the level conditions.
+        - Level A is the range of integers greater than 0 but less than 21 (0 < i && i < 21)
+        - Level B is the range of integers greater than or equal to 21 but less than 170 (21 <= i && i < 170)
+        - Level C is the range of integers greater than or equal to 170 (170 <= i)
+**/
+#define LEVEL_A_COORDINATE_MAX 21
+
+/**
+    Overflow Protection (Task 1):
+    Three levels have been defined in order to mitigate the risk of improper handling of large input values.
+    Each of these three levels has been designated a range of values and an identifier. These identifiers are A, B, and C.
+    Coordinate pairs are designated to their respective levels based on the sums of their values.
+    As a result, if one value of a pair is significantly higher than the other of that pair,
+    the pathway taken will be that which has been optimized for the larger value,
+    unless one of such values is less than or equal to 0.
+    Any coordinate value being less than or equal to 0 results in that pair being handled prior to level assignment,
+    thereby not neccesitating its inclusion in the level conditions.
+        - Level A is the range of integers greater than 0 but less than 21 (0 < i && i < 21)
+        - Level B is the range of integers greater than or equal to 21 but less than 170 (21 <= i && i < 170)
+        - Level C is the range of integers greater than or equal to 170 (170 <= i)
+**/
+#define LEVEL_B_COORDINATE_MAX 170
+
+// overflow protection
 #define CACHE_MAX 0x8000
 #define M 1000000007
 
@@ -30,15 +63,13 @@ Assignment: 4
 // task 1 helpers
 long long x_1(int *valid);
 long long y_1(int *valid);
-void cacheInitialize();
-void task1(long long leftMoves, long long downMoves);
-unsigned long long compute_paths(long long leftMoves, long long downMoves);
+void task1(long long goLeft, long long goDown);
+unsigned long long compute_paths(long long goLeft, long long goDown);
 unsigned long long modMult(unsigned long long a, unsigned long long b);
 unsigned long long factorial(long long n);
 
 // task 1 cache
-unsigned long long cacheFactorial[FACTORIAL_MAX] = {0};
-unsigned long long cacheT1F0[SMALL_COORDINATE_MAX][SMALL_COORDINATE_MAX] = {0};
+unsigned long long cacheT1F0[LEVEL_A_COORDINATE_MAX][LEVEL_A_COORDINATE_MAX] = {0};
 unsigned long long cacheT1F2x[CACHE_MAX] = {0};
 unsigned long long cacheT1F2y[CACHE_MAX] = {0};
 unsigned long long cacheT1F2Result[CACHE_MAX] = {0};
@@ -71,13 +102,6 @@ void task3ParenthesisValidator();
 void task4QueensBattle();
 void task5CrosswordGenerator();
 
-// initialize cache
-void cacheInitialize() {
-    cacheFactorial[0] = 1;
-    cacheFactorial[1] = 1;
-    cacheT1F0[1][1] = 2;
-}
-
 // initialize
 int task = 0;
 int sizeRemainder = 0;
@@ -90,7 +114,6 @@ void full_terminate() {
 }
 
 int main() {
-	cacheInitialize();
 	setupPyramid();
 	do {
 		printf("Choose an option:\n"
@@ -137,6 +160,8 @@ int main() {
 
 ///////////////////////////////////////////////////////////////////////////
 
+// TASK 1 ROBOT PATHS
+
 // TASK 1: VALIDATE: X
 long long x_1(int *valid) {
     long long x;
@@ -172,7 +197,11 @@ void task1RobotPaths() {
     task1(x, y);
 }
 
-// TASK 1 ROBOT PATHS
+unsigned long long modMult(unsigned long long a, unsigned long long b) {
+    return (a % M) * (b % M) % M;
+}
+
+unsigned long long cacheFactorial[FACTORIAL_MAX] = {0};
 
 unsigned long long factorial(long long n) {
     if (n < 0) {
@@ -187,55 +216,133 @@ unsigned long long factorial(long long n) {
     return cacheFactorial[n] = modMult(n, factorial(n - 1));
 }
 
-unsigned long long modMult(unsigned long long a, unsigned long long b) {
-    return (a % M) * (b % M) % M;
+/**
+CACHE_MAX: overflow protection
+3: goLeft, goDown, result
+**/
+unsigned long long cachePaths[CACHE_MAX][3] = {0};
+
+unsigned long long findInCache(long long goLeft, long long goDown, int index) {
+    if (index >= CACHE_MAX) {
+        return 0;
+    }
+    if (cachePaths[index][0] == (unsigned long long)goLeft && cachePaths[index][1] == (unsigned long long)goDown) {
+        return cachePaths[index][2];
+    }
+    return findInCache(goLeft, goDown, index + 1);
 }
 
-unsigned long long compute_paths(long long leftMoves, long long downMoves) {
-    if (leftMoves < 0 || downMoves < 0) return 0;
-    if (leftMoves == 0 || downMoves == 0) return 1;
+void saveToCache(long long goLeft, long long goDown, unsigned long long result, int index) {
+    if (index >= CACHE_MAX) {
+        return;
+    }
+    if (cachePaths[index][0] == 0 && cachePaths[index][1] == 0) {
+        cachePaths[index][0] = goLeft;
+        cachePaths[index][1] = goDown;
+        cachePaths[index][2] = result;
+        return;
+    }
+    saveToCache(goLeft, goDown, result, index + 1);
+}
 
-    int flag = (leftMoves + downMoves <= 20) ? 0 : ((leftMoves + downMoves < 170) ? 1 : 2);
-
-    // x + y <= 20
-    if (flag == 0) {
-        if (cacheT1F0[leftMoves][downMoves] != 0){
-            return cacheT1F0[leftMoves][downMoves];
-        }
-        return cacheT1F0[leftMoves][downMoves] = modMult(factorial(leftMoves + downMoves), modMult(factorial(leftMoves), factorial(downMoves)));
+unsigned long long compute_paths(long long goLeft, long long goDown) {
+    if (goLeft < 0 || goDown < 0) {
+        return 0;
+    }
+    if (goLeft == 0 || goDown == 0) {
+        return 1;
     }
 
-    // x + y < 170
-    if (flag == 1) {
-        return modMult(factorial(leftMoves + downMoves), modMult(factorial(leftMoves), factorial(downMoves)));
+    int level = (goLeft + goDown < LEVEL_A_COORDINATE_MAX) ? 0 : ((goLeft + goDown < LEVEL_B_COORDINATE_MAX) ? 1 : 2);
+
+    if (level == 0) {
+        return compute_paths(goLeft - 1, goDown) + compute_paths(goLeft, goDown - 1);
     }
 
-    // x + y >= 170
-    if (flag == 2) {
-        for (int i = 0; i < CACHE_MAX; i++) {
-            if (cacheT1F2x[i] == (unsigned long long)leftMoves && cacheT1F2y[i] == (unsigned long long)downMoves) {
-                return cacheT1F2Result[i];
-            }
+    if (level == 1) {
+        return modMult(factorial(goLeft + goDown), modMult(factorial(goLeft), factorial(goDown)));
+    }
+
+    if (level == 2) {
+        unsigned long long cachedResult = (unsigned long long)findInCache(goLeft, goDown, 0);
+        if (cachedResult != 0) {
+            return cachedResult;
         }
-        unsigned long long result = modMult(factorial(leftMoves + downMoves), modMult(factorial(leftMoves), factorial(downMoves)));
-        for (int i = 0; i < CACHE_MAX; i++) {
-            if (cacheT1F2x[i] == 0 && cacheT1F2y[i] == 0) {
-                cacheT1F2x[i] = leftMoves;
-                cacheT1F2y[i] = downMoves;
-                cacheT1F2Result[i] = result;
-                break;
-            }
-        }
+        unsigned long long result = modMult(factorial(goLeft + goDown), modMult(factorial(goLeft), factorial(goDown)));
+        saveToCache(goLeft, goDown, result, 0);
         return result;
     }
     return 0;
 }
 
-void task1(long long leftMoves, long long downMoves) {
-    unsigned long long totalDistinctPaths = compute_paths(leftMoves, downMoves);
+void task1(long long goLeft, long long goDown) {
+    unsigned long long totalDistinctPaths = compute_paths(goLeft, goDown);
     printf("The total number of paths the robot can take to reach home is: %llu\n", totalDistinctPaths);
-    return;
 }
+
+// unsigned long long factorial(long long n) {
+//     if (n < 0) {
+//         return 0;
+//     }
+//     if (n == 0) {
+//         return 1;
+//     }
+//     if (cacheFactorial[n] != 0) {
+//         return cacheFactorial[n];
+//     }
+//     return cacheFactorial[n] = modMult(n, factorial(n - 1));
+// }
+
+// unsigned long long modMult(unsigned long long a, unsigned long long b) {
+//     return (a % M) * (b % M) % M;
+// }
+
+// unsigned long long compute_paths(long long goLeft, long long goDown) {
+//     if (goLeft < 0 || goDown < 0) return 0;
+//     if (goLeft == 0 || goDown == 0) return 1;
+
+//     int level = (goLeft + goDown <= 20) ? 0 : ((goLeft + goDown < 170) ? 1 : 2);
+
+//     // x + y <= 20
+//     if (level == 0) {
+//         return compute_paths(goDown - 1, goLeft) + compute_paths(goDown, goLeft - 1);
+//         // if (cacheT1F0[goLeft][goDown] != 0){
+//         //     return cacheT1F0[goLeft][goDown];
+//         // }
+//         // return cacheT1F0[goLeft][goDown] = modMult(factorial(goLeft + goDown), modMult(factorial(goLeft), factorial(goDown)));
+//     }
+
+//     // x + y < 170
+//     if (level == 1) {
+//         return modMult(factorial(goLeft + goDown), modMult(factorial(goLeft), factorial(goDown)));
+//     }
+
+//     // x + y >= 170
+//     if (level == 2) {
+//         for (int i = 0; i < CACHE_MAX; i++) {
+//             if (cacheT1F2x[i] == (unsigned long long)goLeft && cacheT1F2y[i] == (unsigned long long)goDown) {
+//                 return cacheT1F2Result[i];
+//             }
+//         }
+//         unsigned long long result = modMult(factorial(goLeft + goDown), modMult(factorial(goLeft), factorial(goDown)));
+//         for (int i = 0; i < CACHE_MAX; i++) {
+//             if (cacheT1F2x[i] == 0 && cacheT1F2y[i] == 0) {
+//                 cacheT1F2x[i] = goLeft;
+//                 cacheT1F2y[i] = goDown;
+//                 cacheT1F2Result[i] = result;
+//                 break;
+//             }
+//         }
+//         return result;
+//     }
+//     return 0;
+// }
+
+// void task1(long long goLeft, long long goDown) {
+//     unsigned long long totalDistinctPaths = compute_paths(goLeft, goDown);
+//     printf("The total number of paths the robot can take to reach home is: %llu\n", totalDistinctPaths);
+//     return;
+// }
 
 ///////////////////////////////////////////////////////////////////////////
 
