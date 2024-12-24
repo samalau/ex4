@@ -8,7 +8,7 @@ Assignment: 4
 
 ///////////////////////////////////////////////////////////////////////////
 
-// gracefully exit main while loop to terminate the program
+// globally trigger exit main while loop to gracefully terminate the program
 #define EXIT 6
 
 // task 1 macros -- overflow protection
@@ -63,10 +63,10 @@ Assignment: 4
 // task 1 helpers
 long long x_1(int *valid);
 long long y_1(int *valid);
-void task1(long long goLeft, long long goDown);
-unsigned long long compute_paths(long long goLeft, long long goDown);
+unsigned long long factorial(unsigned long long n);
 unsigned long long modMult(unsigned long long a, unsigned long long b);
-unsigned long long factorial(long long n);
+unsigned long long compute_paths(unsigned long long goLeft, unsigned long long goDown);
+void task1(unsigned long long goLeft, unsigned long long goDown);
 
 // task 1 cache
 unsigned long long cacheT1F0[LEVEL_A_COORDINATE_MAX][LEVEL_A_COORDINATE_MAX] = {0};
@@ -109,6 +109,7 @@ char bufferExtract[] = {0};
 char nextMainTask = 0;
 char remainderOfExtract[] = {0};
 
+// 'EXIT' for global clarity (main task = 6)
 void full_terminate() {
 	task = EXIT;
 }
@@ -147,6 +148,7 @@ int main() {
 			case 5:
 				task5CrosswordGenerator();
 				break;
+            // 'EXIT' for global clarity (task = 6)
 			case EXIT:
 				break;
 			default:
@@ -203,8 +205,8 @@ unsigned long long modMult(unsigned long long a, unsigned long long b) {
 
 unsigned long long cacheFactorial[FACTORIAL_MAX] = {0};
 
-unsigned long long factorial(long long n) {
-    if (n < 0) {
+unsigned long long factorial(unsigned long long n) {
+    if (n < 0 || n >= FACTORIAL_MAX) {
         return 0;
     }
     if (n == 0) {
@@ -222,17 +224,17 @@ CACHE_MAX: overflow protection
 **/
 unsigned long long cachePaths[CACHE_MAX][3] = {0};
 
-unsigned long long findInCache(long long goLeft, long long goDown, int index) {
+unsigned long long findInCache(unsigned long long goLeft, unsigned long long goDown, unsigned int index) {
     if (index >= CACHE_MAX) {
         return 0;
     }
-    if (cachePaths[index][0] == (unsigned long long)goLeft && cachePaths[index][1] == (unsigned long long)goDown) {
+    if (cachePaths[index][0] == goLeft && cachePaths[index][1] == goDown) {
         return cachePaths[index][2];
     }
     return findInCache(goLeft, goDown, index + 1);
 }
 
-void saveToCache(long long goLeft, long long goDown, unsigned long long result, int index) {
+void saveToCache(unsigned long long goLeft, unsigned long long goDown, unsigned long long result, unsigned int index) {
     if (index >= CACHE_MAX) {
         return;
     }
@@ -245,7 +247,7 @@ void saveToCache(long long goLeft, long long goDown, unsigned long long result, 
     saveToCache(goLeft, goDown, result, index + 1);
 }
 
-unsigned long long compute_paths(long long goLeft, long long goDown) {
+unsigned long long compute_paths(unsigned long long goLeft, unsigned long long goDown) {
     if (goLeft < 0 || goDown < 0) {
         return 0;
     }
@@ -264,7 +266,7 @@ unsigned long long compute_paths(long long goLeft, long long goDown) {
     }
 
     if (level == 2) {
-        unsigned long long cachedResult = (unsigned long long)findInCache(goLeft, goDown, 0);
+        unsigned long long cachedResult = findInCache(goLeft, goDown, 0);
         if (cachedResult != 0) {
             return cachedResult;
         }
@@ -275,74 +277,10 @@ unsigned long long compute_paths(long long goLeft, long long goDown) {
     return 0;
 }
 
-void task1(long long goLeft, long long goDown) {
+void task1(unsigned long long goLeft, unsigned long long goDown) {
     unsigned long long totalDistinctPaths = compute_paths(goLeft, goDown);
     printf("The total number of paths the robot can take to reach home is: %llu\n", totalDistinctPaths);
 }
-
-// unsigned long long factorial(long long n) {
-//     if (n < 0) {
-//         return 0;
-//     }
-//     if (n == 0) {
-//         return 1;
-//     }
-//     if (cacheFactorial[n] != 0) {
-//         return cacheFactorial[n];
-//     }
-//     return cacheFactorial[n] = modMult(n, factorial(n - 1));
-// }
-
-// unsigned long long modMult(unsigned long long a, unsigned long long b) {
-//     return (a % M) * (b % M) % M;
-// }
-
-// unsigned long long compute_paths(long long goLeft, long long goDown) {
-//     if (goLeft < 0 || goDown < 0) return 0;
-//     if (goLeft == 0 || goDown == 0) return 1;
-
-//     int level = (goLeft + goDown <= 20) ? 0 : ((goLeft + goDown < 170) ? 1 : 2);
-
-//     // x + y <= 20
-//     if (level == 0) {
-//         return compute_paths(goDown - 1, goLeft) + compute_paths(goDown, goLeft - 1);
-//         // if (cacheT1F0[goLeft][goDown] != 0){
-//         //     return cacheT1F0[goLeft][goDown];
-//         // }
-//         // return cacheT1F0[goLeft][goDown] = modMult(factorial(goLeft + goDown), modMult(factorial(goLeft), factorial(goDown)));
-//     }
-
-//     // x + y < 170
-//     if (level == 1) {
-//         return modMult(factorial(goLeft + goDown), modMult(factorial(goLeft), factorial(goDown)));
-//     }
-
-//     // x + y >= 170
-//     if (level == 2) {
-//         for (int i = 0; i < CACHE_MAX; i++) {
-//             if (cacheT1F2x[i] == (unsigned long long)goLeft && cacheT1F2y[i] == (unsigned long long)goDown) {
-//                 return cacheT1F2Result[i];
-//             }
-//         }
-//         unsigned long long result = modMult(factorial(goLeft + goDown), modMult(factorial(goLeft), factorial(goDown)));
-//         for (int i = 0; i < CACHE_MAX; i++) {
-//             if (cacheT1F2x[i] == 0 && cacheT1F2y[i] == 0) {
-//                 cacheT1F2x[i] = goLeft;
-//                 cacheT1F2y[i] = goDown;
-//                 cacheT1F2Result[i] = result;
-//                 break;
-//             }
-//         }
-//         return result;
-//     }
-//     return 0;
-// }
-
-// void task1(long long goLeft, long long goDown) {
-//     unsigned long long totalDistinctPaths = compute_paths(goLeft, goDown);
-//     printf("The total number of paths the robot can take to reach home is: %llu\n", totalDistinctPaths);
-//     return;
-// }
 
 ///////////////////////////////////////////////////////////////////////////
 
@@ -362,12 +300,12 @@ void setupPyramid() {
     dataPyramid[3] = level_4;
     dataPyramid[4] = level_5;
 
+    // grid initialization/reset
     for (int i = 0; i < 5; i++) {
         for (int j = 0; j <= i; j++) {
             dataPyramid[i][j] = 0.00;
         }
-    }
-    // pyramid is now reset
+    }   
 }
 
 int getWeight() {
@@ -515,77 +453,76 @@ int abs(int x) {
 
 void markZoneCells(char zones[DIMENSION_MAX][DIMENSION_MAX], int n, int row, int col, 
                    int visited[DIMENSION_MAX][DIMENSION_MAX], int *foundQueen, int *board, char startZone) {
-    if (row < 0 || row >= n || col < 0 || col >= n) return; // Out of bounds
-    if (visited[row][col]) return; // Already visited
-    if (zones[row][col] != startZone) return; // Different zone
-
-    visited[row][col] = 1; // Mark this cell as visited
-
-    // Check if this cell has a queen
-    if (board[row] == col + 1) {
-        (*foundQueen)++;
-        // If more than one queen is found in the zone, return immediately
-        if (*foundQueen > 1) return;
+    
+    // out of bounds
+    if (row < 0 || row >= n || col < 0 || col >= n) {
+        return;
     }
 
-    // Recur for all 8 directions
-    markZoneCells(zones, n, row - 1, col, visited, foundQueen, board, startZone); // Up
-    markZoneCells(zones, n, row + 1, col, visited, foundQueen, board, startZone); // Down
-    markZoneCells(zones, n, row, col - 1, visited, foundQueen, board, startZone); // Left
-    markZoneCells(zones, n, row, col + 1, visited, foundQueen, board, startZone); // Right
-    markZoneCells(zones, n, row - 1, col - 1, visited, foundQueen, board, startZone); // Top-left diagonal
-    markZoneCells(zones, n, row - 1, col + 1, visited, foundQueen, board, startZone); // Top-right diagonal
-    markZoneCells(zones, n, row + 1, col - 1, visited, foundQueen, board, startZone); // Bottom-left diagonal
-    markZoneCells(zones, n, row + 1, col + 1, visited, foundQueen, board, startZone); // Bottom-right diagonal
+    // already visited
+    if (visited[row][col]) {
+        return;
+    }
+
+    // different zone
+    if (zones[row][col] != startZone) {
+        return;
+    }
+
+    // mark cell as visited
+    visited[row][col] = 1;
+
+    // check if cell has queen
+    if (board[row] == col + 1) {
+        (*foundQueen)++;
+        // return immediately if more than one queen found in zone
+        if (*foundQueen > 1) {
+            return;
+        }
+    }
+
+    // UP
+    markZoneCells(zones, n, row - 1, col, visited, foundQueen, board, startZone);
+
+     // DOWN
+    markZoneCells(zones, n, row + 1, col, visited, foundQueen, board, startZone);
+
+    // LEFT
+    markZoneCells(zones, n, row, col - 1, visited, foundQueen, board, startZone);
+
+    // RIGHT
+    markZoneCells(zones, n, row, col + 1, visited, foundQueen, board, startZone);
+
+    // UP-LEFT DIAGONAL
+    markZoneCells(zones, n, row - 1, col - 1, visited, foundQueen, board, startZone);
+
+    // UP-RIGHT DIAGONAL
+    markZoneCells(zones, n, row - 1, col + 1, visited, foundQueen, board, startZone);
+
+    // DOWN-LEFT DIAGONAL
+    markZoneCells(zones, n, row + 1, col - 1, visited, foundQueen, board, startZone);
+
+    // DOWN-RIGHT DIAGONAL
+    markZoneCells(zones, n, row + 1, col + 1, visited, foundQueen, board, startZone);
 }
 
 int isZoneValidRec(char zones[DIMENSION_MAX][DIMENSION_MAX], int n, int zoneRow, int zoneCol, int *board) {
-    int visited[DIMENSION_MAX][DIMENSION_MAX] = {0}; // To keep track of visited cells
-    int foundQueen = 0; // To count the queens found in the zone
-    char startZone = zones[zoneRow][zoneCol]; // Set the starting zone label
+    
+    // track the visited cells
+    int visited[DIMENSION_MAX][DIMENSION_MAX] = {0};
 
-    // Start DFS-like traversal from the current cell
+    // count the queens found in zone
+    int foundQueen = 0; 
+
+    // set the starting zone label
+    char startZone = zones[zoneRow][zoneCol]; 
+
+    // check current cell's zone and adjacent cells for existing queens
     markZoneCells(zones, n, zoneRow, zoneCol, visited, &foundQueen, board, startZone);
 
-    // If more than one queen is found in the zone, return invalid
+    // return invalid if more than one queen found in zone
     return (foundQueen <= 1);
 }
-
-// void markZoneCells(char zones[DIMENSION_MAX][DIMENSION_MAX], int n, int row, int col, int visited[DIMENSION_MAX][DIMENSION_MAX], int *foundQueen, int *board) {
-//     if (row < 0 || row >= n || col < 0 || col >= n) return; // Out of bounds
-//     if (visited[row][col]) return; // Already visited
-
-//     visited[row][col] = 1; // Mark this cell as visited
-
-//     // Check if this cell has a queen
-//     if (board[row] == col + 1) {
-//         (*foundQueen)++;
-//         // If more than one queen is found in the zone, return immediately
-//         if (*foundQueen > 1) return;
-//     }
-
-//     // Recur for all 8 directions
-//     markZoneCells(zones, n, row - 1, col, visited, foundQueen, board); // Up
-//     markZoneCells(zones, n, row + 1, col, visited, foundQueen, board); // Down
-//     markZoneCells(zones, n, row, col - 1, visited, foundQueen, board); // Left
-//     markZoneCells(zones, n, row, col + 1, visited, foundQueen, board); // Right
-//     markZoneCells(zones, n, row - 1, col - 1, visited, foundQueen, board); // Top-left diagonal
-//     markZoneCells(zones, n, row - 1, col + 1, visited, foundQueen, board); // Top-right diagonal
-//     markZoneCells(zones, n, row + 1, col - 1, visited, foundQueen, board); // Bottom-left diagonal
-//     markZoneCells(zones, n, row + 1, col + 1, visited, foundQueen, board); // Bottom-right diagonal
-// }
-
-// // Updated function for validation
-// int isZoneValidRec(char zones[DIMENSION_MAX][DIMENSION_MAX], int n, int zoneRow, int zoneCol, int *board) {
-//     int visited[DIMENSION_MAX][DIMENSION_MAX] = {0}; // To keep track of visited cells
-//     int foundQueen = 0; // To count the queens found in the zone
-
-//     // Start DFS-like traversal from the current cell
-//     markZoneCells(zones, n, zoneRow, zoneCol, visited, &foundQueen, board);
-
-//     // If more than one queen is found in the zone, return invalid
-//     return (foundQueen <= 1);
-// }
 
 int isValidRec(int *board, int row, int col, char zones[DIMENSION_MAX][DIMENSION_MAX], int *usedZones, int i) {
     if (i >= row) {
