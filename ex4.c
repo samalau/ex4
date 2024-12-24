@@ -265,7 +265,7 @@ long long y1(int *valid) {
 // TASK 1: ENTRY
 void task1RobotPaths() {
     int valid = 0;
-    printf("Please enter the coordinates of the robot (col, row):\n");
+    printf("Please enter the coordinates of the robot (column, row):\n");
     long long x = x1(&valid);
     if (!valid) { return; }
     long long y = y1(&valid);
