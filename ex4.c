@@ -959,7 +959,7 @@ void task5CrosswordGenerator() {
     for (int i = 0; i < numWords; i++) {
         input = scanf(" %s", dictionary[i]);
 		if (input == EOF) {
-			full_terminate();
+			fullTerminate();
 			return;
 		}
     }
