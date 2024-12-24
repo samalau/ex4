@@ -22,10 +22,10 @@ Assignment: 4
 #define MAX_DEPTH 128
 
 // task 4 macros
-#define MIN_BOARD_SIZE 1
-#define MAX_BOARD_SIZE 20
-#define EMPTY_CELL '*'
-#define QUEEN_CELL 'X'
+#define DIMENSION_MIN 1
+#define DIMENSION_MAX 20
+#define QUEEN "X "
+#define EMPTY "* "
 
 // task 1 helpers
 long long x_1(int *valid);
@@ -405,217 +405,131 @@ void task3ParenthesisValidator() {
 
 // TASK 4 QUEEN BATTLE
 
-int validate_color_zones(int size, Cell board[][size], char mapped_colors[], int *unique_colors) {
-    // track number of unique colors
-    int color_count[MAX_BOARD_SIZE];
-
-    // initialize/reset count
-    *unique_colors = 0;
-
-    // initialize color_count
-    for (int i = 0; i < MAX_BOARD_SIZE; i++) {
-        color_count[i] = 0;
-    }
-
-    for (int i = 0; i < size; i++) {
-        for (int j = 0; j < size; j++) {
-            char color = board[i][j].color;
-            int mapped_index = -1;
-            for (int k = 0; k < *unique_colors; k++) {
-                if (mapped_colors[k] == color) {
-                    mapped_index = k;
-                    break;
-                }
-            }
-
-            if (mapped_index == -1) {
-                if (*unique_colors > size) {
-                    // too many unique colors for the board size
-                    return 0;
-                }
-                mapped_index = (*unique_colors)++;
-                mapped_colors[mapped_index] = color;
-            }
-
-            color_count[mapped_index]++;
-        }
-    }
-
-    return 1;
-    // return *unique_colors == size;
+// Custom implementation of abs
+int abs(int x) {
+    return x < 0 ? -x : x;
 }
 
-int queen_in_row(int size, Cell board[][size], int row) {
-    for (int col = 0; col < size; col++) {
-        if (board[row][col].has_queen) {
-            return 1;
-        }
+// Recursive function to validate a queen's placement
+int isValidRec(int *board, int row, int col, char zones[DIMENSION_MAX][DIMENSION_MAX], int *usedZones, int i) {
+    if (i >= row) {
+        unsigned char zone = (unsigned char)zones[row][col];
+		// Zone uniqueness
+        return !usedZones[zone];
     }
-    return 0;
+
+    int x1 = i + 1, y1 = board[i];
+    int x2 = row + 1, y2 = col + 1;
+
+    // Check adjacency
+    if (abs(x2 - x1) <= 1 && abs(y2 - y1) <= 1) return 0;
+
+    // Check row/column exclusivity
+    if (y1 == y2) return 0;
+
+    // Check diagonal validity
+    if ((x2 - x1 == y2 - y1 || x2 - x1 == -(y2 - y1)) &&
+        (abs(x2 - x1) == 1 && abs(y2 - y1) == 1)) return 0;
+
+    return isValidRec(board, row, col, zones, usedZones, i + 1);
 }
 
-int queen_in_col(int size, Cell board[][size], int col) {
-    for (int row = 0; row < size; row++) {
-        if (board[row][col].has_queen) {
-            return 1;
-        }
-    }
-    return 0;
+// Wrapper function for validation
+int isValid(int *board, int row, int col, char zones[DIMENSION_MAX][DIMENSION_MAX], int *usedZones) {
+    return isValidRec(board, row, col, zones, usedZones, 0);
 }
 
-int queen_in_direct_diagonal(int size, Cell board[][size], int row, int col) {
-    int directions[4][2] = {{-1, -1}, {-1, 1}, {1, -1}, {1, 1}};
-    for (int i = 0; i < 4; i++) {
-        int new_row = row + directions[i][0];
-        int new_col = col + directions[i][1];
-        if (new_row >= 0 && new_row < size && new_col >= 0 && new_col < size && board[new_row][new_col].has_queen) {
-             return 1;
-        }
+// Recursive function to solve the board
+int solveRec(int *board, int row, int n, int *usedColumns, int *usedZones, char zones[DIMENSION_MAX][DIMENSION_MAX], int col) {
+    // Base case: all rows filled
+	if (row == n) return 1;
+	// No columns left
+    if (col >= n) return 0;
+
+    if (!usedColumns[col] && isValid(board, row, col, zones, usedZones)) {
+        board[row] = col + 1;
+        usedColumns[col] = 1;
+        unsigned char zone = (unsigned char)zones[row][col];
+        usedZones[zone] = 1;
+
+        if (solveRec(board, row + 1, n, usedColumns, usedZones, zones, 0)) return 1;
+
+        usedColumns[col] = 0;
+        usedZones[zone] = 0;
     }
-    return 0;
+
+    return solveRec(board, row, n, usedColumns, usedZones, zones, col + 1);
 }
 
-int is_valid_queen(int size, Cell board[][size], int row, int col, int *color_with_queen) {
-    // initialize
-    int color_map[size];
-    for (int i = 0; i < size; i++) {
-        color_map[i] = -1;
-    }
-
-    char color = board[row][col].color;
-
-    // map character to index
-    if (color_map[(unsigned char)color] == -1) {
-        static int next_index = 0;
-        color_map[(unsigned char)color] = next_index++;
-    }
-
-    int index = color_map[(unsigned char)color];
-    return !queen_in_row(size, board, row) &&
-           !queen_in_col(size, board, col) &&
-           !queen_in_direct_diagonal(size, board, row, col) &&
-           color_with_queen[index] == 0;
+// Wrapper for the solve function
+int solve(int *board, int row, int n, int *usedColumns, int *usedZones, char zones[20][20]) {
+    return solveRec(board, row, n, usedColumns, usedZones, zones, 0);
 }
 
-void mark_queen(int size, Cell board[][size], int row, int col, int *color_with_queen, char mapped_colors[]) {
-    board[row][col].has_queen = 1;
-    char color = board[row][col].color;
-
-    // find mapped index for color
-    int index = -1;
-    for (int i = 0; i < size; i++) {
-        if (mapped_colors[i] == color) {
-            index = i;
-            break;
-        }
-    }
-
-    if (index != -1) {
-        color_with_queen[index] = 1;
+// Recursive function to read the zones
+void readZonesRec(char zones[DIMENSION_MAX][DIMENSION_MAX], int n, int filled) {
+    // Base case: all cells filled
+	if (filled >= n * n) return;
+	char c;
+	scanf("%c", &c);
+    if (c == ' ' || c == '\n') {
+		// Skip spaces and newlines
+        readZonesRec(zones, n, filled);
+    } else {
+		// Fill the zones
+        zones[filled / n][filled % n] = c;
+        readZonesRec(zones, n, filled + 1);
     }
 }
 
-void mark_not_queen(int size, Cell board[][size], int row, int col, int *color_with_queen, char mapped_colors[]) {
-    board[row][col].has_queen = 0;
-    char color = board[row][col].color;
-
-    // find mapped index for color
-    int index = -1;
-    for (int i = 0; i < size; i++) {
-        if (mapped_colors[i] == color) {
-            index = i;
-            break;
-        }
-    }
-
-    if (index != -1) {
-        color_with_queen[index] = 0;
-    }
-}
-
-int queens_solver(int size, Cell board[][size], int assigned_queens, int start, int *color_with_queen, char mapped_colors[]) {
-    if (assigned_queens == size) {
-        return 1;
-    }
-
-    for (int i = 0; i < size; i++) {
-        if (is_valid_queen(size, board, start, i, color_with_queen)) {
-            mark_queen(size, board, start, i, color_with_queen, mapped_colors);
-
-            if (queens_solver(size, board, assigned_queens + 1, start + 1, color_with_queen, mapped_colors)) {
-                return 1;
-            }
-            // backtrack
-            mark_not_queen(size, board, start, i, color_with_queen, mapped_colors);
-        }
-    }
-    return 0;
-}
-
-void display_board(int size, Cell board[][size]) {
-    for (int i = 0; i < size; i++) {
-        for (int j = 0; j < size; j++) {
-            printf("%c ", board[i][j].has_queen ? QUEEN_CELL : EMPTY_CELL);
-        }
-        printf("\n");
-    }
+// Wrapper for the zone reader
+void readZones(char zones[DIMENSION_MAX][DIMENSION_MAX], int n) {
+    readZonesRec(zones, n, 0);
 }
 
 void task4QueensBattle() {
-    int size;
+    int n;
     printf("Please enter the dimensions of the board:\n");
-    int inputSize = scanf(" %d", &size);
+	int getSize = scanf(" %d", &n);
 
-    if (inputSize == EOF) {
-        full_terminate();
+    if (!getSize || DIMENSION_MIN < 1 || n > DIMENSION_MAX) {
+		if (getSize == EOF) {
+			full_terminate();
+		} else {
+			printf("This puzzle cannot be solved.\n");
+		}
         return;
     }
 
-    if (inputSize != 1 || size < MIN_BOARD_SIZE || size > MAX_BOARD_SIZE) {
-        // scanf("%*[^\n]");
-        printf("RRTERT This puzzle cannot be solved.\n");
-        printf("This puzzle cannot be solved.\n");
-        return;
-    }
+	// Consume leftover newline from input buffer
+	scanf("%*c");
 
-    Cell board[MAX_BOARD_SIZE][MAX_BOARD_SIZE];
-    char mapped_colors[MAX_BOARD_SIZE] = {0};
-    int unique_colors = 0;
+    printf("Please enter the %d*%d puzzle board:\n", n, n);
 
-    printf("Please enter the %d*%d puzzle board:\n", size, size);
-    for (int i = 0; i < size; i++) {
-        for (int j = 0; j < size; j++) {
-            int input_zone = scanf(" %c", &board[i][j].color);
-            if (input_zone == EOF) {
-                printf("NOOOO This puzzle cannot be solved.\n");
-                full_terminate();
-                return;
+    // Create the zones 2D array (static allocation)
+    char zones[DIMENSION_MAX][DIMENSION_MAX];
+    readZones(zones, n);
+
+    // Initialize board and tracking arrays (static allocation)
+    int board[DIMENSION_MAX] = {0};
+    int usedColumns[DIMENSION_MAX] = {0};
+	// Allow all ASCII characters as zone labels
+    int usedZones[256] = {0};
+
+    if (solve(board, 0, n, usedColumns, usedZones, zones)) {
+        printf("Solution:\n");
+        for (int i = 0; i < n; i++) {
+            for (int j = 1; j <= n; j++) {
+                if (board[i] == j) printf(QUEEN);
+                else printf(EMPTY);
             }
-            if (input_zone != 1) {
-                printf("AHHH This puzzle cannot be solved.\n");
-                // scanf("%*[^\n]");
-                return;
-            }
-            board[i][j].has_queen = 0;
+            printf("\n");
         }
-    }
-
-    if (!validate_color_zones(size, board, mapped_colors, &unique_colors)) {
-        printf("EEEEEEE This puzzle cannot be solved.\n");
-        printf("This puzzle cannot be solved.\n");
-        return;
-    }
-
-    // Initialize to 0
-    int color_with_queen[MAX_BOARD_SIZE] = {0};
-
-    if (queens_solver(size, board, 0, 0, color_with_queen, mapped_colors)) {
-        printf("HJSALGFHEL.\n");
-        display_board(size, board);
     } else {
-        printf("OEOEOEOOEP This puzzle cannot be solved.\n");
         printf("This puzzle cannot be solved.\n");
     }
+
+    return;
 }
 
 ///////////////////////////////////////////////////////////////////////////
