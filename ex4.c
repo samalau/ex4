@@ -106,8 +106,8 @@ int main() {
         }
         if (nextMainTask != 1 || task < 1 || task > EXIT) {
             task = 0;
-			scanf("%*[^ 1-6]");
         }
+        scanf("%*c");
 		switch (task) {
 			case 1:
 				task1RobotPaths();
