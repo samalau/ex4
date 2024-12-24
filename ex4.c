@@ -70,7 +70,7 @@ unsigned long long factorial(unsigned long long n);
 unsigned long long modMult(unsigned long long a,
                                             unsigned long long b);
 
-unsigned long long compute_paths(unsigned long long goLeft,
+unsigned long long computePaths(unsigned long long goLeft,
                                                     unsigned long long goDown);
 
 void task1(unsigned long long goLeft,
@@ -312,7 +312,7 @@ void saveToCache(unsigned long long goLeft,
         - Level B is the range of integers greater than or equal to 21 but less than 170 (21 <= i && i < 170)
         - Level C is the range of integers greater than or equal to 170 (170 <= i)
 **/
-unsigned long long compute_paths(unsigned long long goLeft,
+unsigned long long computePaths(unsigned long long goLeft,
                                                     unsigned long long goDown) {
     
     if (goLeft < 0 || goDown < 0) {
@@ -327,7 +327,7 @@ unsigned long long compute_paths(unsigned long long goLeft,
     
     // LEVEL A
     if (level == 0) {
-        return compute_paths(goLeft - 1, goDown) + compute_paths(goLeft, goDown - 1);
+        return computePaths(goLeft - 1, goDown) + computePaths(goLeft, goDown - 1);
     }
 
     // LEVEL B
@@ -350,26 +350,26 @@ unsigned long long compute_paths(unsigned long long goLeft,
 
 void task1(unsigned long long goLeft,
                 unsigned long long goDown) {
-    unsigned long long totalDistinctPaths = compute_paths(goLeft, goDown);
+    unsigned long long totalDistinctPaths = computePaths(goLeft, goDown);
     printf("The total number of paths the robot can take to reach home is: %llu\n", totalDistinctPaths);
 }
 
 
 // TASK 2 HUMAN PYRAMID
 double *dataPyramid[5];
-double level_1[1];
-double level_2[2];
-double level_3[3];
-double level_4[4];
-double level_5[5];
+double level1[1];
+double level2[2];
+double level3[3];
+double level4[4];
+double level5[5];
 
 void setupPyramid() {
 
-    dataPyramid[0] = level_1;
-    dataPyramid[1] = level_2;
-    dataPyramid[2] = level_3;
-    dataPyramid[3] = level_4;
-    dataPyramid[4] = level_5;
+    dataPyramid[0] = level1;
+    dataPyramid[1] = level2;
+    dataPyramid[2] = level3;
+    dataPyramid[3] = level4;
+    dataPyramid[4] = level5;
 
     // grid initialization/reset
     for (int i = 0; i < 5; i++) {
