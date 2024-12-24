@@ -914,7 +914,7 @@ void task5CrosswordGenerator() {
     input = scanf(" %d", &gridSize);
 	if (input != 1) {
 		if (input == EOF) {
-			full_termination();
+			fullTerminate();
 		} else {
 			scanf("%*c");
 		}
@@ -926,7 +926,7 @@ void task5CrosswordGenerator() {
     input = scanf(" %d", &numSlots);
 	if (input != 1) {
 		if (input == EOF) {
-			full_termination();
+			fullTerminate();
 		} else {
 			scanf("%*c");
 		}
@@ -938,7 +938,7 @@ void task5CrosswordGenerator() {
         input = (scanf(" %d %d %d %c", &slots[i].row, &slots[i].col, &slots[i].length, &slots[i].direction));
 		if (input != 1) {
 			if (input == EOF) {
-				full_termination();
+				fullTerminate();
 			} else {
 				scanf("%*c");
 			}
@@ -951,7 +951,7 @@ void task5CrosswordGenerator() {
 		input = scanf(" %d", &numWords);
         if (input != 1) {
 			if (input == EOF) {
-				full_termination();
+				fullTerminate();
 			} else {
 				scanf("%*c");
 			}
@@ -967,7 +967,7 @@ void task5CrosswordGenerator() {
         input = scanf(" %s", dictionary[i]);
 		if (input != 1) {
 			if (input == EOF) {
-				full_termination();
+				fullTerminate();
 			} else {
 				scanf("%*c");
 			}
