@@ -54,7 +54,8 @@ void task3ParenthesisValidator();
 
 // task 4 helpers
 int abs(int x);
-void markZoneCells(char zones[DIMENSION_MAX][DIMENSION_MAX], int n, int row, int col, int visited[DIMENSION_MAX][DIMENSION_MAX], int *foundQueen, int *board);
+void markZoneCells(char zones[DIMENSION_MAX][DIMENSION_MAX], int n, int row, int col, 
+                   int visited[DIMENSION_MAX][DIMENSION_MAX], int *foundQueen, int *board, char startZone);
 int isZoneValidRec(char zones[DIMENSION_MAX][DIMENSION_MAX], int n, int zoneRow, int zoneCol, int *board);
 int isValidRec(int *board, int row, int col, char zones[DIMENSION_MAX][DIMENSION_MAX], int *usedZones, int i);
 int isValid(int *board, int row, int col, char zones[DIMENSION_MAX][DIMENSION_MAX], int *usedZones);
@@ -405,9 +406,11 @@ int abs(int x) {
     return x < 0 ? -x : x;
 }
 
-void markZoneCells(char zones[DIMENSION_MAX][DIMENSION_MAX], int n, int row, int col, int visited[DIMENSION_MAX][DIMENSION_MAX], int *foundQueen, int *board) {
+void markZoneCells(char zones[DIMENSION_MAX][DIMENSION_MAX], int n, int row, int col, 
+                   int visited[DIMENSION_MAX][DIMENSION_MAX], int *foundQueen, int *board, char startZone) {
     if (row < 0 || row >= n || col < 0 || col >= n) return; // Out of bounds
     if (visited[row][col]) return; // Already visited
+    if (zones[row][col] != startZone) return; // Different zone
 
     visited[row][col] = 1; // Mark this cell as visited
 
@@ -419,27 +422,63 @@ void markZoneCells(char zones[DIMENSION_MAX][DIMENSION_MAX], int n, int row, int
     }
 
     // Recur for all 8 directions
-    markZoneCells(zones, n, row - 1, col, visited, foundQueen, board); // Up
-    markZoneCells(zones, n, row + 1, col, visited, foundQueen, board); // Down
-    markZoneCells(zones, n, row, col - 1, visited, foundQueen, board); // Left
-    markZoneCells(zones, n, row, col + 1, visited, foundQueen, board); // Right
-    markZoneCells(zones, n, row - 1, col - 1, visited, foundQueen, board); // Top-left diagonal
-    markZoneCells(zones, n, row - 1, col + 1, visited, foundQueen, board); // Top-right diagonal
-    markZoneCells(zones, n, row + 1, col - 1, visited, foundQueen, board); // Bottom-left diagonal
-    markZoneCells(zones, n, row + 1, col + 1, visited, foundQueen, board); // Bottom-right diagonal
+    markZoneCells(zones, n, row - 1, col, visited, foundQueen, board, startZone); // Up
+    markZoneCells(zones, n, row + 1, col, visited, foundQueen, board, startZone); // Down
+    markZoneCells(zones, n, row, col - 1, visited, foundQueen, board, startZone); // Left
+    markZoneCells(zones, n, row, col + 1, visited, foundQueen, board, startZone); // Right
+    markZoneCells(zones, n, row - 1, col - 1, visited, foundQueen, board, startZone); // Top-left diagonal
+    markZoneCells(zones, n, row - 1, col + 1, visited, foundQueen, board, startZone); // Top-right diagonal
+    markZoneCells(zones, n, row + 1, col - 1, visited, foundQueen, board, startZone); // Bottom-left diagonal
+    markZoneCells(zones, n, row + 1, col + 1, visited, foundQueen, board, startZone); // Bottom-right diagonal
 }
 
-// Updated function for validation
 int isZoneValidRec(char zones[DIMENSION_MAX][DIMENSION_MAX], int n, int zoneRow, int zoneCol, int *board) {
     int visited[DIMENSION_MAX][DIMENSION_MAX] = {0}; // To keep track of visited cells
     int foundQueen = 0; // To count the queens found in the zone
+    char startZone = zones[zoneRow][zoneCol]; // Set the starting zone label
 
     // Start DFS-like traversal from the current cell
-    markZoneCells(zones, n, zoneRow, zoneCol, visited, &foundQueen, board);
+    markZoneCells(zones, n, zoneRow, zoneCol, visited, &foundQueen, board, startZone);
 
     // If more than one queen is found in the zone, return invalid
     return (foundQueen <= 1);
 }
+
+// void markZoneCells(char zones[DIMENSION_MAX][DIMENSION_MAX], int n, int row, int col, int visited[DIMENSION_MAX][DIMENSION_MAX], int *foundQueen, int *board) {
+//     if (row < 0 || row >= n || col < 0 || col >= n) return; // Out of bounds
+//     if (visited[row][col]) return; // Already visited
+
+//     visited[row][col] = 1; // Mark this cell as visited
+
+//     // Check if this cell has a queen
+//     if (board[row] == col + 1) {
+//         (*foundQueen)++;
+//         // If more than one queen is found in the zone, return immediately
+//         if (*foundQueen > 1) return;
+//     }
+
+//     // Recur for all 8 directions
+//     markZoneCells(zones, n, row - 1, col, visited, foundQueen, board); // Up
+//     markZoneCells(zones, n, row + 1, col, visited, foundQueen, board); // Down
+//     markZoneCells(zones, n, row, col - 1, visited, foundQueen, board); // Left
+//     markZoneCells(zones, n, row, col + 1, visited, foundQueen, board); // Right
+//     markZoneCells(zones, n, row - 1, col - 1, visited, foundQueen, board); // Top-left diagonal
+//     markZoneCells(zones, n, row - 1, col + 1, visited, foundQueen, board); // Top-right diagonal
+//     markZoneCells(zones, n, row + 1, col - 1, visited, foundQueen, board); // Bottom-left diagonal
+//     markZoneCells(zones, n, row + 1, col + 1, visited, foundQueen, board); // Bottom-right diagonal
+// }
+
+// // Updated function for validation
+// int isZoneValidRec(char zones[DIMENSION_MAX][DIMENSION_MAX], int n, int zoneRow, int zoneCol, int *board) {
+//     int visited[DIMENSION_MAX][DIMENSION_MAX] = {0}; // To keep track of visited cells
+//     int foundQueen = 0; // To count the queens found in the zone
+
+//     // Start DFS-like traversal from the current cell
+//     markZoneCells(zones, n, zoneRow, zoneCol, visited, &foundQueen, board);
+
+//     // If more than one queen is found in the zone, return invalid
+//     return (foundQueen <= 1);
+// }
 
 int isValidRec(int *board, int row, int col, char zones[DIMENSION_MAX][DIMENSION_MAX], int *usedZones, int i) {
     if (i >= row) {
@@ -502,17 +541,25 @@ int solve(int *board, int row, int n, int *usedColumns, int *usedZones, char zon
 // Recursive function to read the zones
 void readZonesRec(char zones[DIMENSION_MAX][DIMENSION_MAX], int n, int filled) {
     // Base case: all cells filled
-	if (filled >= n * n) return;
-	char c;
-	scanf("%c", &c);
-    if (c == ' ' || c == '\n') {
-		// Skip spaces and newlines
-        readZonesRec(zones, n, filled);
-    } else {
-		// Fill the zones
-        zones[filled / n][filled % n] = c;
-        readZonesRec(zones, n, filled + 1);
+	if (filled >= n * n) {
+        return;
     }
+	char c;
+    int getC = scanf("%c", &c);
+    if (getC != 1) {
+        if (getC == EOF) {
+            full_terminate();
+        }
+        return;
+    }
+    if (c == ' ' || c == '\n') {
+        // Skip spaces and newlines
+        readZonesRec(zones, n, filled);
+        return;
+    }
+    // Fill the zones
+    zones[filled / n][filled % n] = c;
+    readZonesRec(zones, n, filled + 1);
 }
 
 // Wrapper for the zone reader
