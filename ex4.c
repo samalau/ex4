@@ -197,7 +197,10 @@ int main() {
         if (nextMainTask == EOF) {
             break;
         }
-        if (nextMainTask != 1 || task < 1 || task > EXIT) {
+        if (nextMainTask != 1
+        || task < 1
+        || task > EXIT) {
+            // ensure default switch case
             task = 0;
         }
         scanf("%*c");
@@ -217,7 +220,7 @@ int main() {
 			case 5:
 				task5CrosswordGenerator();
 				break;
-            // 'EXIT' for global clarity (task = 6)
+            // macro 'EXIT' for global clarity (task = 6)
 			case EXIT:
 				break;
 			default:
@@ -260,9 +263,13 @@ void task1RobotPaths() {
     int valid = 0;
     printf("Please enter the coordinates of the robot (column, row):\n");
     long long x = x1(&valid);
-    if (!valid) { return; }
+    if (!valid) {
+        return;
+    }
     long long y = y1(&valid);
-    if (!valid) { return; }
+    if (!valid) {
+        return;
+    }
     task1(x, y);
 }
 
@@ -273,7 +280,8 @@ unsigned long long modMult(unsigned long long a, unsigned long long b) {
 unsigned long long cacheFactorial[FACTORIAL_MAX] = {0};
 
 unsigned long long factorial(unsigned long long n) {
-    if (n < 0 || n >= FACTORIAL_MAX) {
+    if (n < 0
+    || n >= FACTORIAL_MAX) {
         return 0;
     }
     if (n == 0) {
@@ -297,7 +305,8 @@ unsigned long long findInCache(unsigned long long goLeft,
     if (index >= CACHE_MAX) {
         return 0;
     }
-    if (cachePaths[index][0] == goLeft && cachePaths[index][1] == goDown) {
+    if (cachePaths[index][0] == goLeft
+    && cachePaths[index][1] == goDown) {
         return cachePaths[index][2];
     }
     return findInCache(goLeft, goDown, index + 1);
@@ -310,12 +319,16 @@ void saveToCache(unsigned long long goLeft,
     if (index >= CACHE_MAX) {
         return;
     }
-    if (cachePaths[index][0] == 0 && cachePaths[index][1] == 0) {
+
+    if (cachePaths[index][0] == 0
+    && cachePaths[index][1] == 0)
+    {
         cachePaths[index][0] = goLeft;
         cachePaths[index][1] = goDown;
         cachePaths[index][2] = result;
         return;
     }
+
     saveToCache(goLeft, goDown, result, index + 1);
 }
 
@@ -333,13 +346,13 @@ void saveToCache(unsigned long long goLeft,
         - Level B is the range of integers greater than or equal to 21 but less than 170 (21 <= i && i < 170)
         - Level C is the range of integers greater than or equal to 170 (170 <= i)
 **/
-unsigned long long computePaths(unsigned long long goLeft,
-                                                 unsigned long long goDown) {
-    
-    if (goLeft < 0 || goDown < 0) {
+unsigned long long computePaths(unsigned long long goLeft, unsigned long long goDown) {
+    if (goLeft < 0
+    || goDown < 0) {
         return 0;
     }
-    if (goLeft == 0 || goDown == 0) {
+    if (goLeft == 0
+    || goDown == 0) {
         return 1;
     }
 
@@ -369,8 +382,7 @@ unsigned long long computePaths(unsigned long long goLeft,
     return 0;
 }
 
-void task1(unsigned long long goLeft,
-                unsigned long long goDown) {
+void task1(unsigned long long goLeft, unsigned long long goDown) {
     unsigned long long totalDistinctPaths = computePaths(goLeft, goDown);
     printf("The total number of paths the robot can take to reach home is: %llu\n", totalDistinctPaths);
 }
@@ -413,7 +425,8 @@ int getWeight() {
                 return 0;
             }
 
-            if (input != 1 || nextWeight < 0) {
+            if (input != 1
+            || nextWeight < 0) {
                 scanf("%*[^\n]");
                 if (scanf("%*c") == EOF) {
 					fullTerminate();
@@ -423,7 +436,6 @@ int getWeight() {
                 // return to main
                 return 0;
             }
-
             // valid weight
             dataPyramid[i][j] = nextWeight;
         }
@@ -433,7 +445,6 @@ int getWeight() {
 
 void task2HumanPyramid() {
     int fullData = getWeight();
-
     if (!fullData) {
         return;
     }
@@ -449,7 +460,6 @@ void task2HumanPyramid() {
                 double weightUpRight = (j < i) ? (double)dataPyramid[i - 1][j] / 2.0 : 0;
                 weightLoad += weightUpLeft + weightUpRight;
             }
-
             dataPyramid[i][j] = weightLoad;
             printf("%.2f ", weightLoad);
         }
@@ -499,7 +509,8 @@ int processSymbol(int position,
 	int index = findIndex(symbol);
 	
     // skip invalid chars
-    if (symbol == ' ' || index == -1) {
+    if (symbol == ' '
+    || index == -1) {
         return processSymbol(position + 1, globalBalance, expected);
     }
 
@@ -512,7 +523,8 @@ int processSymbol(int position,
 
     // handle closing parentheses
     else {
-        if (*globalBalance == 0 || symbol != *expected) {
+        if (*globalBalance == 0
+        || symbol != *expected) {
 			scanf("%*[^\n]");
 			scanf("%*c");
             return 0;
@@ -558,7 +570,10 @@ void markZoneCells(char zones[DIMENSION_MAX][DIMENSION_MAX],
                                 int *board,
                                 char startZone) {
     // out of bounds
-    if (row < 0 || row >= n || col < 0 || col >= n) {
+    if (row < 0
+    || row >= n
+    || col < 0
+    || col >= n) {
         return;
     }
 
@@ -650,7 +665,8 @@ int isValidRec(int *board,
     int x2 = row + 1, y2 = col + 1;
 
     // check adjacency
-    if (abs(x2 - x1) <= 1 && abs(y2 - y1) <= 1) {
+    if (abs(x2 - x1) <= 1
+    && abs(y2 - y1) <= 1) {
         return 0;
     }
 
@@ -680,12 +696,12 @@ int isValid(int *board,
 }
 
 int solveRec(int *board,
-                        int row,
-                        int n,
-                        int *usedColumns,
-                        int *usedZones,
-                        char zones[DIMENSION_MAX][DIMENSION_MAX],
-                        int col) {
+                    int row,
+                    int n,
+                    int *usedColumns,
+                    int *usedZones,
+                    char zones[DIMENSION_MAX][DIMENSION_MAX],
+                    int col) {
     // all rows filled
 	if (row == n) {
         return 1;
@@ -736,7 +752,8 @@ void readZonesRec(char zones[DIMENSION_MAX][DIMENSION_MAX],
         }
         return;
     }
-    if (c == ' ' || c == '\n') {
+    if (c == ' '
+    || c == '\n') {
         // skip spaces and newlines
         readZonesRec(zones,
                                 n,
@@ -777,10 +794,9 @@ int readZones(char zones[DIMENSION_MAX][DIMENSION_MAX], int n) {
 }
 
 void task4QueensBattle() {
-    int n;
     printf("Please enter the dimensions of the board:\n");
+    int n;
 	int getSize = scanf(" %d", &n);
-
     if (!getSize
     || n < DIMENSION_MIN
     || n > DIMENSION_MAX) {
