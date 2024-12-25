@@ -107,9 +107,9 @@ void markZoneCells(char zones[DIMENSION_MAX][DIMENSION_MAX],
                                 int *foundQueen, int *board, char startZone);
 
 int isZoneValidRec(char zones[DIMENSION_MAX][DIMENSION_MAX],
-                                int n,
-                                int zoneRow, int zoneCol,
-                                int *board);
+                            int n,
+                            int zoneRow, int zoneCol,
+                            int *board);
 
 int isValidRec(int *board,
                         int row, int col,
@@ -334,7 +334,7 @@ void saveToCache(unsigned long long goLeft,
         - Level C is the range of integers greater than or equal to 170 (170 <= i)
 **/
 unsigned long long computePaths(unsigned long long goLeft,
-                                                    unsigned long long goDown) {
+                                                 unsigned long long goDown) {
     
     if (goLeft < 0 || goDown < 0) {
         return 0;
@@ -385,7 +385,6 @@ double level4[4];
 double level5[5];
 
 void setupPyramid() {
-
     dataPyramid[0] = level1;
     dataPyramid[1] = level2;
     dataPyramid[2] = level3;
@@ -533,7 +532,6 @@ void task3ParenthesisValidator() {
     printf("Please enter a term for validation:\n");
 
 	int isBalanced = processSymbol(0, &globalBalance, &expected);
-    
     if (!isBalanced) {
 		if (task != EXIT) {
         	printf("The parentheses are not balanced correctly.\n");
@@ -553,12 +551,12 @@ int abs(int x) {
 
 // check current cell's zone and adjacent cells for existing queens
 void markZoneCells(char zones[DIMENSION_MAX][DIMENSION_MAX],
-                                    int n,
-                                    int row, int col, 
-                                    int visited[DIMENSION_MAX][DIMENSION_MAX],
-                                    int *foundQueen,
-                                    int *board,
-                                    char startZone) {
+                                int n,
+                                int row, int col, 
+                                int visited[DIMENSION_MAX][DIMENSION_MAX],
+                                int *foundQueen,
+                                int *board,
+                                char startZone) {
     // out of bounds
     if (row < 0 || row >= n || col < 0 || col >= n) {
         return;
@@ -612,9 +610,9 @@ void markZoneCells(char zones[DIMENSION_MAX][DIMENSION_MAX],
 }
 
 int isZoneValidRec(char zones[DIMENSION_MAX][DIMENSION_MAX],
-                                    int n,
-                                    int zoneRow, int zoneCol,
-                                    int *board) {
+                            int n,
+                            int zoneRow, int zoneCol,
+                            int *board) {
     // track the visited cells
     int visited[DIMENSION_MAX][DIMENSION_MAX] = {0};
 
@@ -626,11 +624,11 @@ int isZoneValidRec(char zones[DIMENSION_MAX][DIMENSION_MAX],
 
     // check current cell's zone and adjacent cells for existing queens
     markZoneCells(zones,
-                                n,
-                                zoneRow, zoneCol,
-                                visited, &foundQueen,
-                                board,
-                                startZone);
+                            n,
+                            zoneRow, zoneCol,
+                            visited, &foundQueen,
+                            board,
+                            startZone);
 
     // return invalid if more than one queen found in zone
     return (foundQueen <= 1);
@@ -638,10 +636,10 @@ int isZoneValidRec(char zones[DIMENSION_MAX][DIMENSION_MAX],
 
 // check current cell's zone and adjacent cells for existing queens
 int isValidRec(int *board,
-                            int row, int col,
-                            char zones[DIMENSION_MAX][DIMENSION_MAX],
-                            int *usedZones,
-                            int i) {
+                        int row, int col,
+                        char zones[DIMENSION_MAX][DIMENSION_MAX],
+                        int *usedZones,
+                        int i) {
     if (i >= row) {
         unsigned char zone = (unsigned char)zones[row][col];
         // zone uniqueness
@@ -652,27 +650,31 @@ int isValidRec(int *board,
     int x2 = row + 1, y2 = col + 1;
 
     // check adjacency
-    if (abs(x2 - x1) <= 1 && abs(y2 - y1) <= 1) return 0;
+    if (abs(x2 - x1) <= 1 && abs(y2 - y1) <= 1) {
+        return 0;
+    }
 
     // check row/column exclusivity
-    if (y1 == y2) return 0;
+    if (y1 == y2) {
+        return 0;
+    }
 
     // check diagonal validity
-    if ((x2 - x1 == y2 - y1 || x2 - x1 == -(y2 - y1)) &&
-        (abs(x2 - x1) == 1 && abs(y2 - y1) == 1)) return 0;
-
+    if ((x2 - x1 == y2 - y1 || x2 - x1 == -(y2 - y1))
+    && (abs(x2 - x1) == 1 && abs(y2 - y1) == 1)) {
+        return 0;
+    }
     return isValidRec(board, row, col, zones, usedZones, i + 1);
 }
 
 // wrapper for zone validation
 int isValid(int *board,
-                        int row, int col,
-                        char zones[DIMENSION_MAX][DIMENSION_MAX],
-                        int *usedZones) {
+                int row, int col,
+                char zones[DIMENSION_MAX][DIMENSION_MAX],
+                int *usedZones) {
     if (!isValidRec(board, row, col, zones, usedZones, 0)) {
         return 0;
     }
-
     // validate current zone
     return isZoneValidRec(zones, DIMENSION_MAX, row, col, board);
 }
@@ -693,7 +695,8 @@ int solveRec(int *board,
         return 0;
     }
 
-    if (!usedColumns[col] && isValid(board, row, col, zones, usedZones)) {
+    if (!usedColumns[col]
+    && isValid(board, row, col, zones, usedZones)) {
         board[row] = col + 1;
         usedColumns[col] = 1;
         unsigned char zone = (unsigned char)zones[row][col];
@@ -709,18 +712,18 @@ int solveRec(int *board,
 
 // wrapper for the solve function
 int solve(int *board,
-                    int row,
-                    int n,
-                    int *usedColumns, int *usedZones,
-                    char zones[DIMENSION_MAX][DIMENSION_MAX]) {
+                int row,
+                int n,
+                int *usedColumns, int *usedZones,
+                char zones[DIMENSION_MAX][DIMENSION_MAX]) {
     return solveRec(board, row, n, usedColumns, usedZones, zones, 0);
 }
 
 // scan zones
 void readZonesRec(char zones[DIMENSION_MAX][DIMENSION_MAX],
-                                    int n,
-                                    int filled,
-                                    int *uniqueZones, int *usedZones) {
+                                int n,
+                                int filled,
+                                int *uniqueZones, int *usedZones) {
     // all cells filled
 	if (filled >= n * n) {
         return;
@@ -778,7 +781,9 @@ void task4QueensBattle() {
     printf("Please enter the dimensions of the board:\n");
 	int getSize = scanf(" %d", &n);
 
-    if (!getSize || n < DIMENSION_MIN || n > DIMENSION_MAX) {
+    if (!getSize
+    || n < DIMENSION_MIN
+    || n > DIMENSION_MAX) {
 		if (getSize == EOF) {
 			fullTerminate();
 		} else {
@@ -811,8 +816,11 @@ void task4QueensBattle() {
         printf("Solution:\n");
         for (int i = 0; i < n; i++) {
             for (int j = 1; j <= n; j++) {
-                if (board[i] == j) printf(QUEEN);
-                else printf(EMPTY);
+                if (board[i] == j) {
+                    printf(QUEEN);
+                } else {
+                    printf(EMPTY);
+                }
             }
             printf("\n");
         }
@@ -843,13 +851,14 @@ void displayGrid() {
 
 int validPlaceWord(int slotIndex, const char* word) {
     Slot slot = slots[slotIndex];
+
     if ((int)strlen(word) != slot.length) {
 		return 0;
 	}
+
     for (int i = 0; i < slot.length; i++) {
         int r = slot.row + (slot.direction == 'V' ? i : 0);
         int c = slot.col + (slot.direction == 'H' ? i : 0);
-
         if (grid[r][c] != '#' && grid[r][c] != word[i]) {
 			return 0;
 		}
@@ -886,8 +895,8 @@ int solveCrossword(int slotIndex) {
 		return 1;
 	}
     for (int i = 0; i < numWords; i++) {
-        if (!usedWords[i] && validPlaceWord(slotIndex, dictionary[i])) {
-
+        if (!usedWords[i]
+        && validPlaceWord(slotIndex, dictionary[i])) {
             usedWords[i] = 1;
             placeWord(slotIndex, dictionary[i]);
 
