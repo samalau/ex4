@@ -54,7 +54,7 @@ Assignment: 4
 #define MAX_DEPTH 128
 
 // task 4 macros
-#define PRINTABLE_MIN 32
+#define PRINTABLE_MIN 33
 #define PRINTABLE_MAX 126
 #define PRINTABLE_RANGE (PRINTABLE_MAX - PRINTABLE_MIN + 1)
 #define DIMENSION_MIN 1
@@ -72,13 +72,9 @@ Assignment: 4
 // task 1 helpers
 long long x1(int *valid);
 long long y1(int *valid);
-
 unsigned long long factorial(long long n);
-
 unsigned long long modMult(unsigned long long a, unsigned long long b);
-
 unsigned long long computePaths(long long goLeft, long long goDown);
-
 void task1(long long goLeft, long long goDown);
 
 
@@ -89,36 +85,26 @@ int getWeight();
 
 // task 3 helpers
 int findIndex(char symbol);
-
 int processSymbol(int position, int* globalBalance, char *expected);
-
 void task3ParenthesisValidator();
 
 
 // task 4 helpers
 int abs(int x);
-
 int markZoneCells(char zones[DIMENSION_MAX][DIMENSION_MAX], int n,
                             int row, int col, int visited[DIMENSION_MAX][DIMENSION_MAX],
                             int *foundQueen, int *board, char startZone);
-
 int isZoneValidRec(char zones[DIMENSION_MAX][DIMENSION_MAX], int n,  int zoneRow, int zoneCol, int *board);
-
 int isValidRec(int *board, int row, int col, char zones[DIMENSION_MAX][DIMENSION_MAX],
                     int *usedZones, int i);
-
 int isValid(int *board,  int row, int col,
                 char zones[DIMENSION_MAX][DIMENSION_MAX], int *usedZones);
-
 int solveRec(int *board, int row, int n, int *usedColumns, int *usedZones,
                     char zones[DIMENSION_MAX][DIMENSION_MAX], int col);
-
 int solve(int *board, int row,  int n, int *usedColumns, int *usedZones,
                 char zones[DIMENSION_MAX][DIMENSION_MAX]);
-
 int readZonesRec(char zones[DIMENSION_MAX][DIMENSION_MAX],
                             int n, int row, int column, int *uniqueZones, int *usedZones);
-
 int readZones(char zones[DIMENSION_MAX][DIMENSION_MAX], int n);
 
 
@@ -182,8 +168,8 @@ int main() {
         || task > EXIT) {
             // ensure default switch case
             task = 0;
-            printf("Please choose a task number from the list.\n");
             scanf("%*[^\n]");
+            printf("Please choose a task number from the list.\n");
             continue;
         }
         scanf("%*c");
@@ -208,7 +194,6 @@ int main() {
 				break;
 			default:
 				printf("Please choose a task number from the list.\n");
-                scanf("%*[^\n]");
 				break;
 		}
 	} while (task != EXIT);
@@ -217,7 +202,6 @@ int main() {
 }
 
 // TASK 1 ROBOT PATHS
-
 // TASK 1: VALIDATE: X COORDINATE
 long long x1(int *valid) {
     long long x;
@@ -422,10 +406,10 @@ void task2HumanPyramid() {
     printf("The total weight on each cheerleader is:\n");
     for (int i = 0; i < 5; i++) {
         for (int j = 0; j <= i; j++) {
-            double weightLoad = dataPyramid[i][j];
+            float weightLoad = dataPyramid[i][j];
             if (i > 0) {
-                double weightUpLeft = (j > 0) ? (double)dataPyramid[i - 1][j - 1] / 2.0 : 0;
-                double weightUpRight = (j < i) ? (double)dataPyramid[i - 1][j] / 2.0 : 0;
+                float weightUpLeft = (j > 0) ? (float)dataPyramid[i - 1][j - 1] / 2.0 : 0;
+                float weightUpRight = (j < i) ? (float)dataPyramid[i - 1][j] / 2.0 : 0;
                 weightLoad += weightUpLeft + weightUpRight;
             }
             dataPyramid[i][j] = weightLoad;
@@ -585,11 +569,11 @@ int isZoneValidRec(char zones[DIMENSION_MAX][DIMENSION_MAX], int n, int zoneRow,
 
 // check current cell's zone and adjacent cells for existing queens
 int isValidRec(int *board, int row, int col, char zones[DIMENSION_MAX][DIMENSION_MAX], int *usedZones, int i) {
-    if (zones[row][col] < PRINTABLE_MIN || zones[row][col] > PRINTABLE_MAX) {
-        return 0;
-    }
+    // if (zones[row][col] < PRINTABLE_MIN || zones[row][col] > PRINTABLE_MAX) {
+    //     return 0;
+    // }
     if (i >= row) {
-        unsigned char zone = (unsigned char)zones[row][col];
+        unsigned char zone = zones[row][col];
         // zone uniqueness
         return !(usedZones[zone]);
     }
@@ -613,9 +597,7 @@ int isValidRec(int *board, int row, int col, char zones[DIMENSION_MAX][DIMENSION
 }
 
 // wrapper for zone validation
-int isValid(int *board, int row, int col,
-                char zones[DIMENSION_MAX][DIMENSION_MAX],
-                int *usedZones) {
+int isValid(int *board, int row, int col, char zones[DIMENSION_MAX][DIMENSION_MAX], int *usedZones) {
     if (!isValidRec(board, row, col, zones, usedZones, 0)) {
         return 0;
     }
@@ -656,40 +638,93 @@ int solveRec(int *board, int row, int n, int *usedColumns, int *usedZones,
     return solveRec(board, row, n, usedColumns, usedZones, zones, col + 1);
 }
 
-// scan zones
+
 int readZonesRec(char zones[DIMENSION_MAX][DIMENSION_MAX],
                             int n, int row, int col, int *uniqueZones, int *usedZones) {
     // all cells filled
-	if (row == n || *uniqueZones == n) {
+    if (row == n || *uniqueZones == n) {
         return 1;
     }
-	char c;
-    int input = scanf("%c", &c);
+
+    char c;
+    int input = scanf(" %c", &c);
+    // printf("%c", c);
     if (input != 1) {
         if (input == EOF) {
             fullTerminate();
+            return 0;
         }
-        return 0;
+        // scanf("%*[^\n]");
+        // scanf("%*c");
+        return readZonesRec(zones, n, row, col, uniqueZones, usedZones);
+        // return 0;
     }
-    // skip spaces and newlines
-    if (c == ' ' || c == '\n' || c == '\t') {
-        return readZonesRec(zones, n, row + (col == n ? 1 : 0), (col == n ? 0 : col), uniqueZones, usedZones);
-    }
+
+    // skip spaces, newlines, and tabs
+    // if (c == ' ' || c == '\n' || c == '\t') {
+    //     return readZonesRec(zones, n, row, col, uniqueZones, usedZones);
+    // }
+
     // validate zones requirements
     if (c < PRINTABLE_MIN || c > PRINTABLE_MAX) {
         return 0;
     }
+
+    // place the valid character in the zone
     zones[row][col] = c;
     int index = c - PRINTABLE_MIN;
     if (index < 0 || index >= PRINTABLE_RANGE) {
         return 0;
     }
+
+    // track unique zones
     if (!usedZones[index]) {
         usedZones[index] = 1;
         (*uniqueZones)++;
     }
-   return readZonesRec(zones, n, row + (col + 1 == n), (col + 1) % n, uniqueZones, usedZones);
+
+    // move to the next cell
+    int nextRow = row + (col + 1 == n);
+    int nextCol = (col + 1) % n;
+    return readZonesRec(zones, n, nextRow, nextCol, uniqueZones, usedZones);
 }
+
+
+// // scan zones
+// int readZonesRec(char zones[DIMENSION_MAX][DIMENSION_MAX],
+//                             int n, int row, int col, int *uniqueZones, int *usedZones) {
+//     // all cells filled
+// 	if (row == n || *uniqueZones == n) {
+//         return 1;
+//     }
+// 	char c;
+//     int input = scanf("%c", &c);
+//     if (input != 1) {
+//         if (input == EOF) {
+//             fullTerminate();
+//         }
+//         return 0;
+//     }
+//     // skip spaces and newlines
+//     if (c == ' ' || c == '\n' || c == '\t') {
+//         return readZonesRec(zones, n, row, col, uniqueZones, usedZones);
+//     }
+//     // validate zones requirements
+//     if (c < PRINTABLE_MIN || c > PRINTABLE_MAX) {
+//         return 0;
+//     }
+//     zones[row][col] = c;
+//     int index = c - PRINTABLE_MIN;
+//     if (index < 0 || index >= PRINTABLE_RANGE) {
+//         return 0;
+//     }
+//     // track unique zones
+//     if (!usedZones[index]) {
+//         usedZones[index] = 1;
+//         (*uniqueZones)++;
+//     }
+//    return readZonesRec(zones, n, row + (col + 1 == n), (col + 1) % n, uniqueZones, usedZones);
+// }
 
 int readZones(char zones[DIMENSION_MAX][DIMENSION_MAX], int n) {
     // count number of unique zones
@@ -698,8 +733,6 @@ int readZones(char zones[DIMENSION_MAX][DIMENSION_MAX], int n) {
     int usedZones[PRINTABLE_RANGE] = {0};
     // process zones from input and validate number of unique zones
     if (!readZonesRec(zones, n, 0, 0, &uniqueZones, usedZones) || uniqueZones != n || task == EXIT) {
-        scanf("%*[^\n]");
-        scanf("%*c");
         return 0;
     }
     return 1;
@@ -716,20 +749,14 @@ void task4QueensBattle() {
 			fullTerminate();
 		} else {
 			printf("This puzzle cannot be solved.\n");
-            scanf("%*[^\n]");
-            scanf("%*c");
 		}
         return;
     }
 
-	// consume leftover newline from input buffer
-	// scanf("%*c");
     printf("Please enter the %d*%d puzzle board:\n", n, n);
     char zones[DIMENSION_MAX][DIMENSION_MAX];
     if (!readZones(zones, n)) {
         printf("This puzzle cannot be solved.\n");
-        scanf("%*[^\n]");
-        scanf("%*c");
         return;
     }
     // initialize board and tracking arrays
@@ -750,14 +777,11 @@ void task4QueensBattle() {
             printf("\n");
         }
     } else {
-        scanf("%*[^\n]");
-        scanf("%*c");
         printf("This puzzle cannot be solved.\n");
     }
 }
 
 // TASK 5 CROSSWORD
-
 void initializeGrid() {
     for (int i = 0; i < gridSize; i++) {
         for (int j = 0; j < gridSize; j++) {
