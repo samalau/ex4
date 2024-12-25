@@ -54,6 +54,9 @@ Assignment: 4
 #define MAX_DEPTH 128
 
 // task 4 macros
+#define PRINTABLE_MIN 32
+#define PRINTABLE_MAX 126
+#define PRINTABLE_RANGE (PRINTABLE_MAX - PRINTABLE_MIN + 1)
 #define DIMENSION_MIN 1
 #define DIMENSION_MAX 20
 
@@ -680,11 +683,18 @@ int solveRec(int *board, int row, int n,
     if (col >= n) {
         return 0;
     }
-
+    if (zones[row][col] == '\0'
+    || zones[row][col] == '\n'
+    || zones[row][col] == '\t'
+    || zones[row][col] < 33
+    || zones[row][col] > 126) {
+        // invalid char
+        return 0;
+    }
     if (!usedColumns[col] && isValid(board, row, col, zones, usedZones)) {
+        unsigned char zone = (unsigned char)zones[row][col];
         board[row] = col + 1;
         usedColumns[col] = 1;
-        unsigned char zone = (unsigned char)zones[row][col];
         usedZones[zone] = 1;
 
         if (solveRec(board, row + 1, n, usedColumns, usedZones, zones, 0)) {
@@ -694,6 +704,7 @@ int solveRec(int *board, int row, int n,
         usedColumns[col] = 0;
         usedZones[zone] = 0;
     }
+
     return solveRec(board, row, n, usedColumns, usedZones, zones, col + 1);
 }
 
@@ -703,11 +714,10 @@ int solve(int *board, int row, int n,  int *usedColumns, int *usedZones,
     return solveRec(board, row, n, usedColumns, usedZones, zones, 0);
 }
 
-int debugcount = 0;
 // scan zones
 int readZonesRec(char *buffer,  char zones[DIMENSION_MAX][DIMENSION_MAX],
                             int n, int *filled, int *uniqueZones, int *usedZones) {
-    printf("Filled: %d\n", *filled);
+    
     // all cells filled
 	if (*filled >= n * n) {
         return 1;
@@ -716,7 +726,7 @@ int readZonesRec(char *buffer,  char zones[DIMENSION_MAX][DIMENSION_MAX],
 	char c;
     int input = scanf("%c", &c);
 
-    if (input != 1) {
+    if (input != 1 || c < PRINTABLE_MIN || c > PRINTABLE_MAX) {
         if (input == EOF) {
             fullTerminate();
         }
@@ -730,9 +740,9 @@ int readZonesRec(char *buffer,  char zones[DIMENSION_MAX][DIMENSION_MAX],
 
     // ensure dimension * dimension chars
     buffer[*filled] = c;
-
-    if (!usedZones[(unsigned char)c]) {
-        usedZones[(unsigned char)c] = 1;
+    int index = c - PRINTABLE_MIN;
+    if (!usedZones[index]) {
+        usedZones[index] = 1;
         (*uniqueZones)++;
     }
     // fill the zones
@@ -746,7 +756,7 @@ int readZones(char buffer[DIMENSION_MAX * DIMENSION_MAX + 1], char zones[DIMENSI
     // buffer index to ensure dimension*dimension char
     int filled = 0;
     // zone label (ASCII) character tracker
-    int usedZones[256] = {0};
+    int usedZones[PRINTABLE_RANGE] = {0};
     // count number of unique zones
     int uniqueZones = 0;      
     // process zones from input and validate number of unique zones
@@ -754,6 +764,7 @@ int readZones(char buffer[DIMENSION_MAX * DIMENSION_MAX + 1], char zones[DIMENSI
         printf("AHHH\n");
         return 0;
     }
+    printf("HELLO\n");
     return 1;
 }
 
@@ -787,7 +798,7 @@ void task4QueensBattle() {
     int board[DIMENSION_MAX] = {0};
     int usedColumns[DIMENSION_MAX] = {0};
 	// allow all ASCII characters as zone labels (empty char will be skipped upon scan)
-    int usedZones[256] = {0};
+    int usedZones[PRINTABLE_RANGE] = {0};
 
     printf("OMGOMGOMG\n");
 
