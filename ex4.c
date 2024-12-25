@@ -72,14 +72,11 @@ long long y1(int *valid);
 
 unsigned long long factorial(unsigned long long n);
 
-unsigned long long modMult(unsigned long long a,
-                                            unsigned long long b);
+unsigned long long modMult(unsigned long long a, unsigned long long b);
 
-unsigned long long computePaths(unsigned long long goLeft,
-                                                    unsigned long long goDown);
+unsigned long long computePaths(long long goLeft, long long goDown);
 
-void task1(unsigned long long goLeft,
-                unsigned long long goDown);
+void task1(long long goLeft, long long goDown);
 
 
 // task 2 helpers
@@ -280,8 +277,7 @@ unsigned long long modMult(unsigned long long a, unsigned long long b) {
 unsigned long long cacheFactorial[FACTORIAL_MAX] = {0};
 
 unsigned long long factorial(unsigned long long n) {
-    if (n < 0
-    || n >= FACTORIAL_MAX) {
+    if (n >= FACTORIAL_MAX) {
         return 0;
     }
     if (n == 0) {
@@ -346,7 +342,7 @@ void saveToCache(unsigned long long goLeft,
         - Level B is the range of integers greater than or equal to 21 but less than 170 (21 <= i && i < 170)
         - Level C is the range of integers greater than or equal to 170 (170 <= i)
 **/
-unsigned long long computePaths(unsigned long long goLeft, unsigned long long goDown) {
+unsigned long long computePaths(long long goLeft, long long goDown) {
     if (goLeft < 0
     || goDown < 0) {
         return 0;
@@ -361,7 +357,7 @@ unsigned long long computePaths(unsigned long long goLeft, unsigned long long go
     
     // LEVEL A
     if (level == 0) {
-        return computePaths(goLeft - 1, goDown) + computePaths(goLeft, goDown - 1);
+        return (unsigned long long)computePaths(goLeft - 1, goDown) + (unsigned long long)computePaths(goLeft, goDown - 1);
     }
 
     // LEVEL B
@@ -382,7 +378,7 @@ unsigned long long computePaths(unsigned long long goLeft, unsigned long long go
     return 0;
 }
 
-void task1(unsigned long long goLeft, unsigned long long goDown) {
+void task1(long long goLeft, long long goDown) {
     unsigned long long totalDistinctPaths = computePaths(goLeft, goDown);
     printf("The total number of paths the robot can take to reach home is: %llu\n", totalDistinctPaths);
 }
