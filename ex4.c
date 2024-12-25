@@ -97,7 +97,7 @@ void task3ParenthesisValidator();
 // task 4 helpers
 int abs(int x);
 
-void markZoneCells(char zones[DIMENSION_MAX][DIMENSION_MAX],
+int markZoneCells(char zones[DIMENSION_MAX][DIMENSION_MAX],
                                 int n,
                                 int row, int col, 
                                 int visited[DIMENSION_MAX][DIMENSION_MAX],
@@ -357,7 +357,7 @@ unsigned long long computePaths(long long goLeft, long long goDown) {
     
     // LEVEL A
     if (level == 0) {
-        return (unsigned long long)computePaths(goLeft - 1, goDown) + (unsigned long long)computePaths(goLeft, goDown - 1);
+        return computePaths(goLeft - 1, goDown) + computePaths(goLeft, goDown - 1);
     }
 
     // LEVEL B
@@ -558,29 +558,21 @@ int abs(int x) {
 }
 
 // check current cell's zone and adjacent cells for existing queens
-void markZoneCells(char zones[DIMENSION_MAX][DIMENSION_MAX],
+int markZoneCells(char zones[DIMENSION_MAX][DIMENSION_MAX],
                                 int n,
                                 int row, int col, 
                                 int visited[DIMENSION_MAX][DIMENSION_MAX],
                                 int *foundQueen,
                                 int *board,
                                 char startZone) {
+    if (
     // out of bounds
-    if (row < 0
-    || row >= n
-    || col < 0
-    || col >= n) {
-        return;
-    }
-
+    row < 0 || row >= n || col < 0 || col >= n
     // already visited
-    if (visited[row][col]) {
-        return;
-    }
-
+    || visited[row][col]
     // different zone
-    if (zones[row][col] != startZone) {
-        return;
+    || zones[row][col] != startZone) {
+        return 0;
     }
 
     // mark cell as visited
@@ -591,33 +583,43 @@ void markZoneCells(char zones[DIMENSION_MAX][DIMENSION_MAX],
         (*foundQueen)++;
         // return immediately if more than one queen found in zone
         if (*foundQueen > 1) {
-            return;
+            return 1;
         }
     }
 
     // UP
-    markZoneCells(zones, n, row - 1, col, visited, foundQueen, board, startZone);
-
+    if (markZoneCells(zones, n, row - 1, col, visited, foundQueen, board, startZone)) {
+        return 1;
+    }
      // DOWN
-    markZoneCells(zones, n, row + 1, col, visited, foundQueen, board, startZone);
-
+    if (markZoneCells(zones, n, row + 1, col, visited, foundQueen, board, startZone)) {
+        return 1;
+    }
     // LEFT
-    markZoneCells(zones, n, row, col - 1, visited, foundQueen, board, startZone);
-
+    if (markZoneCells(zones, n, row, col - 1, visited, foundQueen, board, startZone)) {
+        return 1;
+    }
     // RIGHT
-    markZoneCells(zones, n, row, col + 1, visited, foundQueen, board, startZone);
-
+    if (markZoneCells(zones, n, row, col + 1, visited, foundQueen, board, startZone)) {
+        return 1;
+    }
     // UP-LEFT DIAGONAL
-    markZoneCells(zones, n, row - 1, col - 1, visited, foundQueen, board, startZone);
-
+    if (markZoneCells(zones, n, row - 1, col - 1, visited, foundQueen, board, startZone)) {
+        return 1;
+    }
     // UP-RIGHT DIAGONAL
-    markZoneCells(zones, n, row - 1, col + 1, visited, foundQueen, board, startZone);
-
+    if (markZoneCells(zones, n, row - 1, col + 1, visited, foundQueen, board, startZone)) {
+        return 1;
+    }
     // DOWN-LEFT DIAGONAL
-    markZoneCells(zones, n, row + 1, col - 1, visited, foundQueen, board, startZone);
-
+    if (markZoneCells(zones, n, row + 1, col - 1, visited, foundQueen, board, startZone)) {
+        return 1;
+    }
     // DOWN-RIGHT DIAGONAL
-    markZoneCells(zones, n, row + 1, col + 1, visited, foundQueen, board, startZone);
+    if (markZoneCells(zones, n, row + 1, col + 1, visited, foundQueen, board, startZone)) {
+        return 1;
+    }
+    return 0;
 }
 
 int isZoneValidRec(char zones[DIMENSION_MAX][DIMENSION_MAX],
@@ -646,31 +648,25 @@ int isZoneValidRec(char zones[DIMENSION_MAX][DIMENSION_MAX],
 }
 
 // check current cell's zone and adjacent cells for existing queens
-int isValidRec(int *board,
-                        int row, int col,
-                        char zones[DIMENSION_MAX][DIMENSION_MAX],
-                        int *usedZones,
-                        int i) {
+int isValidRec(int *board, int row, int col,
+                     char zones[DIMENSION_MAX][DIMENSION_MAX],
+                     int *usedZones, int i) {
     if (i >= row) {
         unsigned char zone = (unsigned char)zones[row][col];
         // zone uniqueness
         return !(usedZones[zone]);
     }
-
     int x1 = i + 1, y1 = board[i];
     int x2 = row + 1, y2 = col + 1;
-
     // check adjacency
     if (abs(x2 - x1) <= 1
     && abs(y2 - y1) <= 1) {
         return 0;
     }
-
     // check row/column exclusivity
     if (y1 == y2) {
         return 0;
     }
-
     // check diagonal validity
     if ((x2 - x1 == y2 - y1 || x2 - x1 == -(y2 - y1))
     && (abs(x2 - x1) == 1 && abs(y2 - y1) == 1)) {
@@ -707,12 +703,12 @@ int solveRec(int *board,
         return 0;
     }
 
-    if (!usedColumns[col]
-    && isValid(board, row, col, zones, usedZones)) {
+    if (!usedColumns[col] && isValid(board, row, col, zones, usedZones)) {
         board[row] = col + 1;
         usedColumns[col] = 1;
         unsigned char zone = (unsigned char)zones[row][col];
         usedZones[zone] = 1;
+
         if (solveRec(board, row + 1, n, usedColumns, usedZones, zones, 0)) {
             return 1;
         }
@@ -741,15 +737,14 @@ void readZonesRec(char zones[DIMENSION_MAX][DIMENSION_MAX],
         return;
     }
 	char c;
-    int getC = scanf("%c", &c);
-    if (getC != 1) {
-        if (getC == EOF) {
+    int input = scanf("%c", &c);
+    if (input != 1) {
+        if (input == EOF) {
             fullTerminate();
         }
         return;
     }
-    if (c == ' '
-    || c == '\n') {
+    if (c == ' ' || c == '\n') {
         // skip spaces and newlines
         readZonesRec(zones,
                                 n,
@@ -764,11 +759,7 @@ void readZonesRec(char zones[DIMENSION_MAX][DIMENSION_MAX],
     }
     // fill the zones
     zones[filled / n][filled % n] = c;
-    readZonesRec(zones,
-                            n,
-                            filled + 1,
-                            uniqueZones,
-                            usedZones);
+    readZonesRec(zones, n, filled + 1, uniqueZones, usedZones);
 }
 
 int readZones(char zones[DIMENSION_MAX][DIMENSION_MAX], int n) {
