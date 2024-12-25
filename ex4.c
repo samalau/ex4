@@ -546,20 +546,13 @@ void task3ParenthesisValidator() {
 
 
 // TASK 4 QUEEN BATTLE
-
 // compute absolute val
 int abs(int x) {
     return x < 0 ? -x : x;
 }
-
 // check current cell's zone and adjacent cells for existing queens
-int markZoneCells(char zones[DIMENSION_MAX][DIMENSION_MAX],
-                                int n,
-                                int row, int col, 
-                                int visited[DIMENSION_MAX][DIMENSION_MAX],
-                                int *foundQueen,
-                                int *board,
-                                char startZone) {
+int markZoneCells(char zones[DIMENSION_MAX][DIMENSION_MAX], int n, int row, int col,
+                            int visited[DIMENSION_MAX][DIMENSION_MAX], int *foundQueen, int *board, char startZone) {
     if (
     // out of bounds
     row < 0 || row >= n || col < 0 || col >= n
@@ -569,10 +562,8 @@ int markZoneCells(char zones[DIMENSION_MAX][DIMENSION_MAX],
     || zones[row][col] != startZone) {
         return 0;
     }
-
     // mark cell as visited
     visited[row][col] = 1;
-
     // check if cell has queen
     if (board[row] == col + 1) {
         (*foundQueen)++;
@@ -581,7 +572,6 @@ int markZoneCells(char zones[DIMENSION_MAX][DIMENSION_MAX],
             return 1;
         }
     }
-
     // UP
     if (markZoneCells(zones, n, row - 1, col, visited, foundQueen, board, startZone)) {
         return 1;
@@ -621,25 +611,21 @@ int isZoneValidRec(char zones[DIMENSION_MAX][DIMENSION_MAX],
                             int n, int zoneRow, int zoneCol, int *board) {
     // track the visited cells
     int visited[DIMENSION_MAX][DIMENSION_MAX] = {0};
-
     // count the queens found in zone
     int foundQueen = 0; 
-
     // set the starting zone label
     char startZone = zones[zoneRow][zoneCol]; 
-
     // check current cell's zone and adjacent cells for existing queens
-    markZoneCells(zones, n, zoneRow, zoneCol, visited,
-                            &foundQueen, board, startZone);
-
+    markZoneCells(zones, n, zoneRow, zoneCol, visited, &foundQueen, board, startZone);
     // return invalid if more than one queen found in zone
     return (foundQueen <= 1);
 }
 
 // check current cell's zone and adjacent cells for existing queens
-int isValidRec(int *board, int row, int col,
-                     char zones[DIMENSION_MAX][DIMENSION_MAX],
-                     int *usedZones, int i) {
+int isValidRec(int *board, int row, int col, char zones[DIMENSION_MAX][DIMENSION_MAX], int *usedZones, int i) {
+    if (zones[row][col] < PRINTABLE_MIN || zones[row][col] > PRINTABLE_MAX) {
+        return 0;
+    }
     if (i >= row) {
         unsigned char zone = (unsigned char)zones[row][col];
         // zone uniqueness
@@ -675,10 +661,8 @@ int isValid(int *board, int row, int col,
     return isZoneValidRec(zones, DIMENSION_MAX, row, col, board);
 }
 
-int solveRec(int *board, int row, int n,
-                    int *usedColumns, int *usedZones,
-                    char zones[DIMENSION_MAX][DIMENSION_MAX],
-                    int col) {
+int solveRec(int *board, int row, int n, int *usedColumns, int *usedZones,
+                    char zones[DIMENSION_MAX][DIMENSION_MAX], int col) {
     // all rows filled
 	if (row == n) {
         return 1;
@@ -687,20 +671,19 @@ int solveRec(int *board, int row, int n,
     if (col >= n) {
         return 0;
     }
-    if (zones[row][col] == '\0'
-    || zones[row][col] == '\n'
-    || zones[row][col] == '\t'
-    || zones[row][col] < 33
-    || zones[row][col] > 126) {
-        // invalid char
-        return 0;
-    }
+    // if (zones[row][col] == '\0'
+    // || zones[row][col] == '\n'
+    // || zones[row][col] == '\t'
+    // || zones[row][col] < 33
+    // || zones[row][col] > 126) {
+    //     // invalid char
+    //     return 0;
+    // }
     if (!usedColumns[col] && isValid(board, row, col, zones, usedZones)) {
         unsigned char zone = (unsigned char)zones[row][col];
         board[row] = col + 1;
         usedColumns[col] = 1;
         usedZones[zone] = 1;
-
         if (solveRec(board, row + 1, n, usedColumns, usedZones, zones, 0)) {
             return 1;
         }
@@ -708,27 +691,18 @@ int solveRec(int *board, int row, int n,
         usedColumns[col] = 0;
         usedZones[zone] = 0;
     }
-
     return solveRec(board, row, n, usedColumns, usedZones, zones, col + 1);
-}
-
-// wrapper for the solve function
-int solve(int *board, int row, int n,  int *usedColumns, int *usedZones,
-                char zones[DIMENSION_MAX][DIMENSION_MAX]) {
-    return solveRec(board, row, n, usedColumns, usedZones, zones, 0);
 }
 
 // scan zones
 int readZonesRec(char zones[DIMENSION_MAX][DIMENSION_MAX],
                             int n, int row, int col, int *uniqueZones, int *usedZones) {
     // all cells filled
-	if (*uniqueZones == n) {
+	if (row == n || *uniqueZones == n) {
         return 1;
     }
-
 	char c;
     int input = scanf("%c", &c);
-
     if (input != 1) {
         if (input == EOF) {
             fullTerminate();
@@ -737,41 +711,35 @@ int readZonesRec(char zones[DIMENSION_MAX][DIMENSION_MAX],
     }
     // skip spaces and newlines
     if (c == ' ' || c == '\n' || c == '\t') {
-        return readZonesRec(zones, n, row, col, uniqueZones, usedZones);
+        return readZonesRec(zones, n, row + (col == n ? 1 : 0), (col == n ? 0 : col), uniqueZones, usedZones);
     }
-    // validate zone char
+    // validate zones requirements
     if (c < PRINTABLE_MIN || c > PRINTABLE_MAX) {
         return 0;
     }
-    // validate zones requirements
     zones[row][col] = c;
     int index = c - PRINTABLE_MIN;
+    if (index < 0 || index >= PRINTABLE_RANGE) {
+        return 0;
+    }
     if (!usedZones[index]) {
         usedZones[index] = 1;
         (*uniqueZones)++;
     }
-    // fill the zones
-    // zones[*filled / n][*filled % n] = c;
-   if (col + 1 == n) {
-        return readZonesRec(zones, n, row + 1, 0, uniqueZones, usedZones);
-    } else {
-        return readZonesRec(zones, n, row, col + 1, uniqueZones, usedZones);
-    }
-    // return readZonesRec(zones, n, filled, uniqueZones, usedZones);
+   return readZonesRec(zones, n, row + (col + 1 == n), (col + 1) % n, uniqueZones, usedZones);
 }
 
 int readZones(char zones[DIMENSION_MAX][DIMENSION_MAX], int n) {
-    // buffer index to ensure dimension*dimension char
     // count number of unique zones
-    int uniqueZones = 0;     
+    int uniqueZones = 0;
     // zone label (ASCII) character tracker
     int usedZones[PRINTABLE_RANGE] = {0};
     // process zones from input and validate number of unique zones
     if (!readZonesRec(zones, n, 0, 0, &uniqueZones, usedZones) || uniqueZones != n || task == EXIT) {
-        printf("AHHH\n");
+        scanf("%*[^\n]");
+        scanf("%*c");
         return 0;
     }
-    printf("HELLO\n");
     return 1;
 }
 
@@ -785,6 +753,7 @@ void task4QueensBattle() {
 		if (getSize == EOF) {
 			fullTerminate();
 		} else {
+            scanf("%*c");
 			printf("This puzzle cannot be solved.\n");
 		}
         return;
@@ -795,21 +764,16 @@ void task4QueensBattle() {
     printf("Please enter the %d*%d puzzle board:\n", n, n);
     char zones[DIMENSION_MAX][DIMENSION_MAX];
     if (!readZones(zones, n)) {
-        printf("YOYOYO");
         printf("This puzzle cannot be solved.\n");
+        scanf("%*c");
         return;
     }
-
     // initialize board and tracking arrays
-
     int board[DIMENSION_MAX] = {0};
     int usedColumns[DIMENSION_MAX] = {0};
 	// allow all ASCII characters as zone labels (empty char will be skipped upon scan)
     int usedZones[PRINTABLE_RANGE] = {0};
-
-    printf("OMGOMGOMG\n");
-
-    if (solve(board, 0, n, usedColumns, usedZones, zones)) {
+    if (solveRec(board, 0, n, usedColumns, usedZones, zones, 0)) {
         printf("Solution:\n");
         for (int i = 0; i < n; i++) {
             for (int j = 1; j <= n; j++) {
@@ -822,6 +786,7 @@ void task4QueensBattle() {
             printf("\n");
         }
     } else {
+        scanf("%*c");
         printf("This puzzle cannot be solved.\n");
     }
 }
