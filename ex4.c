@@ -131,7 +131,7 @@ int solve(int *board,
                 int *usedColumns, int *usedZones,
                 char zones[DIMENSION_MAX][DIMENSION_MAX]);
 
-void readZonesRec(char zones[DIMENSION_MAX][DIMENSION_MAX],
+int readZonesRec(char zones[DIMENSION_MAX][DIMENSION_MAX],
                                 int n,
                                 int filled,
                                 int *uniqueZones, int *usedZones);
@@ -342,6 +342,7 @@ void saveToCache(unsigned long long goLeft,
         - Level B is the range of integers greater than or equal to 21 but less than 170 (21 <= i && i < 170)
         - Level C is the range of integers greater than or equal to 170 (170 <= i)
 **/
+
 unsigned long long computePaths(long long goLeft, long long goDown) {
     if (goLeft < 0
     || goDown < 0) {
@@ -728,13 +729,13 @@ int solve(int *board,
 }
 
 // scan zones
-void readZonesRec(char zones[DIMENSION_MAX][DIMENSION_MAX],
+int readZonesRec(char zones[DIMENSION_MAX][DIMENSION_MAX],
                                 int n,
                                 int filled,
                                 int *uniqueZones, int *usedZones) {
     // all cells filled
 	if (filled >= n * n) {
-        return;
+        return 1;
     }
 	char c;
     int input = scanf("%c", &c);
@@ -742,16 +743,11 @@ void readZonesRec(char zones[DIMENSION_MAX][DIMENSION_MAX],
         if (input == EOF) {
             fullTerminate();
         }
-        return;
+        return 0;
     }
     if (c == ' ' || c == '\n') {
         // skip spaces and newlines
-        readZonesRec(zones,
-                                n,
-                                filled,
-                                uniqueZones,
-                                usedZones);
-        return;
+        return readZonesRec(zones, n, filled, uniqueZones, usedZones);
     }
     if (!usedZones[(unsigned char)c]) {
         usedZones[(unsigned char)c] = 1;
@@ -759,21 +755,16 @@ void readZonesRec(char zones[DIMENSION_MAX][DIMENSION_MAX],
     }
     // fill the zones
     zones[filled / n][filled % n] = c;
-    readZonesRec(zones, n, filled + 1, uniqueZones, usedZones);
+    return readZonesRec(zones, n, filled + 1, uniqueZones, usedZones);
 }
 
 int readZones(char zones[DIMENSION_MAX][DIMENSION_MAX], int n) {
     // zone label (ASCII) character tracker
     int usedZones[256] = {0};
-
     // count number of unique zones
     int uniqueZones = 0;      
-
-    // process zones from input
-    readZonesRec(zones, n, 0, &uniqueZones, usedZones);
-
-    // validate number of unique zones
-    if (uniqueZones != n || task == EXIT) {
+    // process zones from input and validate number of unique zones
+    if (!readZonesRec(zones, n, 0, &uniqueZones, usedZones) || uniqueZones != n || task == EXIT) {
         return 0;
     } else {
         return 1;
@@ -796,9 +787,8 @@ void task4QueensBattle() {
     }
 
 	// consume leftover newline from input buffer
-	scanf("%*c");
+	// scanf("%*c");
     printf("Please enter the %d*%d puzzle board:\n", n, n);
-
     char zones[DIMENSION_MAX][DIMENSION_MAX];
     if (!readZones(zones, n)) {
         printf("This puzzle cannot be solved.\n");
@@ -854,11 +844,9 @@ void displayGrid() {
 
 int validPlaceWord(int slotIndex, const char* word) {
     Slot slot = slots[slotIndex];
-
     if ((int)strlen(word) != slot.length) {
 		return 0;
 	}
-
     for (int i = 0; i < slot.length; i++) {
         int r = slot.row + (slot.direction == 'V' ? i : 0);
         int c = slot.col + (slot.direction == 'H' ? i : 0);
