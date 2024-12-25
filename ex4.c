@@ -298,7 +298,6 @@ void saveToCache(unsigned long long goLeft, unsigned long long goDown,
     if (index >= CACHE_MAX) {
         return;
     }
-
     if (cachePaths[index][0] == 0
     && cachePaths[index][1] == 0)
     {
@@ -307,14 +306,12 @@ void saveToCache(unsigned long long goLeft, unsigned long long goDown,
         cachePaths[index][2] = result;
         return;
     }
-
     saveToCache(goLeft, goDown, result, index + 1);
 }
 
 /**
-    Overflow Protection (Task 1)
     Three levels have been defined in order to mitigate the risk of improper handling of large input values.
-    Each of these three levels has been designated a range of values and an identifier. These identifiers are A, B, and C.
+    Each of these three levels has been designated a range of values and an identifier. These identifiers are A, B, C.
     Coordinate pairs are designated to their respective levels based on the sums of their values.
     As a result, if one value of a pair is significantly higher than the other of that pair,
     the pathway taken will be that which has been optimized for the larger value,
@@ -325,7 +322,6 @@ void saveToCache(unsigned long long goLeft, unsigned long long goDown,
         - Level B is the range of integers greater than or equal to 21 but less than 170 (21 <= i && i < 170)
         - Level C is the range of integers greater than or equal to 170 (170 <= i)
 **/
-
 unsigned long long computePaths(long long goLeft, long long goDown) {
     if (goLeft < 0
     || goDown < 0) {
@@ -440,9 +436,7 @@ void task2HumanPyramid() {
     return;
 }
 
-
 // TASK 3 PARENTHESIS VALIDATION
-
 char validSymbols[8] = {
 	'(', ')',
 	'[', ']',
@@ -464,9 +458,7 @@ extract parentheses
 0: unbalanced
 1: balanced
 **/
-int processSymbol(int position,
-                            int* globalBalance,
-                            char *expected) {
+int processSymbol(int position, int* globalBalance, char *expected) {
     char symbol;
     int input = scanf("%c", &symbol);
     if (input == EOF) {
@@ -515,7 +507,6 @@ void task3ParenthesisValidator() {
         printf("The parentheses are balanced correctly.\n");
     }
 }
-
 
 // TASK 4 QUEEN BATTLE
 // compute absolute val
@@ -579,8 +570,7 @@ int markZoneCells(char zones[DIMENSION_MAX][DIMENSION_MAX], int n, int row, int 
     return 0;
 }
 
-int isZoneValidRec(char zones[DIMENSION_MAX][DIMENSION_MAX],
-                            int n, int zoneRow, int zoneCol, int *board) {
+int isZoneValidRec(char zones[DIMENSION_MAX][DIMENSION_MAX], int n, int zoneRow, int zoneCol, int *board) {
     // track the visited cells
     int visited[DIMENSION_MAX][DIMENSION_MAX] = {0};
     // count the queens found in zone
@@ -725,8 +715,9 @@ void task4QueensBattle() {
 		if (getSize == EOF) {
 			fullTerminate();
 		} else {
-            scanf("%*c");
 			printf("This puzzle cannot be solved.\n");
+            scanf("%*[^\n]");
+            scanf("%*c");
 		}
         return;
     }
@@ -737,6 +728,7 @@ void task4QueensBattle() {
     char zones[DIMENSION_MAX][DIMENSION_MAX];
     if (!readZones(zones, n)) {
         printf("This puzzle cannot be solved.\n");
+        scanf("%*[^\n]");
         scanf("%*c");
         return;
     }
@@ -758,11 +750,11 @@ void task4QueensBattle() {
             printf("\n");
         }
     } else {
+        scanf("%*[^\n]");
         scanf("%*c");
         printf("This puzzle cannot be solved.\n");
     }
 }
-
 
 // TASK 5 CROSSWORD
 
