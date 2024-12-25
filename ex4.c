@@ -98,29 +98,22 @@ void task3ParenthesisValidator();
 // task 4 helpers
 int abs(int x);
 
-int markZoneCells(char zones[DIMENSION_MAX][DIMENSION_MAX],
-                            int n, int row, int col, int visited[DIMENSION_MAX][DIMENSION_MAX],
+int markZoneCells(char zones[DIMENSION_MAX][DIMENSION_MAX], int n,
+                            int row, int col, int visited[DIMENSION_MAX][DIMENSION_MAX],
                             int *foundQueen, int *board, char startZone);
 
-int isZoneValidRec(char zones[DIMENSION_MAX][DIMENSION_MAX],
-                            int n,  int zoneRow, int zoneCol, int *board);
+int isZoneValidRec(char zones[DIMENSION_MAX][DIMENSION_MAX], int n,  int zoneRow, int zoneCol, int *board);
 
-int isValidRec(int *board, int row, int col,
-                    char zones[DIMENSION_MAX][DIMENSION_MAX],
+int isValidRec(int *board, int row, int col, char zones[DIMENSION_MAX][DIMENSION_MAX],
                     int *usedZones, int i);
 
-int isValid(int *board,
-                int row, int col,
-                char zones[DIMENSION_MAX][DIMENSION_MAX],
-                int *usedZones);
+int isValid(int *board,  int row, int col,
+                char zones[DIMENSION_MAX][DIMENSION_MAX], int *usedZones);
 
-int solveRec(int *board, int row, int n,
-                    int *usedColumns, int *usedZones,
-                    char zones[DIMENSION_MAX][DIMENSION_MAX],
-                    int col);
+int solveRec(int *board, int row, int n, int *usedColumns, int *usedZones,
+                    char zones[DIMENSION_MAX][DIMENSION_MAX], int col);
 
-int solve(int *board, int row,  int n,
-                int *usedColumns, int *usedZones,
+int solve(int *board, int row,  int n, int *usedColumns, int *usedZones,
                 char zones[DIMENSION_MAX][DIMENSION_MAX]);
 
 int readZonesRec(char zones[DIMENSION_MAX][DIMENSION_MAX],
@@ -289,9 +282,7 @@ CACHE_MAX: overflow protection
 **/
 unsigned long long cachePaths[CACHE_MAX][3] = {0};
 
-unsigned long long findInCache(unsigned long long goLeft,
-                                                unsigned long long goDown,
-                                                int index) {
+unsigned long long findInCache(unsigned long long goLeft, unsigned long long goDown, int index) {
     if (index >= CACHE_MAX) {
         return 0;
     }
@@ -302,10 +293,8 @@ unsigned long long findInCache(unsigned long long goLeft,
     return findInCache(goLeft, goDown, index + 1);
 }
 
-void saveToCache(unsigned long long goLeft,
-                            unsigned long long goDown,
-                            unsigned long long result,
-                            unsigned int index) {
+void saveToCache(unsigned long long goLeft, unsigned long long goDown,
+                            unsigned long long result, unsigned int index) {
     if (index >= CACHE_MAX) {
         return;
     }
@@ -346,20 +335,16 @@ unsigned long long computePaths(long long goLeft, long long goDown) {
     || goDown == 0) {
         return 1;
     }
-
     int level = (goLeft + goDown < LEVEL_A_COORDINATE_MAX) ? 0 : (
                         (goLeft + goDown < LEVEL_B_COORDINATE_MAX) ? 1 : 2);
-    
     // LEVEL A
     if (level == 0) {
         return computePaths(goLeft - 1, goDown) + computePaths(goLeft, goDown - 1);
     }
-
     // LEVEL B
     if (level == 1) {
         return modMult(factorial(goLeft + goDown), modMult(factorial(goLeft), factorial(goDown)));
     }
-
     // LEVEL C
     if (level == 2) {
         unsigned long long cachedResult = findInCache(goLeft, goDown, 0);
