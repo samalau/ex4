@@ -82,13 +82,6 @@ void task1(unsigned long long goLeft,
                 unsigned long long goDown);
 
 
-// task 1 cache (placeholder)
-unsigned long long cacheT1F0[LEVEL_A_COORDINATE_MAX][LEVEL_A_COORDINATE_MAX] = {0};
-unsigned long long cacheT1F2x[CACHE_MAX] = {0};
-unsigned long long cacheT1F2y[CACHE_MAX] = {0};
-unsigned long long cacheT1F2Result[CACHE_MAX] = {0};
-
-
 // task 2 helpers
 void setupPyramid();
 int getWeight();
