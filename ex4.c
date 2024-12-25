@@ -363,7 +363,6 @@ void task1(long long goLeft, long long goDown) {
     printf("The total number of paths the robot can take to reach home is: %llu\n", totalDistinctPaths);
 }
 
-
 // TASK 2 HUMAN PYRAMID
 double *dataPyramid[5];
 double level1[1];
@@ -424,13 +423,10 @@ void task2HumanPyramid() {
     if (!fullData) {
         return;
     }
-
     printf("The total weight on each cheerleader is:\n");
-
     for (int i = 0; i < 5; i++) {
         for (int j = 0; j <= i; j++) {
             double weightLoad = dataPyramid[i][j];
-
             if (i > 0) {
                 double weightUpLeft = (j > 0) ? (double)dataPyramid[i - 1][j - 1] / 2.0 : 0;
                 double weightUpRight = (j < i) ? (double)dataPyramid[i - 1][j] / 2.0 : 0;
@@ -473,30 +469,24 @@ int processSymbol(int position,
                             char *expected) {
     char symbol;
     int input = scanf("%c", &symbol);
-
     if (input == EOF) {
         return 0;
     }
-
     if (symbol == '\n') {
         return (*globalBalance == 0);
     }
-
 	int index = findIndex(symbol);
-	
     // skip invalid chars
     if (symbol == ' '
     || index == -1) {
         return processSymbol(position + 1, globalBalance, expected);
     }
-
     // handle opening parentheses
     if (index % 2 == 0) {
         (*globalBalance)++;
         *expected = validSymbols[index + 1];
         return processSymbol(position + 1, globalBalance, expected);
     }
-
     // handle closing parentheses
     else {
         if (*globalBalance == 0
@@ -513,12 +503,9 @@ int processSymbol(int position,
 void task3ParenthesisValidator() {
     // initialize globalBalance
     int globalBalance = 0;
-
     // initialize expected
     char expected = '\0';
-
     printf("Please enter a term for validation:\n");
-
 	int isBalanced = processSymbol(0, &globalBalance, &expected);
     if (!isBalanced) {
 		if (task != EXIT) {
