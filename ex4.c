@@ -70,7 +70,7 @@ Assignment: 4
 long long x1(int *valid);
 long long y1(int *valid);
 
-unsigned long long factorial(unsigned long long n);
+unsigned long long factorial(long long n);
 
 unsigned long long modMult(unsigned long long a, unsigned long long b);
 
@@ -276,8 +276,8 @@ unsigned long long modMult(unsigned long long a, unsigned long long b) {
 
 unsigned long long cacheFactorial[FACTORIAL_MAX] = {0};
 
-unsigned long long factorial(unsigned long long n) {
-    if (n >= FACTORIAL_MAX) {
+unsigned long long factorial(long long n) {
+    if (n < 0 || n >= FACTORIAL_MAX) {
         return 0;
     }
     if (n == 0) {
@@ -297,7 +297,7 @@ unsigned long long cachePaths[CACHE_MAX][3] = {0};
 
 unsigned long long findInCache(unsigned long long goLeft,
                                                 unsigned long long goDown,
-                                                unsigned int index) {
+                                                int index) {
     if (index >= CACHE_MAX) {
         return 0;
     }
