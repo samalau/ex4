@@ -123,10 +123,10 @@ int solve(int *board, int row,  int n,
                 int *usedColumns, int *usedZones,
                 char zones[DIMENSION_MAX][DIMENSION_MAX]);
 
-int readZonesRec(char *buffer, char zones[DIMENSION_MAX][DIMENSION_MAX],
-                            int n, int *filled, int *uniqueZones, int *usedZones);
+int readZonesRec(char zones[DIMENSION_MAX][DIMENSION_MAX],
+                            int n, int row, int column, int *uniqueZones, int *usedZones);
 
-int readZones(char buffer[DIMENSION_MAX * DIMENSION_MAX + 1], char zones[DIMENSION_MAX][DIMENSION_MAX], int n);
+int readZones(char zones[DIMENSION_MAX][DIMENSION_MAX], int n);
 
 
 // task 5 helpers
@@ -189,6 +189,9 @@ int main() {
         || task > EXIT) {
             // ensure default switch case
             task = 0;
+            printf("Please choose a task number from the list.\n");
+            scanf("%*[^\n]");
+            continue;
         }
         scanf("%*c");
 		switch (task) {
@@ -212,6 +215,7 @@ int main() {
 				break;
 			default:
 				printf("Please choose a task number from the list.\n");
+                scanf("%*[^\n]");
 				break;
 		}
 	} while (task != EXIT);
@@ -715,52 +719,55 @@ int solve(int *board, int row, int n,  int *usedColumns, int *usedZones,
 }
 
 // scan zones
-int readZonesRec(char *buffer,  char zones[DIMENSION_MAX][DIMENSION_MAX],
-                            int n, int *filled, int *uniqueZones, int *usedZones) {
-    
+int readZonesRec(char zones[DIMENSION_MAX][DIMENSION_MAX],
+                            int n, int row, int col, int *uniqueZones, int *usedZones) {
     // all cells filled
-	if (*filled >= n * n) {
+	if (*uniqueZones == n) {
         return 1;
     }
 
 	char c;
     int input = scanf("%c", &c);
 
-    if (input != 1 || c < PRINTABLE_MIN || c > PRINTABLE_MAX) {
+    if (input != 1) {
         if (input == EOF) {
             fullTerminate();
         }
         return 0;
     }
     // skip spaces and newlines
-    if (c == ' ' || c == '\n') {
-        printf("SKIPPING!!!\n");
-        return readZonesRec(buffer, zones, n, filled, uniqueZones, usedZones);
+    if (c == ' ' || c == '\n' || c == '\t') {
+        return readZonesRec(zones, n, row, col, uniqueZones, usedZones);
     }
-
-    // ensure dimension * dimension chars
-    buffer[*filled] = c;
+    // validate zone char
+    if (c < PRINTABLE_MIN || c > PRINTABLE_MAX) {
+        return 0;
+    }
+    // validate zones requirements
+    zones[row][col] = c;
     int index = c - PRINTABLE_MIN;
     if (!usedZones[index]) {
         usedZones[index] = 1;
         (*uniqueZones)++;
     }
     // fill the zones
-    zones[*filled / n][*filled % n] = c;
-    printf("Filled: %d, Char: %c\n", *filled, c);
-    (*filled)++;
-    return readZonesRec(buffer, zones, n, filled, uniqueZones, usedZones);
+    // zones[*filled / n][*filled % n] = c;
+   if (col + 1 == n) {
+        return readZonesRec(zones, n, row + 1, 0, uniqueZones, usedZones);
+    } else {
+        return readZonesRec(zones, n, row, col + 1, uniqueZones, usedZones);
+    }
+    // return readZonesRec(zones, n, filled, uniqueZones, usedZones);
 }
 
-int readZones(char buffer[DIMENSION_MAX * DIMENSION_MAX + 1], char zones[DIMENSION_MAX][DIMENSION_MAX], int n) {
+int readZones(char zones[DIMENSION_MAX][DIMENSION_MAX], int n) {
     // buffer index to ensure dimension*dimension char
-    int filled = 0;
+    // count number of unique zones
+    int uniqueZones = 0;     
     // zone label (ASCII) character tracker
     int usedZones[PRINTABLE_RANGE] = {0};
-    // count number of unique zones
-    int uniqueZones = 0;      
     // process zones from input and validate number of unique zones
-    if (!readZonesRec(buffer, zones, n, &filled, &uniqueZones, usedZones) || uniqueZones != n || filled != n * n || task == EXIT) {
+    if (!readZonesRec(zones, n, 0, 0, &uniqueZones, usedZones) || uniqueZones != n || task == EXIT) {
         printf("AHHH\n");
         return 0;
     }
@@ -787,8 +794,8 @@ void task4QueensBattle() {
 	// scanf("%*c");
     printf("Please enter the %d*%d puzzle board:\n", n, n);
     char zones[DIMENSION_MAX][DIMENSION_MAX];
-    char buffer[DIMENSION_MAX * DIMENSION_MAX + 1] = {0};
-    if (!readZones(buffer, zones, n)) {
+    if (!readZones(zones, n)) {
+        printf("YOYOYO");
         printf("This puzzle cannot be solved.\n");
         return;
     }
