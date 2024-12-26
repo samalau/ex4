@@ -1131,8 +1131,7 @@ int solveCrossword(int slotIndex) {
 		return 1;
 	}
     for (int i = 0; i < numWords; i++) {
-        if (!usedWords[i]
-        && validPlaceWord(slotIndex, dictionary[i])) {
+        if (!usedWords[i] && validPlaceWord(slotIndex, dictionary[i])) {
             usedWords[i] = 1;
             placeWord(slotIndex, dictionary[i]);
 
