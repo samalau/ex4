@@ -605,6 +605,8 @@ void task4QueensBattle() {
             // exit main
 			fullTerminate();
 		} else {
+            scanf("%*[^\n]");
+            scanf("%*c");
 			printf("This puzzle cannot be solved.\n");
 		}
         return;
@@ -612,7 +614,7 @@ void task4QueensBattle() {
 
 	// consume newline from input buffer
 	scanf("%*c");
-
+    
     printf("Please enter a %d*%d puzzle board:\n", n, n);
 
     char zones[DIMENSION_MAX][DIMENSION_MAX];
