@@ -747,7 +747,7 @@ void task5CrosswordGenerator() {
 
 	initializeGrid();
 
-	scanf("%*c");
+	// scanf("%*c");
 	printf("Please enter the number of slots in the crossword:\n");
 	input = scanf(" %d", &numSlots);
 	if (input == EOF) {
@@ -756,7 +756,7 @@ void task5CrosswordGenerator() {
 		return;
 	}
 
-	scanf("%*c");
+	// scanf("%*c");
 	printf("Please enter the details for each slot (Row, Column, Length, Direction):\n");
 	for  (int i = 0; i < numSlots; i++) {
 		input = (scanf(" %d %d %d %c", &slots[i].row, &slots[i].col, &slots[i].length, &slots[i].direction));
@@ -767,7 +767,7 @@ void task5CrosswordGenerator() {
 		}
 	}
 
-	scanf("%*c");
+	// scanf("%*c");
 	printf("Please enter the number of words in the dictionary:\n");
 	do {
 		input = scanf(" %d", &numWords);
@@ -778,12 +778,12 @@ void task5CrosswordGenerator() {
 		}
 		if (numWords < numSlots) {
 			scanf("%*[^\n]");
-			scanf("%*c");
+			// scanf("%*c");
 			printf("The dictionary must contain at least %d words. Please enter a valid dictionary size:\n", numSlots);
 		}
 	} while (numWords < numSlots);
 
-	scanf("%*c");
+	// scanf("%*c");
 	printf("Please enter the words for the dictionary:\n");
 	for (int i = 0; i < numWords; i++) {
 		input = scanf(" %s", dictionary[i]);
