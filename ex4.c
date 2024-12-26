@@ -457,7 +457,7 @@ int processSymbol(int position, int* globalBalance, char expected) {
     char symbol;
     int input = scanf("%c", &symbol);
 
-    // End of input
+    // end of input
     if (input == EOF) {
         fullTerminate();
         return 0;
@@ -466,17 +466,18 @@ int processSymbol(int position, int* globalBalance, char expected) {
         return (*globalBalance == 0);
     }
 
+    // identify symbol validity
     int index = findIndex(symbol);
 
-    // Skip invalid characters
+    // skip invalid characters
     if (symbol == ' ' || index == -1) {
         return processSymbol(position + 1, globalBalance, expected);
     }
 
-    // Handle opening parentheses
+    // handle opening parentheses
     if (index % 2 == 0) {
         (*globalBalance)++;
-        // Pass the new expected closing parenthesis for this level
+        // pass new expected closing parenthesis for this level
         char newExpected = validSymbols[index + 1];
         if (!processSymbol(position + 1, globalBalance, newExpected)) {
             return 0;
@@ -484,12 +485,12 @@ int processSymbol(int position, int* globalBalance, char expected) {
         return processSymbol(position + 1, globalBalance, expected);
     }
 
-    // Handle closing parentheses
+    // handle closing parentheses
     if (*globalBalance == 0 || symbol != expected) {
         return 0;
     }
 
-    // Valid closing parenthesis
+    // valid closing parenthesis
     (*globalBalance)--;
     return 1;
 }
