@@ -585,14 +585,20 @@ int isValidRec(int *board, int row, int col, char zones[DIMENSION_MAX][DIMENSION
         return 0;
     }
     // check row/column exclusivity
-    if (y1 == y2) {
+    if (x1 == x2 || y1 == y2) {
         return 0;
     }
     // check diagonal validity
-    if ((x2 - x1 == y2 - y1 || x2 - x1 == -(y2 - y1))
-    && (abs(x2 - x1) == 1 && abs(y2 - y1) == 1)) {
+    int dx = abs(x2 - x1);
+    int dy = abs(y2 - y1);
+    // if (dx <= 1 && dy <= 1 && (dx != 0 || dy != 0)) {
+    if (dx != 0 || dy != 0) {
         return 0;
     }
+    // if ((x2 - x1 == y2 - y1 || x2 - x1 == -(y2 - y1))
+    // && (abs(x2 - x1) == 1 && abs(y2 - y1) == 1)) {
+    //     return 0;
+    // }
     return isValidRec(board, row, col, zones, usedZones, i + 1);
 }
 
@@ -642,7 +648,7 @@ int solveRec(int *board, int row, int n, int *usedColumns, int *usedZones,
 int readZonesRec(char zones[DIMENSION_MAX][DIMENSION_MAX],
                             int n, int row, int col, int *uniqueZones, int *usedZones) {
     // all cells filled
-    if (row == n || *uniqueZones == n) {
+    if (row == n) {
         return 1;
     }
 
@@ -732,7 +738,9 @@ int readZones(char zones[DIMENSION_MAX][DIMENSION_MAX], int n) {
     // zone label (ASCII) character tracker
     int usedZones[PRINTABLE_RANGE] = {0};
     // process zones from input and validate number of unique zones
-    if (!readZonesRec(zones, n, 0, 0, &uniqueZones, usedZones) || uniqueZones != n || task == EXIT) {
+    if (!readZonesRec(zones, n, 0, 0, &uniqueZones, usedZones) || task == EXIT || uniqueZones != n) {
+        scanf("%*[^\n]");
+        scanf("%*c");
         return 0;
     }
     return 1;
@@ -748,6 +756,7 @@ void task4QueensBattle() {
 		if (getSize == EOF) {
 			fullTerminate();
 		} else {
+            scanf("%*[^\n]");
 			printf("This puzzle cannot be solved.\n");
 		}
         return;
