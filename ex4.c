@@ -451,63 +451,105 @@ int findIndex(char symbol) {
 extract parentheses
 0: unbalanced
 1: balanced
-
 **/
-int processSymbol(int position, int* globalBalance, char* expected) {
+///
+int processSymbol(int position, int* globalBalance, char expected) {
     char symbol;
     int input = scanf("%c", &symbol);
 
-    // end of input
-    if (input == -1) {
-        if (input == EOF) {
-            // exit main
-            fullTerminate();
-        }
+    // End of input
+    if (input == EOF) {
+        fullTerminate();
         return 0;
     }
-    
-    // end of input
     if (symbol == '\n') {
         return (*globalBalance == 0);
     }
 
-    // char validation
     int index = findIndex(symbol);
 
-    // skip non-parenthesis char
+    // Skip invalid characters
     if (symbol == ' ' || index == -1) {
         return processSymbol(position + 1, globalBalance, expected);
     }
 
-    // handle opening parentheses
+    // Handle opening parentheses
     if (index % 2 == 0) {
-        if (*globalBalance < position) {
-        // closing parenthesis illegally exists before new opening
+        (*globalBalance)++;
+        // Pass the new expected closing parenthesis for this level
+        char newExpected = validSymbols[index + 1];
+        if (!processSymbol(position + 1, globalBalance, newExpected)) {
             return 0;
         }
-        (*globalBalance)++;
-        // update expected closing parenthesis
-        char newExpected = validSymbols[index + 1];
-        return processSymbol(position + 1, globalBalance, &newExpected);
+        return processSymbol(position + 1, globalBalance, expected);
     }
 
-    // handle closing parentheses
-    if (*globalBalance == 0 || (expected != NULL && symbol != *expected)) {
+    // Handle closing parentheses
+    if (*globalBalance == 0 || symbol != expected) {
         return 0;
     }
-    // valid closing parenthesis
+
+    // Valid closing parenthesis
     (*globalBalance)--;
-    return processSymbol(position + 1, globalBalance, NULL);
+    return 1;
 }
+///
+// int processSymbol(int position, int* globalBalance, char* expected) {
+//     char symbol;
+//     int input = scanf("%c", &symbol);
+
+//     // end of input
+//     if (input == -1) {
+//         if (input == EOF) {
+//             // exit main
+//             fullTerminate();
+//         }
+//         return 0;
+//     }
+    
+//     // end of input
+//     if (symbol == '\n') {
+//         return (*globalBalance == 0);
+//     }
+
+//     // char validation
+//     int index = findIndex(symbol);
+
+//     // skip non-parenthesis char
+//     if (symbol == ' ' || index == -1) {
+//         return processSymbol(position + 1, globalBalance, expected);
+//     }
+
+//     // handle opening parentheses
+//     if (index % 2 == 0) {
+//         if (*globalBalance < position) {
+//         // closing parenthesis illegally exists before new opening
+//             return 0;
+//         }
+//         (*globalBalance)++;
+//         // update expected closing parenthesis
+//         char newExpected = validSymbols[index + 1];
+//         return processSymbol(position + 1, globalBalance, &newExpected);
+//     }
+
+//     // handle closing parentheses
+//     if (*globalBalance == 0 || (expected != NULL && symbol != *expected)) {
+//         return 0;
+//     }
+//     // valid closing parenthesis
+//     (*globalBalance)--;
+//     return processSymbol(position + 1, globalBalance, NULL);
+// }
 
 void task3ParenthesisValidator() {
     int globalBalance = 0;
     char expected = '\0';
 
-    printf("Please enter a term for validation:\n");
     scanf("%*c");
-
-    if (!processSymbol(0, &globalBalance, &expected)) {
+    printf("Please enter a term for validation:\n");
+    
+    if (!processSymbol(0, &globalBalance, expected)) {
+    // if (!processSymbol(0, &globalBalance, &expected)) {
         if (task == EXIT) {
             return;
         }
