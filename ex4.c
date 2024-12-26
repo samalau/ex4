@@ -84,7 +84,8 @@ int getWeight();
 
 // task 3 helpers
 int findIndex(char symbol);
-int processSymbol(int position, int* globalBalance, char *expected);
+// int processSymbol(int position, int* globalBalance, char* expected);
+// int processSymbol(int position, int* globalBalance, char *expected);
 void task3ParenthesisValidator();
 
 
@@ -141,7 +142,7 @@ char bufferExtract[] = {0};
 char nextMainTask = 0;
 char remainderOfExtract[] = {0};
 
-// 'fullTerminate', 'EXIT' for global clarity (main task = 6)
+ // exit main, 'EXIT' for global clarity, main task = 6
 void fullTerminate() {
 	task = EXIT;
 }
@@ -149,6 +150,9 @@ void fullTerminate() {
 int main() {
 	setupPyramid();
 	do {
+        if (task == EXIT) {
+            break;
+        }
 		printf("Choose an option:\n"
 			   "1. Robot Paths\n"
 			   "2. The Human Pyramid\n"
@@ -157,7 +161,7 @@ int main() {
 			   "5. Crossword Generator\n"
 			   "6. Exit\n");
 		nextMainTask = scanf(" %d", &task);
-        if (nextMainTask == EOF) {
+        if (nextMainTask == EOF || task == EXIT) {
             break;
         }
         if (nextMainTask != 1
@@ -373,6 +377,7 @@ int getWeight() {
             int input = scanf(" %lf", &nextWeight);
 
             if (input == EOF) {
+                 // exit main
                 fullTerminate();
                 return 0;
             }
@@ -381,6 +386,7 @@ int getWeight() {
             || nextWeight < 0) {
                 scanf("%*[^\n]");
                 if (scanf("%*c") == EOF) {
+                    // exit main
 					fullTerminate();
                     return 0;
                 }
@@ -418,6 +424,13 @@ void task2HumanPyramid() {
 }
 
 // TASK 3 PARENTHESIS VALIDATION
+/*
+8 valid symbols, 4 valid pairs
+'(', ')' (2, 1)
+'[', ']' (4, 2)
+'{', '}' (6, 3)
+'<', '>' (8, 4)
+*/
 char validSymbols[8] = {
 	'(', ')',
 	'[', ']',
@@ -434,60 +447,144 @@ int findIndex(char symbol) {
     return -1;
 }
 
+int processSymbol(int position, int* globalBalance, char* expected) {
+    char symbol;
+    int input = scanf("%c", &symbol);
+
+    // end of input
+    if (input == -1) {
+        if (input != EOF) {
+            // exit main
+            fullTerminate(); 
+        }
+        scanf("%*[^\n]");
+        scanf("%*c");
+        return -1;
+    }
+    
+    // end of input
+    if (symbol == '\n') {
+        return (*globalBalance == 0);
+    }
+
+    // char validation
+    int index = findIndex(symbol);
+
+    // skip non-parenthesis char
+    if (symbol == ' ' || index == -1) {
+        return processSymbol(position + 1, globalBalance, expected);
+    }
+
+    // handle opening parentheses
+    if (index % 2 == 0) {
+        (*globalBalance)++;
+        // update expected closing parenthesis
+        char newExpected = validSymbols[index + 1];
+        return processSymbol(position + 1, globalBalance, &newExpected);
+    }
+
+    // handle closing parentheses
+    if (*globalBalance == 0 || (expected != NULL && symbol != *expected)) {
+        return 0;
+    }
+    // valid closing parenthesis
+    (*globalBalance)--;
+    return processSymbol(position + 1, globalBalance, NULL);
+}
+
+void task3ParenthesisValidator() {
+    int globalBalance = 0;
+    char expected = '\0';
+
+    printf("Please enter a term for validation:\n");
+    int isBalanced = processSymbol(0, &globalBalance, &expected);
+
+    if (isBalanced == -1) {
+        return;
+    }
+    if (!isBalanced) {
+        if (task != EXIT) {
+            printf("The parentheses are not balanced correctly.\n");
+        }
+    } else {
+        printf("The parentheses are balanced correctly.\n");
+    }
+}
+
+
 /**
 extract parentheses
 0: unbalanced
 1: balanced
 **/
-int processSymbol(int position, int* globalBalance, char *expected) {
-    char symbol;
-    int input = scanf("%c", &symbol);
-    if (input == EOF) {
-        return 0;
-    }
-    if (symbol == '\n') {
-        return (*globalBalance == 0);
-    }
-	int index = findIndex(symbol);
-    // skip invalid chars
-    if (symbol == ' '
-    || index == -1) {
-        return processSymbol(position + 1, globalBalance, expected);
-    }
-    // handle opening parentheses
-    if (index % 2 == 0) {
-        (*globalBalance)++;
-        *expected = validSymbols[index + 1];
-        return processSymbol(position + 1, globalBalance, expected);
-    }
-    // handle closing parentheses
-    else {
-        if (*globalBalance == 0
-        || symbol != *expected) {
-			scanf("%*[^\n]");
-			scanf("%*c");
-            return 0;
-        }
-        (*globalBalance)--;
-        return processSymbol(position + 1, globalBalance, expected);
-    }
-}
+// int processSymbol(int position, int* globalBalance, char *expected) {
+//     char symbol;
+//     int input = scanf("%c", &symbol);
+//     if (input == EOF || symbol == '\n') {
+//         if (input == EOF) {
+//             fullTerminate();
+//         }
+//         return (*globalBalance == 0);
+//     }
+//     // if (input == EOF) {
+//     //     return 0;
+//     // }
+//     // if (symbol == '\n') {
+//     //     return (*globalBalance == 0);
+//     // }
+// 	int index = findIndex(symbol);
+//     // skip invalid chars
+//     if (index == -1) {
+//     // if (symbol == ' ' || index == -1) {
+//         return processSymbol(position + 1, globalBalance, expected);
+//     }
+//     // char *prev = expected;
+//     // handle opening parentheses
+//     if (index % 2 == 0) {
+//         (*globalBalance)++;
+//         if (!processSymbol(position + 1, globalBalance, validSymbols[index + 1])) {
+//             return 0;
+//         // char newExpected = validSymbols[index + 1];
+//         // *expected = validSymbols[index + 1];
+//         // printf("Opening: %c, Expected: %c, Balance: %d\n", symbol, newExpected, *globalBalance);
+//         // printf("Opening: %c, Expected: %c, Balance: %d\n", symbol, *expected, *globalBalance);
+//         // if (!processSymbol(position + 1, globalBalance, &newExpected)) {
+//         //     return 0;
+//         // }
+//         // return processSymbol(position + 1, globalBalance, &newExpected);
+//         // return processSymbol(position + 1, globalBalance, expected);
+//     }
+//     // handle closing parentheses
+//     else {
+//         if (*globalBalance == 0) {
+//         // if (*globalBalance == 0 || symbol != *expected) {
+// 			// scanf("%*[^\n]");
+// 			// scanf("%*c");
+//             // printf("Mismatch or unbalanced: %c, Expected: %c, Balance: %d\n", symbol, *expected, *globalBalance);
+//             return 0;
+//         }
+//         (*globalBalance)--;
+//         // printf("Closing: %c, Balance: %d\n", symbol, *globalBalance);
+//         // *expected = validSymbols[findIndex(*prev) + 1];
+//     }
+//     return processSymbol(position + 1, globalBalance, expected);
+// }
 
-void task3ParenthesisValidator() {
-    // initialize globalBalance
-    int globalBalance = 0;
-    // initialize expected
-    char expected = '\0';
-    printf("Please enter a term for validation:\n");
-	int isBalanced = processSymbol(0, &globalBalance, &expected);
-    if (!isBalanced) {
-		if (task != EXIT) {
-        	printf("The parentheses are not balanced correctly.\n");
-		}
-    } else {
-        printf("The parentheses are balanced correctly.\n");
-    }
-}
+// void task3ParenthesisValidator() {
+//     // initialize globalBalance
+//     int globalBalance = 0;
+//     // initialize expected
+//     // char expected = '\0';
+//     printf("Please enter a term for validation:\n");
+//     // if (!processSymbol(0, &globalBalance, &expected)) {
+//     if (!processSymbol(0, &globalBalance, '\0', 0)) {
+// 		if (task != EXIT) {
+//         	printf("The parentheses are not balanced correctly.\n");
+// 		}
+//     } else {
+//         printf("The parentheses are balanced correctly.\n");
+//     }
+// }
 
 
 // TASK 4 QUEEN BATTLE
@@ -576,11 +673,12 @@ void readZones(char zones[DIMENSION_MAX][DIMENSION_MAX], int n) {
 
 void task4QueensBattle() {
     int n;
-    printf("Please enter the dimensions of the board:\n");
+    printf("Please enter the board dimensions:\n");
 	int getSize = scanf(" %d", &n);
 
     if (!getSize || n < DIMENSION_MIN || n > DIMENSION_MAX) {
 		if (getSize == EOF) {
+            // exit main
 			fullTerminate();
 		} else {
 			printf("This puzzle cannot be solved.\n");
@@ -591,7 +689,7 @@ void task4QueensBattle() {
 	// Consume leftover newline from input buffer
 	scanf("%*c");
 
-    printf("Please enter the %d*%d puzzle board:\n", n, n);
+    printf("Please enter a %d*%d puzzle board:\n", n, n);
 
     // Create the zones 2D array (static allocation)
     char zones[DIMENSION_MAX][DIMENSION_MAX];
@@ -1151,6 +1249,7 @@ void task5CrosswordGenerator() {
     printf("Please enter the dimensions of the crossword grid:\n");
     input = scanf(" %d", &gridSize);
 	if (input == EOF) {
+        // exit main
 		fullTerminate();
 		return;
 	}
@@ -1161,6 +1260,7 @@ void task5CrosswordGenerator() {
     printf("Please enter the number of slots in the crossword:\n");
     input = scanf(" %d", &numSlots);
 	if (input == EOF) {
+        // exit main
 		fullTerminate();
         return;
 	}
@@ -1170,6 +1270,7 @@ void task5CrosswordGenerator() {
 	for  (int i = 0; i < numSlots; i++) {
 		input = (scanf(" %d %d %d %c", &slots[i].row, &slots[i].col, &slots[i].length, &slots[i].direction));
 		if (input == EOF) {
+            // exit main
 			fullTerminate();
 			return;
 		}
@@ -1180,6 +1281,7 @@ void task5CrosswordGenerator() {
     do {
 		input = scanf(" %d", &numWords);
 		if (input == EOF) {
+            // exit main
 			fullTerminate();
 			return;
 		}
@@ -1195,6 +1297,7 @@ void task5CrosswordGenerator() {
     for (int i = 0; i < numWords; i++) {
         input = scanf(" %s", dictionary[i]);
 		if (input == EOF) {
+            // exit main
 			fullTerminate();
 			return;
 		}
