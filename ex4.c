@@ -48,7 +48,6 @@ Assignment: 4
 #define CACHE_MAX 0x8000
 #define M 1000000007
 
-
 // task 3 macro
 // placeholder (consider 64)
 #define MAX_DEPTH 128
@@ -76,11 +75,9 @@ unsigned long long modMult(unsigned long long a, unsigned long long b);
 unsigned long long computePaths(long long goLeft, long long goDown);
 void task1(long long goLeft, long long goDown);
 
-
 // task 2 helpers
 void setupPyramid();
 int getWeight();
-
 
 // task 3 helpers
 // locate symbol among those valid
@@ -88,13 +85,8 @@ int findIndex(char symbol);
 int processSymbol(int position, int* globalBalance, char expected);
 void task3ParenthesisValidator();
 
-
 // task 4 helpers
 int abs(int x);
-// int markZoneCells(char zones[DIMENSION_MAX][DIMENSION_MAX], int n,
-//                             int row, int col, int visited[DIMENSION_MAX][DIMENSION_MAX],
-//                             int *foundQueen, int *board, char startZone);
-// int isZoneValidRec(char zones[DIMENSION_MAX][DIMENSION_MAX], int n,  int zoneRow, int zoneCol, int *board);
 int isValidRec(int *board, int row, int col, char zones[DIMENSION_MAX][DIMENSION_MAX],
                     int *usedZones, int i);
 int isValid(int *board,  int row, int col,
@@ -111,7 +103,6 @@ typedef struct {
     int row, col, length;
     char direction;
 } Slot;
-
 int gridSize;
 char grid[MAX_GRID_SIZE][MAX_GRID_SIZE];
 Slot slots[MAX_SLOTS];
@@ -119,8 +110,6 @@ int numSlots;
 char dictionary[MAX_WORDS][MAX_WORD_LENGTH + 1];
 int numWords;
 int usedWords[MAX_WORDS];
-
-void task5CrosswordGenerator();
 void initializeGrid();
 void displayGrid();
 int validPlaceWord(int slotIndex, const char* word);
@@ -135,14 +124,11 @@ void task3ParenthesisValidator();
 void task4QueensBattle();
 void task5CrosswordGenerator();
 
-// initialize
+// global initializations
 int task = 0;
-int sizeRemainder = 0;
-char bufferExtract[] = {0};
 char nextMainTask = 0;
-char remainderOfExtract[] = {0};
 
- // exit main, 'EXIT' for global clarity, main task = 6
+ // exit main, 'EXIT' for global clarity, main: task = 6 = EXIT
 void fullTerminate() {
 	task = EXIT;
 }
