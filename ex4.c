@@ -150,9 +150,6 @@ void fullTerminate() {
 int main() {
 	setupPyramid();
 	do {
-        if (task == EXIT) {
-            break;
-        }
 		printf("Choose an option:\n"
 			   "1. Robot Paths\n"
 			   "2. The Human Pyramid\n"
@@ -162,18 +159,17 @@ int main() {
 			   "6. Exit\n");
 		nextMainTask = scanf(" %d", &task);
         if (nextMainTask == EOF || task == EXIT) {
+            // exit main
             break;
         }
-        if (nextMainTask != 1
-        || task < 1
-        || task > EXIT) {
+        if (nextMainTask != 1 || task < 1 || task > EXIT) {
             // ensure default switch case
             task = 0;
             scanf("%*[^\n]");
             printf("Please choose a task number from the list.\n");
             continue;
         }
-        scanf("%*c");
+        // scanf("%*c");
 		switch (task) {
 			case 1:
 				task1RobotPaths();
@@ -197,6 +193,10 @@ int main() {
 				printf("Please choose a task number from the list.\n");
 				break;
 		}
+        if (task == EXIT) {
+            // scanf("%*c");
+            break;
+        }
 	} while (task != EXIT);
 	printf("Goodbye!\n");
 	return 0;
@@ -447,19 +447,23 @@ int findIndex(char symbol) {
     return -1;
 }
 
+/**
+extract parentheses
+0: unbalanced
+1: balanced
+
+**/
 int processSymbol(int position, int* globalBalance, char* expected) {
     char symbol;
     int input = scanf("%c", &symbol);
 
     // end of input
     if (input == -1) {
-        if (input != EOF) {
+        if (input == EOF) {
             // exit main
-            fullTerminate(); 
+            fullTerminate();
         }
-        scanf("%*[^\n]");
-        scanf("%*c");
-        return -1;
+        return 0;
     }
     
     // end of input
@@ -477,6 +481,10 @@ int processSymbol(int position, int* globalBalance, char* expected) {
 
     // handle opening parentheses
     if (index % 2 == 0) {
+        if (*globalBalance < position) {
+        // closing parenthesis illegally exists before new opening
+            return 0;
+        }
         (*globalBalance)++;
         // update expected closing parenthesis
         char newExpected = validSymbols[index + 1];
@@ -497,147 +505,73 @@ void task3ParenthesisValidator() {
     char expected = '\0';
 
     printf("Please enter a term for validation:\n");
-    int isBalanced = processSymbol(0, &globalBalance, &expected);
+    scanf("%*c");
 
-    if (isBalanced == -1) {
-        return;
-    }
-    if (!isBalanced) {
-        if (task != EXIT) {
-            printf("The parentheses are not balanced correctly.\n");
+    if (!processSymbol(0, &globalBalance, &expected)) {
+        if (task == EXIT) {
+            return;
         }
+        printf("The parentheses are not balanced correctly.\n");
     } else {
         printf("The parentheses are balanced correctly.\n");
     }
 }
 
 
-/**
-extract parentheses
-0: unbalanced
-1: balanced
-**/
-// int processSymbol(int position, int* globalBalance, char *expected) {
-//     char symbol;
-//     int input = scanf("%c", &symbol);
-//     if (input == EOF || symbol == '\n') {
-//         if (input == EOF) {
-//             fullTerminate();
-//         }
-//         return (*globalBalance == 0);
-//     }
-//     // if (input == EOF) {
-//     //     return 0;
-//     // }
-//     // if (symbol == '\n') {
-//     //     return (*globalBalance == 0);
-//     // }
-// 	int index = findIndex(symbol);
-//     // skip invalid chars
-//     if (index == -1) {
-//     // if (symbol == ' ' || index == -1) {
-//         return processSymbol(position + 1, globalBalance, expected);
-//     }
-//     // char *prev = expected;
-//     // handle opening parentheses
-//     if (index % 2 == 0) {
-//         (*globalBalance)++;
-//         if (!processSymbol(position + 1, globalBalance, validSymbols[index + 1])) {
-//             return 0;
-//         // char newExpected = validSymbols[index + 1];
-//         // *expected = validSymbols[index + 1];
-//         // printf("Opening: %c, Expected: %c, Balance: %d\n", symbol, newExpected, *globalBalance);
-//         // printf("Opening: %c, Expected: %c, Balance: %d\n", symbol, *expected, *globalBalance);
-//         // if (!processSymbol(position + 1, globalBalance, &newExpected)) {
-//         //     return 0;
-//         // }
-//         // return processSymbol(position + 1, globalBalance, &newExpected);
-//         // return processSymbol(position + 1, globalBalance, expected);
-//     }
-//     // handle closing parentheses
-//     else {
-//         if (*globalBalance == 0) {
-//         // if (*globalBalance == 0 || symbol != *expected) {
-// 			// scanf("%*[^\n]");
-// 			// scanf("%*c");
-//             // printf("Mismatch or unbalanced: %c, Expected: %c, Balance: %d\n", symbol, *expected, *globalBalance);
-//             return 0;
-//         }
-//         (*globalBalance)--;
-//         // printf("Closing: %c, Balance: %d\n", symbol, *globalBalance);
-//         // *expected = validSymbols[findIndex(*prev) + 1];
-//     }
-//     return processSymbol(position + 1, globalBalance, expected);
-// }
-
-// void task3ParenthesisValidator() {
-//     // initialize globalBalance
-//     int globalBalance = 0;
-//     // initialize expected
-//     // char expected = '\0';
-//     printf("Please enter a term for validation:\n");
-//     // if (!processSymbol(0, &globalBalance, &expected)) {
-//     if (!processSymbol(0, &globalBalance, '\0', 0)) {
-// 		if (task != EXIT) {
-//         	printf("The parentheses are not balanced correctly.\n");
-// 		}
-//     } else {
-//         printf("The parentheses are balanced correctly.\n");
-//     }
-// }
-
-
 // TASK 4 QUEEN BATTLE
 
-// Custom implementation of abs
+// compute absolute value
 int abs(int x) {
     return x < 0 ? -x : x;
 }
 
-// Recursive function to validate a queen's placement
+// check current cell's zone and adjacent cells for existing queens
 int isValidRec(int *board, int row, int col, char zones[DIMENSION_MAX][DIMENSION_MAX], int *usedZones, int i) {
     if (i >= row) {
         unsigned char zone = (unsigned char)zones[row][col];
-        // Zone uniqueness
+        // zone uniqueness
         return !(usedZones[zone]);
-        // return !(usedZones & (1 << zone));
     }
 
     int x1 = i + 1, y1 = board[i];
     int x2 = row + 1, y2 = col + 1;
 
-    // Check adjacency
+    // check adjacency
     if (abs(x2 - x1) <= 1 && abs(y2 - y1) <= 1) return 0;
 
-    // Check row/column exclusivity
+    // check row/column exclusivity
     if (y1 == y2) return 0;
 
-    // Check diagonal validity
+    // check diagonal validity
     if ((x2 - x1 == y2 - y1 || x2 - x1 == -(y2 - y1)) &&
         (abs(x2 - x1) == 1 && abs(y2 - y1) == 1)) return 0;
 
     return isValidRec(board, row, col, zones, usedZones, i + 1);
 }
 
-// Wrapper function for validation
+// wrapper function for validation
 int isValid(int *board, int row, int col, char zones[DIMENSION_MAX][DIMENSION_MAX], int *usedZones) {
     return isValidRec(board, row, col, zones, usedZones, 0);
 }
 
 int solveRec(int *board, int row, int n, int *usedColumns, int *usedZones, char zones[DIMENSION_MAX][DIMENSION_MAX], int col) {
-    // Base case: all rows filled
-	if (row == n) return 1;
-	// No columns left
-    if (col >= n) return 0;
+    // all rows filled
+	if (row == n) {
+        return 1;
+    }
+	// no columns left
+    if (col >= n) {
+        return 0;
+    }
 
     if (!usedColumns[col] && isValid(board, row, col, zones, usedZones)) {
         board[row] = col + 1;
         usedColumns[col] = 1;
         unsigned char zone = (unsigned char)zones[row][col];
         usedZones[zone] = 1;
-
-        if (solveRec(board, row + 1, n, usedColumns, usedZones, zones, 0)) return 1;
-
+        if (solveRec(board, row + 1, n, usedColumns, usedZones, zones, 0)) {
+            return 1;
+        }
         usedColumns[col] = 0;
         usedZones[zone] = 0;
     }
@@ -645,28 +579,35 @@ int solveRec(int *board, int row, int n, int *usedColumns, int *usedZones, char 
     return solveRec(board, row, n, usedColumns, usedZones, zones, col + 1);
 }
 
-// Wrapper for the solve function
+// wrapper for solve function
 int solve(int *board, int row, int n, int *usedColumns, int *usedZones, char zones[DIMENSION_MAX][DIMENSION_MAX]) {
     return solveRec(board, row, n, usedColumns, usedZones, zones, 0);
 }
 
-// Recursive function to read the zones
+// recursive function to read zones
 void readZonesRec(char zones[DIMENSION_MAX][DIMENSION_MAX], int n, int filled) {
     // Base case: all cells filled
 	if (filled >= n * n) return;
 	char c;
-	scanf("%c", &c);
+	int input = scanf("%c", &c);
+    if (input != 1) {
+        if (input == EOF) {
+            // exit main
+            fullTerminate();
+        }
+        return;
+    }
     if (c == ' ' || c == '\n') {
-		// Skip spaces and newlines
+		// skip spaces and newlines
         readZonesRec(zones, n, filled);
     } else {
-		// Fill the zones
+		// fill zones
         zones[filled / n][filled % n] = c;
         readZonesRec(zones, n, filled + 1);
     }
 }
 
-// Wrapper for the zone reader
+// wrapper for zone reader
 void readZones(char zones[DIMENSION_MAX][DIMENSION_MAX], int n) {
     readZonesRec(zones, n, 0);
 }
@@ -686,19 +627,21 @@ void task4QueensBattle() {
         return;
     }
 
-	// Consume leftover newline from input buffer
+	// consume newline from input buffer
 	scanf("%*c");
 
     printf("Please enter a %d*%d puzzle board:\n", n, n);
 
-    // Create the zones 2D array (static allocation)
     char zones[DIMENSION_MAX][DIMENSION_MAX];
     readZones(zones, n);
+    if (task == EXIT) {
+        // exit main
+        return;
+    }
 
-    // Initialize board and tracking arrays (static allocation)
     int board[DIMENSION_MAX] = {0};
     int usedColumns[DIMENSION_MAX] = {0};
-	// Allow all ASCII characters as zone labels
+	// allow all ASCII characters as zone labels (not all are legal -- handled after input)
     int usedZones[256] = {0};
 
     if (solve(board, 0, n, usedColumns, usedZones, zones)) {
@@ -713,6 +656,12 @@ void task4QueensBattle() {
     } else {
         printf("This puzzle cannot be solved.\n");
     }
+    if (task == EXIT) {
+        // exit main
+        return;
+    }
+    scanf("%*[^\n]");
+    scanf("%*c");
 }
 
 /**
