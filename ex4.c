@@ -182,7 +182,6 @@ int main() {
 				break;
 		}
         if (task == EXIT) {
-            // scanf("%*c");
             break;
         }
 	} while (task != EXIT);
@@ -221,10 +220,14 @@ void task1RobotPaths() {
     printf("Please enter the coordinates of the robot (column, row):\n");
     long long x = x1(&valid);
     if (!valid) {
+        scanf("%*[^\n]");
+        scanf("%*c");
         return;
     }
     long long y = y1(&valid);
     if (!valid) {
+        scanf("%*[^\n]");
+        scanf("%*c");
         return;
     }
     task1(x, y);
