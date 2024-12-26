@@ -15,7 +15,8 @@ Assignment: 4
 /**
     Overflow Protection (Task 1)
     Three levels have been defined in order to mitigate the risk of improper handling of large input values.
-    Each of these three levels has been designated a range of values and an identifier. These identifiers are A, B, and C.
+    Each of these three levels has been designated a range of values and an identifier.
+    These identifiers are A, B, and C.
     Coordinate pairs are designated to their respective levels based on the sums of their values.
     As a result, if one value of a pair is significantly higher than the other of that pair,
     the pathway taken will be that which has been optimized for the larger value,
@@ -31,7 +32,8 @@ Assignment: 4
 /**
     Overflow Protection (Task 1)
     Three levels have been defined in order to mitigate the risk of improper handling of large input values.
-    Each of these three levels has been designated a range of values and an identifier. These identifiers are A, B, and C.
+    Each of these three levels has been designated a range of values and an identifier.
+    These identifiers are A, B, and C.
     Coordinate pairs are designated to their respective levels based on the sums of their values.
     As a result, if one value of a pair is significantly higher than the other of that pair,
     the pathway taken will be that which has been optimized for the larger value,
@@ -249,7 +251,7 @@ unsigned long long factorial(long long n) {
 
 /**
 CACHE_MAX: overflow protection
-3: goLeft, goDown, result
+3: {goLeft, goDown, result}
 **/
 unsigned long long cachePaths[CACHE_MAX][3] = {0};
 
@@ -282,7 +284,8 @@ void saveToCache(unsigned long long goLeft, unsigned long long goDown,
 
 /**
     Three levels have been defined in order to mitigate the risk of improper handling of large input values.
-    Each of these three levels has been designated a range of values and an identifier. These identifiers are A, B, C.
+    Each of these three levels has been designated a range of values and an identifier.
+    These identifiers are A, B, and C.
     Coordinate pairs are designated to their respective levels based on the sums of their values.
     As a result, if one value of a pair is significantly higher than the other of that pair,
     the pathway taken will be that which has been optimized for the larger value,
@@ -318,9 +321,9 @@ unsigned long long computePaths(long long goLeft, long long goDown) {
         if (cachedResult != 0) {
             return cachedResult;
         }
-        unsigned long long result = modMult(factorial(goLeft + goDown), modMult(factorial(goLeft), factorial(goDown)));
-        saveToCache(goLeft, goDown, result, 0);
-        return result;
+        unsigned long long res = modMult(factorial(goLeft + goDown), modMult(factorial(goLeft), factorial(goDown)));
+        saveToCache(goLeft, goDown, res, 0);
+        return res;
     }
     return 0;
 }
@@ -509,7 +512,8 @@ int abs(int x) {
 }
 
 // check current cell's zone and adjacent cells for existing queens
-int isValidRec(int *board, int row, int col, char zones[DIMENSION_MAX][DIMENSION_MAX], int *usedZones, int i) {
+int isValidRec(int *board, int row, int col,
+                    char zones[DIMENSION_MAX][DIMENSION_MAX], int *usedZones, int i) {
     if (i >= row) {
         unsigned char zone = (unsigned char)zones[row][col];
         // zone uniqueness
@@ -537,13 +541,14 @@ int isValid(int *board, int row, int col, char zones[DIMENSION_MAX][DIMENSION_MA
     return isValidRec(board, row, col, zones, usedZones, 0);
 }
 
-int solveRec(int *board, int row, int n, int *usedColumns, int *usedZones, char zones[DIMENSION_MAX][DIMENSION_MAX], int col) {
+int solveRec(int *board, int row, int dimension, int *usedColumns,
+                    int *usedZones, char zones[DIMENSION_MAX][DIMENSION_MAX], int col) {
     // all rows filled
-	if (row == n) {
+	if (row == dimension) {
         return 1;
     }
 	// no columns left
-    if (col >= n) {
+    if (col >= dimension) {
         return 0;
     }
 
@@ -552,25 +557,26 @@ int solveRec(int *board, int row, int n, int *usedColumns, int *usedZones, char 
         usedColumns[col] = 1;
         unsigned char zone = (unsigned char)zones[row][col];
         usedZones[zone] = 1;
-        if (solveRec(board, row + 1, n, usedColumns, usedZones, zones, 0)) {
+        if (solveRec(board, row + 1, dimension, usedColumns, usedZones, zones, 0)) {
             return 1;
         }
         usedColumns[col] = 0;
         usedZones[zone] = 0;
     }
 
-    return solveRec(board, row, n, usedColumns, usedZones, zones, col + 1);
+    return solveRec(board, row, dimension, usedColumns, usedZones, zones, col + 1);
 }
 
 // wrapper for solve function
-int solve(int *board, int row, int n, int *usedColumns, int *usedZones, char zones[DIMENSION_MAX][DIMENSION_MAX]) {
-    return solveRec(board, row, n, usedColumns, usedZones, zones, 0);
+int solve(int *board, int row, int dimension, int *usedColumns,
+            int *usedZones, char zones[DIMENSION_MAX][DIMENSION_MAX]) {
+    return solveRec(board, row, dimension, usedColumns, usedZones, zones, 0);
 }
 
 // recursive function to read zones
-void readZonesRec(char zones[DIMENSION_MAX][DIMENSION_MAX], int n, int filled) {
+void readZonesRec(char zones[DIMENSION_MAX][DIMENSION_MAX], int dimension, int filled) {
     // Base case: all cells filled
-	if (filled >= n * n) return;
+	if (filled >= dimension * dimension) return;
 	char c;
 	int input = scanf("%c", &c);
     if (input != 1) {
@@ -582,25 +588,25 @@ void readZonesRec(char zones[DIMENSION_MAX][DIMENSION_MAX], int n, int filled) {
     }
     if (c == ' ' || c == '\n') {
 		// skip spaces and newlines
-        readZonesRec(zones, n, filled);
+        readZonesRec(zones, dimension, filled);
     } else {
 		// fill zones
-        zones[filled / n][filled % n] = c;
-        readZonesRec(zones, n, filled + 1);
+        zones[filled / dimension][filled % dimension] = c;
+        readZonesRec(zones, dimension, filled + 1);
     }
 }
 
 // wrapper for zone reader
-void readZones(char zones[DIMENSION_MAX][DIMENSION_MAX], int n) {
-    readZonesRec(zones, n, 0);
+void readZones(char zones[DIMENSION_MAX][DIMENSION_MAX], int dimension) {
+    readZonesRec(zones, dimension, 0);
 }
 
 void task4QueensBattle() {
-    int n;
+    int dimension;
     printf("Please enter the board dimensions:\n");
-	int getSize = scanf(" %d", &n);
+	int getSize = scanf(" %d", &dimension);
 
-    if (!getSize || n < DIMENSION_MIN || n > DIMENSION_MAX) {
+    if (!getSize || dimension < DIMENSION_MIN || dimension > DIMENSION_MAX) {
 		if (getSize == EOF) {
             // exit main
 			fullTerminate();
@@ -614,11 +620,11 @@ void task4QueensBattle() {
 
 	// consume newline from input buffer
 	scanf("%*c");
-    
-    printf("Please enter a %d*%d puzzle board:\n", n, n);
+
+    printf("Please enter a %d*%d puzzle board:\n", dimension, dimension);
 
     char zones[DIMENSION_MAX][DIMENSION_MAX];
-    readZones(zones, n);
+    readZones(zones, dimension);
     if (task == EXIT) {
         // exit main
         return;
@@ -629,10 +635,10 @@ void task4QueensBattle() {
 	// allow all ASCII characters as zone labels (not all are legal -- handled after input)
     int usedZones[256] = {0};
 
-    if (solve(board, 0, n, usedColumns, usedZones, zones)) {
+    if (solve(board, 0, dimension, usedColumns, usedZones, zones)) {
         printf("Solution:\n");
-        for (int i = 0; i < n; i++) {
-            for (int j = 1; j <= n; j++) {
+        for (int i = 0; i < dimension; i++) {
+            for (int j = 1; j <= dimension; j++) {
                 if (board[i] == j) printf(QUEEN);
                 else printf(EMPTY);
             }
