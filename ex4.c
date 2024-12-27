@@ -44,7 +44,7 @@ Assignment: 4
 #define LEVEL_B_COORDINATE_MAX 170
 
 // task 1 macro: overflow protection
-#define CACHE_MAX 0x8000
+#define MANAGER_MAX 0x8000
 // task 1 macro: overflow protection: large prime modulus 
 #define M 1000000007
 
@@ -267,6 +267,10 @@ long long y1(int *valid) {
 	long long y;
 	int result = scanf(" %lld", &y);
 	if (result != 1) {
+		if (result == EOF) {
+			// exit main
+			fullTerminate();
+		}
 		*valid = 0;
 		return 0;
 	}
@@ -278,7 +282,7 @@ unsigned long long modMult(unsigned long long a, unsigned long long b) {
 	return (a % M) * (b % M) % M;
 }
 
-unsigned long long cacheFactorial[FACTORIAL_MAX] = {0ULL};
+unsigned long long managerFactorial[FACTORIAL_MAX] = {0ULL};
 
 unsigned long long factorial(long long n) {
 	if (n < 0 || n >= FACTORIAL_MAX) {
@@ -287,41 +291,40 @@ unsigned long long factorial(long long n) {
 	if (n == 0) {
 		return 1;
 	}
-	if (cacheFactorial[n] != 0) {
-		return cacheFactorial[n];
+	if (managerFactorial[n] != 0) {
+		return managerFactorial[n];
 	}
-	return cacheFactorial[n] = modMult((unsigned long long)n, factorial(n - 1));
+	return managerFactorial[n] = modMult((unsigned long long)n, factorial(n - 1));
 }
-
 
 // 3: {goLeft, goDown, result}
-unsigned long long cachePaths[CACHE_MAX][3] = {0ULL};
+unsigned long long managerPaths[MANAGER_MAX][3] = {0ULL};
 
-unsigned long long findInCache(unsigned long long goLeft, unsigned long long goDown, int index) {
-	if (index >= CACHE_MAX) {
+unsigned long long findInManager(unsigned long long goLeft, unsigned long long goDown, int index) {
+	if (index >= MANAGER_MAX) {
 		return 0;
 	}
-	if (cachePaths[index][0] == goLeft
-	&& cachePaths[index][1] == goDown) {
-		return cachePaths[index][2];
+	if (managerPaths[index][0] == goLeft
+	&& managerPaths[index][1] == goDown) {
+		return managerPaths[index][2];
 	}
-	return findInCache(goLeft, goDown, index + 1);
+	return findInManager(goLeft, goDown, index + 1);
 }
 
-void saveToCache(unsigned long long goLeft, unsigned long long goDown,
+void saveToManager(unsigned long long goLeft, unsigned long long goDown,
 							unsigned long long result, unsigned int index) {
-	if (index >= CACHE_MAX) {
+	if (index >= MANAGER_MAX) {
 		return;
 	}
-	if (cachePaths[index][0] == 0ULL
-	&& cachePaths[index][1] == 0ULL)
+	if (managerPaths[index][0] == 0ULL
+	&& managerPaths[index][1] == 0ULL)
 	{
-		cachePaths[index][0] = goLeft;
-		cachePaths[index][1] = goDown;
-		cachePaths[index][2] = result;
+		managerPaths[index][0] = goLeft;
+		managerPaths[index][1] = goDown;
+		managerPaths[index][2] = result;
 		return;
 	}
-	saveToCache(goLeft, goDown, result, index + 1);
+	saveToManager(goLeft, goDown, result, index + 1);
 }
 
 /*
@@ -359,12 +362,12 @@ unsigned long long computePaths(long long goLeft, long long goDown) {
 	}
 	// LEVEL C
 	if (level == 2) {
-		unsigned long long cachedResult = findInCache(goLeft, goDown, 0);
-		if (cachedResult != 0) {
-			return cachedResult;
+		unsigned long long managerdResult = findInManager(goLeft, goDown, 0);
+		if (managerdResult != 0) {
+			return managerdResult;
 		}
 		unsigned long long res = modMult(factorial(goLeft + goDown), modMult(factorial(goLeft), factorial(goDown)));
-		saveToCache(goLeft, goDown, res, 0);
+		saveToManager(goLeft, goDown, res, 0);
 		return res;
 	}
 	return 0;
