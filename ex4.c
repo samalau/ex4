@@ -122,11 +122,17 @@ int abs_val(int x);
 // task 4: print valid board solution
 void displayBoard(int *board, int dimension);
 // task 4: check if zone is already used
-int isZoneUsed(int zone_id, unsigned long long *usedZonesMasks);
+int isZoneUsed(int zone_id, int row, unsigned long long usedZonesMasks[][NUM_ZONES_MASKS]);
 // task 4: set zone as used
-void setZoneUsed(int zone_id, unsigned long long *usedZonesMasks);
+void setZoneUsed(int zone_i, int row, unsigned long long usedZonesMasks[][NUM_ZONES_MASKS]);
 // task 4: function to unset zone (used during backtracking)
-void unsetZoneUsed(int zone_id, unsigned long long *usedZonesMasks);
+void unsetZoneUsed(int zone_id, int row, unsigned long long usedZonesMasks[][NUM_ZONES_MASKS]);
+// // task 4: check if zone is already used
+// int isZoneUsed(int zone_id, int row, unsigned long long *usedZonesMasks);
+// // task 4: set zone as used
+// void setZoneUsed(int zone_i, int row, unsigned long long *usedZonesMasks);
+// // task 4: function to unset zone (used during backtracking)
+// void unsetZoneUsed(int zone_id, int row, unsigned long long *usedZonesMasks);
 /*
 task 4:
 locate legal queen placements (if possible) using bitmask tracking and adjacency constraints;
@@ -136,16 +142,29 @@ int solveRec(int *board, int row, int col, int dimension,
 			unsigned long long usedColumnsMask,
 			unsigned long long usedMainDiagonalsMask,
 			unsigned long long usedAntiDiagonalsMask,
-			unsigned long long *usedZonesMasks,
+			unsigned long long usedZonesMasks[][NUM_ZONES_MASKS],
 			char zones[][dimension],
 			int prevCol);
+// int solveRec(int *board, int row, int col, int dimension, 
+// 			unsigned long long usedColumnsMask,
+// 			unsigned long long usedMainDiagonalsMask,
+// 			unsigned long long usedAntiDiagonalsMask,
+// 			unsigned long long *usedZonesMasks,
+// 			char zones[][dimension],
+// 			int prevCol);
 // task 4: wrapper for solve function
 int solve(int *board, int dimension, 
 		  unsigned long long usedColumnsMask,
 		  unsigned long long usedMainDiagonalsMask,
 		  unsigned long long usedAntiDiagonalsMask,
-		  unsigned long long *usedZonesMasks,
+		  unsigned long long usedZonesMasks[][NUM_ZONES_MASKS],
 		  char zones[][dimension]);
+// int solve(int *board, int dimension, 
+// 		  unsigned long long usedColumnsMask,
+// 		  unsigned long long usedMainDiagonalsMask,
+// 		  unsigned long long usedAntiDiagonalsMask,
+// 		  unsigned long long *usedZonesMasks,
+// 		  char zones[][dimension]);
 
 
 // task 5 helpers and initializations
@@ -623,114 +642,226 @@ void displayBoard(int *board, int dimension) {
 	}
 }
 
-// task 4: check if a zone is already used
-int isZoneUsed(int zone_id, unsigned long long *usedZonesMasks) {
-	int index = zone_id / ZONES_PER_MASK;
-	int bit = zone_id % ZONES_PER_MASK;
+// // task 4: check if a zone is already used
+// int isZoneUsed(int zone_id, unsigned long long *usedZonesMasks) {
+// 	int index = zone_id / ZONES_PER_MASK;
+// 	int bit = zone_id % ZONES_PER_MASK;
 
-	if (index >= NUM_ZONES_MASKS) {
-		// out of range zones treated as used to prevent placement
-		return 1;
-	}
+// 	if (index >= NUM_ZONES_MASKS) {
+// 		// out of range zones treated as used to prevent placement
+// 		return 1;
+// 	}
 
-	return (usedZonesMasks[index] & (1ULL << bit)) != 0;
+// 	return (usedZonesMasks[index] & (1ULL << bit)) != 0;
+// }
+
+// // task 4: set zone as used
+// void setZoneUsed(int zone_id, unsigned long long *usedZonesMasks) {
+// 	int index = zone_id / ZONES_PER_MASK;
+// 	int bit = zone_id % ZONES_PER_MASK;
+
+// 	if (index < NUM_ZONES_MASKS) {
+// 		usedZonesMasks[index] |= (1ULL << bit);
+// 	}
+// }
+
+// // task 4: unset zone (used during backtracking)
+// void unsetZoneUsed(int zone_id, unsigned long long *usedZonesMasks) {
+// 	int index = zone_id / ZONES_PER_MASK;
+// 	int bit = zone_id % ZONES_PER_MASK;
+
+// 	if (index < NUM_ZONES_MASKS) {
+// 		usedZonesMasks[index] &= ~(1ULL << bit);
+// 	}
+// }
+int isZoneUsed(int zone_id, int row, unsigned long long usedZonesMasks[][NUM_ZONES_MASKS]) {
+    int index = zone_id / ZONES_PER_MASK;
+    int bit = zone_id % ZONES_PER_MASK;
+
+    if (index >= NUM_ZONES_MASKS) {
+        // Out of range zones treated as used to prevent placement
+        return 1;
+    }
+
+    return (usedZonesMasks[row][index] & (1ULL << bit)) != 0;
 }
 
-// task 4: set zone as used
-void setZoneUsed(int zone_id, unsigned long long *usedZonesMasks) {
-	int index = zone_id / ZONES_PER_MASK;
-	int bit = zone_id % ZONES_PER_MASK;
+void setZoneUsed(int zone_id, int row, unsigned long long usedZonesMasks[][NUM_ZONES_MASKS]) {
+    int index = zone_id / ZONES_PER_MASK;
+    int bit = zone_id % ZONES_PER_MASK;
 
-	if (index < NUM_ZONES_MASKS) {
-		usedZonesMasks[index] |= (1ULL << bit);
-	}
+    if (index < NUM_ZONES_MASKS) {
+        usedZonesMasks[row][index] |= (1ULL << bit);
+    }
 }
 
-// task 4: unset zone (used during backtracking)
-void unsetZoneUsed(int zone_id, unsigned long long *usedZonesMasks) {
-	int index = zone_id / ZONES_PER_MASK;
-	int bit = zone_id % ZONES_PER_MASK;
+void unsetZoneUsed(int zone_id, int row, unsigned long long usedZonesMasks[][NUM_ZONES_MASKS]) {
+    int index = zone_id / ZONES_PER_MASK;
+    int bit = zone_id % ZONES_PER_MASK;
 
-	if (index < NUM_ZONES_MASKS) {
-		usedZonesMasks[index] &= ~(1ULL << bit);
-	}
+    if (index < NUM_ZONES_MASKS) {
+        usedZonesMasks[row][index] &= ~(1ULL << bit);
+    }
 }
-
 /*
 task 4:
 locate legal queen placements (if possible) using bitmask tracking and adjacency constraints;
 prevCol: track the previous row's queen column
 */
+// int solveRec(int *board, int row, int col, int dimension, 
+// 			unsigned long long usedColumnsMask,
+// 			unsigned long long usedMainDiagonalsMask,
+// 			unsigned long long usedAntiDiagonalsMask,
+// 			unsigned long long *usedZonesMasks,
+// 			char zones[][dimension],
+// 			int prevCol) {
+
+// 	// all rows filled
+// 	if (row == dimension) {
+// 		return 1;
+// 	}
+
+// 	// end of columns
+// 	if (col >= dimension) {
+//         return 0;
+//     }
+
+// 	// calculate the indices for diagonals
+// 	int mainDiagonal = row - col + dimension - 1;
+// 	int antiDiagonal = row + col;
+
+// 	// check if diagonal indices are out of bounds
+// 	if (mainDiagonal < 0 || mainDiagonal >= 2 * dimension - 1 ||
+// 		antiDiagonal < 0 || antiDiagonal >= 2 * dimension - 1) {
+// 		return solveRec(board, row, col + 1, dimension,
+// 						usedColumnsMask, usedMainDiagonalsMask,
+// 						usedAntiDiagonalsMask, usedZonesMasks, zones, prevCol);
+// 	}
+
+// 	// check if column and diagonals are not used
+// 	if (!(usedColumnsMask & (1ULL << col)) &&
+// 		!(usedMainDiagonalsMask & (1ULL << mainDiagonal)) &&
+// 		!(usedAntiDiagonalsMask & (1ULL << antiDiagonal))) {
+
+// 		// check adjacency with the previous row
+// 		if (row > 0 && abs_val(col - prevCol) <= 1) {
+// 			// adjacent to a queen in the previous row
+// 			return solveRec(board, row, col + 1, dimension, 
+// 									usedColumnsMask, usedMainDiagonalsMask,
+// 									usedAntiDiagonalsMask, usedZonesMasks, zones, prevCol);
+// 	}
+
+// 		// check if the zone is already used
+// 		int zone_id = zones[row][col] - PRINTABLE_MIN;
+// 		if (zone_id < 0 || zone_id >= PRINTABLE_RANGE || isZoneUsed(zone_id, usedZonesMasks)) {
+// 			// zone unavailable
+// 			return solveRec(board, row, col + 1, dimension, 
+// 									usedColumnsMask, usedMainDiagonalsMask,
+// 									usedAntiDiagonalsMask, usedZonesMasks, zones, prevCol);
+// 	}
+
+// 		// place queen
+// 		// store as 1-based index
+// 		board[row] = col + 1; 
+
+// 		// update masks
+// 		unsigned long long newUsedColumnsMask = usedColumnsMask | (1ULL << col);
+// 		unsigned long long newUsedMainDiagonalsMask = usedMainDiagonalsMask | (1ULL << mainDiagonal);
+// 		unsigned long long newUsedAntiDiagonalsMask = usedAntiDiagonalsMask | (1ULL << antiDiagonal);
+
+// 		// update usedZonesMasks
+// 		setZoneUsed(zone_id, usedZonesMasks);
+
+// 		// recurse for next row with updated masks and current column as prevCol
+// 		if (solveRec(board, row + 1, 0, dimension,
+// 							newUsedColumnsMask, newUsedMainDiagonalsMask,
+// 							newUsedAntiDiagonalsMask, usedZonesMasks, zones, col)) {
+// 			// valid
+// 			return 1;
+// 		}
+
+// 		// backtrack: remove queen / vacate zone
+// 		board[row] = 0;
+// 		unsetZoneUsed(zone_id, usedZonesMasks);
+// 	}
+// 	// no solution here, go to next column
+//     return solveRec(board, row, col + 1, dimension, 
+//                     usedColumnsMask, usedMainDiagonalsMask,
+//                     usedAntiDiagonalsMask, usedZonesMasks, zones, prevCol);
+// }
 int solveRec(int *board, int row, int col, int dimension, 
-			unsigned long long usedColumnsMask,
-			unsigned long long usedMainDiagonalsMask,
-			unsigned long long usedAntiDiagonalsMask,
-			unsigned long long *usedZonesMasks,
-			char zones[][dimension],
-			int prevCol) {
+             unsigned long long usedColumnsMask,
+             unsigned long long usedMainDiagonalsMask,
+             unsigned long long usedAntiDiagonalsMask,
+             unsigned long long usedZonesMasks[][NUM_ZONES_MASKS],
+             char zones[][dimension],
+             int prevCol) {
 
-	// all rows filled
-	if (row == dimension) {
-		return 1;
-	}
+    // All rows filled
+    if (row == dimension) {
+        return 1;
+    }
 
-	// end of columns
-	if (col >= dimension) {
+    // End of columns
+    if (col >= dimension) {
         return 0;
     }
 
-	// calculate the indices for diagonals
-	int mainDiagonal = row - col + dimension - 1;
-	int antiDiagonal = row + col;
+    // Calculate the indices for diagonals
+    int mainDiagonal = row - col + dimension - 1;
+    int antiDiagonal = row + col;
 
-	// check if column and diagonals are not used
-	if (!(usedColumnsMask & (1ULL << col)) &&
-		!(usedMainDiagonalsMask & (1ULL << mainDiagonal)) &&
-		!(usedAntiDiagonalsMask & (1ULL << antiDiagonal))) {
+    // Check if diagonal indices are out of bounds
+    if (mainDiagonal < 0 || mainDiagonal >= 2 * dimension - 1 ||
+        antiDiagonal < 0 || antiDiagonal >= 2 * dimension - 1) {
+        return solveRec(board, row, col + 1, dimension,
+                        usedColumnsMask, usedMainDiagonalsMask,
+                        usedAntiDiagonalsMask, usedZonesMasks, zones, prevCol);
+    }
 
-		// check adjacency with the previous row
-		if (row > 0 && abs_val(col - prevCol) <= 1) {
-			// adjacent to a queen in the previous row
-			return solveRec(board, row, col + 1, dimension, 
-									usedColumnsMask, usedMainDiagonalsMask,
-									usedAntiDiagonalsMask, usedZonesMasks, zones, prevCol);
-	}
+    // Check if column and diagonals are not used
+    if (!(usedColumnsMask & (1ULL << col)) &&
+        !(usedMainDiagonalsMask & (1ULL << mainDiagonal)) &&
+        !(usedAntiDiagonalsMask & (1ULL << antiDiagonal))) {
 
-		// check if the zone is already used
-		int zone_id = zones[row][col] - PRINTABLE_MIN;
-		if (zone_id < 0 || zone_id >= PRINTABLE_RANGE || isZoneUsed(zone_id, usedZonesMasks)) {
-			// zone unavailable
-			return solveRec(board, row, col + 1, dimension, 
-									usedColumnsMask, usedMainDiagonalsMask,
-									usedAntiDiagonalsMask, usedZonesMasks, zones, prevCol);
-	}
+        // Check adjacency with the previous row
+        if (row > 0 && abs_val(col - prevCol) <= 1) {
+            return solveRec(board, row, col + 1, dimension,
+                            usedColumnsMask, usedMainDiagonalsMask,
+                            usedAntiDiagonalsMask, usedZonesMasks, zones, prevCol);
+        }
 
-		// place queen
-		// store as 1-based index
-		board[row] = col + 1; 
+        // Calculate and validate zone ID
+        int zone_id = zones[row][col] - PRINTABLE_MIN;
+        if (zone_id < 0 || zone_id >= PRINTABLE_RANGE || isZoneUsed(zone_id, row, usedZonesMasks)) {
+            return solveRec(board, row, col + 1, dimension,
+                            usedColumnsMask, usedMainDiagonalsMask,
+                            usedAntiDiagonalsMask, usedZonesMasks, zones, prevCol);
+        }
 
-		// update masks
-		unsigned long long newUsedColumnsMask = usedColumnsMask | (1ULL << col);
-		unsigned long long newUsedMainDiagonalsMask = usedMainDiagonalsMask | (1ULL << mainDiagonal);
-		unsigned long long newUsedAntiDiagonalsMask = usedAntiDiagonalsMask | (1ULL << antiDiagonal);
+        // Place queen and mark the zone
+        board[row] = col + 1;
+        setZoneUsed(zone_id, row, usedZonesMasks);
 
-		// update usedZonesMasks
-		setZoneUsed(zone_id, usedZonesMasks);
+        // Update masks
+        unsigned long long newUsedColumnsMask = usedColumnsMask | (1ULL << col);
+        unsigned long long newUsedMainDiagonalsMask = usedMainDiagonalsMask | (1ULL << mainDiagonal);
+        unsigned long long newUsedAntiDiagonalsMask = usedAntiDiagonalsMask | (1ULL << antiDiagonal);
 
-		// recurse for next row with updated masks and current column as prevCol
-		if (solveRec(board, row + 1, 0, dimension,
-							newUsedColumnsMask, newUsedMainDiagonalsMask,
-							newUsedAntiDiagonalsMask, usedZonesMasks, zones, col)) {
-			// valid
-			return 1;
-		}
+        // Recurse to the next row
+        if (solveRec(board, row + 1, 0, dimension,
+                     newUsedColumnsMask, newUsedMainDiagonalsMask,
+                     newUsedAntiDiagonalsMask, usedZonesMasks, zones, col)) {
+            return 1; // Solution found
+        }
 
-		// backtrack: remove queen / vacate zone
-		board[row] = 0;
-		unsetZoneUsed(zone_id, usedZonesMasks);
-	}
-	// no solution here, go to next column
-    return solveRec(board, row, col + 1, dimension, 
+        // Backtrack: Remove queen and unmark the zone
+        board[row] = 0;
+        unsetZoneUsed(zone_id, row, usedZonesMasks);
+    }
+
+    // Try the next column
+    return solveRec(board, row, col + 1, dimension,
                     usedColumnsMask, usedMainDiagonalsMask,
                     usedAntiDiagonalsMask, usedZonesMasks, zones, prevCol);
 }
@@ -740,7 +871,7 @@ int solve(int *board, int dimension,
 		  unsigned long long usedColumnsMask,
 		  unsigned long long usedMainDiagonalsMask,
 		  unsigned long long usedAntiDiagonalsMask,
-		  unsigned long long *usedZonesMasks,
+		  unsigned long long usedZonesMasks[][NUM_ZONES_MASKS],
 		  char zones[][dimension]) {
 	// prevCol is initialized as -2 to avoid adjacency in the first row
 	return solveRec(board, 0, 0, dimension,
@@ -819,9 +950,11 @@ void task4QueensBattle() {
 	unsigned long long usedAntiDiagonalsMask = 0;
 	
 	// initialize usedZonesMasks array to track zone occupancy
-	unsigned long long usedZonesMasks[NUM_ZONES_MASKS];
-	for (int i = 0; i < NUM_ZONES_MASKS; i++) {
-		usedZonesMasks[i] = 0;
+	unsigned long long usedZonesMasks[dimension][NUM_ZONES_MASKS];
+	for (int i = 0; i < dimension; i++) {
+		for (int j = 0; j < NUM_ZONES_MASKS; j++) {
+			usedZonesMasks[i][j] = 0;
+		}
 	}
 
 	// final output / result
