@@ -179,17 +179,16 @@ void task5CrosswordGenerator();
 // macro used to trigger exit of main while loop from outside of main to gracefully terminate program
 #define EXIT 6
 
+// global initialization of main task;
+int task = 0;
+// global initialization of nextMainTask used in main task input;
+char nextMainTask = 0;
+
  // set task to EXIT (6) outside of main to gracefully exit main 
 void fullTerminate() {
 	// EXIT = 6
 	task = EXIT;
 }
-
-// global initialization of main task;
-int task = 0;
-
-// global initialization of nextMainTask used in main task input;
-char nextMainTask = 0;
 
 
 int main() {
