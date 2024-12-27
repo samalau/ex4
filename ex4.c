@@ -588,8 +588,6 @@ void task3ParenthesisValidator() {
 		if (task == EXIT) {
 			return;
 		}
-		scanf("%*[^\n]");
-		// scanf("%*c");
 		printf("The parentheses are not balanced correctly.\n");
 	} else {
 		printf("The parentheses are balanced correctly.\n");
