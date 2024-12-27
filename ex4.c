@@ -89,16 +89,28 @@ void task3ParenthesisValidator();
 
 // task 4 helpers
 int abs(int x);
-int isValidRec(int *board, int row, int col, char zones[DIMENSION_MAX][DIMENSION_MAX],
+int isValidRec(int *board, int row, int col, int dimension, char zones[dimension][dimension],
 					int *usedZones, int i);
-int isValid(int *board,  int row, int col,
-				char zones[DIMENSION_MAX][DIMENSION_MAX], int *usedZones);
-int solveRec(int *board, int row, int n, int *usedColumns, int *usedZones,
-					char zones[DIMENSION_MAX][DIMENSION_MAX], int col);
-int solve(int *board, int row,  int n, int *usedColumns, int *usedZones,
-				char zones[DIMENSION_MAX][DIMENSION_MAX]);
-void readZonesRec(char zones[DIMENSION_MAX][DIMENSION_MAX], int n, int filled);
-void readZones(char zones[DIMENSION_MAX][DIMENSION_MAX], int n);
+int isValid(int *board,  int row, int col, int dimension,
+				char zones[dimension][dimension], int *usedZones);
+int solveRec(int *board, int row, int dimension, int *usedColumns, int *usedZones,
+					char zones[dimension][dimension], int col);
+int solve(int *board, int row, int dimension, int *usedColumns, int *usedZones,
+				char zones[dimension][dimension]);
+void readZonesRec(int dimension, char zones[dimension][dimension], int filled);
+void readZones(int dimension, char zones[dimension][dimension]);
+void setupMonitors(int m, int dimension, int *board, int *usedColumns);
+// int abs(int x);
+// int isValidRec(int *board, int row, int col, char zones[DIMENSION_MAX][DIMENSION_MAX],
+// 					int *usedZones, int i);
+// int isValid(int *board,  int row, int col,
+// 				char zones[DIMENSION_MAX][DIMENSION_MAX], int *usedZones);
+// int solveRec(int *board, int row, int dimension, int *usedColumns, int *usedZones,
+// 					char zones[DIMENSION_MAX][DIMENSION_MAX], int col);
+// int solve(int *board, int row, int dimension, int *usedColumns, int *usedZones,
+// 				char zones[DIMENSION_MAX][DIMENSION_MAX]);
+// void readZonesRec(char zones[DIMENSION_MAX][DIMENSION_MAX], int dimension, int filled);
+// void readZones(char zones[DIMENSION_MAX][DIMENSION_MAX], int dimension);
 
 // task 5 helpers
 typedef struct {
@@ -514,8 +526,10 @@ int abs(int x) {
 }
 
 // check current cell's zone and adjacent cells for existing queens
-int isValidRec(int *board, int row, int col,
-					char zones[DIMENSION_MAX][DIMENSION_MAX], int *usedZones, int i) {
+int isValidRec(int *board, int row, int col, int dimension,
+					char zones[dimension][dimension], int *usedZones, int i) {
+// int isValidRec(int *board, int row, int col,
+// 					char zones[DIMENSION_MAX][DIMENSION_MAX], int *usedZones, int i) {
 	if (i >= row) {
 		unsigned char zone = (unsigned char)zones[row][col];
 		// zone uniqueness
@@ -526,25 +540,34 @@ int isValidRec(int *board, int row, int col,
 	int x2 = row + 1, y2 = col + 1;
 
 	// check adjacency
-	if (abs(x2 - x1) <= 1 && abs(y2 - y1) <= 1) return 0;
+	if (abs(x2 - x1) <= 1 && abs(y2 - y1) <= 1) {
+		return 0;
+	}
 
 	// check row/column exclusivity
-	if (y1 == y2) return 0;
+	if (y1 == y2) {
+		return 0;
+	}
 
 	// check diagonal validity
 	if ((x2 - x1 == y2 - y1 || x2 - x1 == -(y2 - y1)) &&
-		(abs(x2 - x1) == 1 && abs(y2 - y1) == 1)) return 0;
+		(abs(x2 - x1) == 1 && abs(y2 - y1) == 1)) {
+			return 0;
+		}
 
-	return isValidRec(board, row, col, zones, usedZones, i + 1);
+	return isValidRec(board, row, col, dimension, zones, usedZones, i + 1);
 }
 
 // wrapper function for validation
-int isValid(int *board, int row, int col, char zones[DIMENSION_MAX][DIMENSION_MAX], int *usedZones) {
-	return isValidRec(board, row, col, zones, usedZones, 0);
+int isValid(int *board, int row, int col, int dimension, char zones[dimension][dimension], int *usedZones) {
+// int isValid(int *board, int row, int col, char zones[DIMENSION_MAX][DIMENSION_MAX], int *usedZones) {
+	return isValidRec(board, row, col, dimension, zones, usedZones, 0);
 }
 
 int solveRec(int *board, int row, int dimension, int *usedColumns,
-					int *usedZones, char zones[DIMENSION_MAX][DIMENSION_MAX], int col) {
+					int *usedZones, char zones[dimension][dimension], int col) {
+// int solveRec(int *board, int row, int dimension, int *usedColumns,
+// 					int *usedZones, char zones[DIMENSION_MAX][DIMENSION_MAX], int col) {
 	// all rows filled
 	if (row == dimension) {
 		return 1;
@@ -554,7 +577,7 @@ int solveRec(int *board, int row, int dimension, int *usedColumns,
 		return 0;
 	}
 
-	if (!usedColumns[col] && isValid(board, row, col, zones, usedZones)) {
+	if (!usedColumns[col] && isValid(board, row, col, dimension, zones, usedZones)) {
 		board[row] = col + 1;
 		usedColumns[col] = 1;
 		unsigned char zone = (unsigned char)zones[row][col];
@@ -571,14 +594,19 @@ int solveRec(int *board, int row, int dimension, int *usedColumns,
 
 // wrapper for solve function
 int solve(int *board, int row, int dimension, int *usedColumns,
-			int *usedZones, char zones[DIMENSION_MAX][DIMENSION_MAX]) {
+			int *usedZones, char zones[dimension][dimension]) {
+// int solve(int *board, int row, int dimension, int *usedColumns,
+// 			int *usedZones, char zones[DIMENSION_MAX][DIMENSION_MAX]) {
 	return solveRec(board, row, dimension, usedColumns, usedZones, zones, 0);
 }
 
 // recursive function to read zones
-void readZonesRec(char zones[DIMENSION_MAX][DIMENSION_MAX], int dimension, int filled) {
+void readZonesRec(int dimension, char zones[dimension][dimension], int filled) {
+// void readZonesRec(char zones[DIMENSION_MAX][DIMENSION_MAX], int dimension, int filled) {
 	// Base case: all cells filled
-	if (filled >= dimension * dimension) return;
+	if (filled >= dimension * dimension) {
+		return;
+	}
 	char c;
 	int input = scanf("%c", &c);
 	if (input != 1) {
@@ -590,17 +618,26 @@ void readZonesRec(char zones[DIMENSION_MAX][DIMENSION_MAX], int dimension, int f
 	}
 	if (c == ' ' || c == '\n') {
 		// skip spaces and newlines
-		readZonesRec(zones, dimension, filled);
+		readZonesRec(dimension, zones, filled);
 	} else {
 		// fill zones
 		zones[filled / dimension][filled % dimension] = c;
-		readZonesRec(zones, dimension, filled + 1);
+		readZonesRec(dimension, zones, filled + 1);
 	}
 }
 
 // wrapper for zone reader
-void readZones(char zones[DIMENSION_MAX][DIMENSION_MAX], int dimension) {
-	readZonesRec(zones, dimension, 0);
+void readZones(int dimension, char zones[dimension][dimension]) {
+// void readZones(int dimension, char zones[DIMENSION_MAX][DIMENSION_MAX]) {
+	readZonesRec(dimension, zones, 0);
+}
+
+void setupMonitors(int m, int dimension, int *board, int *usedColumns) {
+	if (m < dimension) {
+		board[m] = 0;
+		usedColumns[m] = 0;
+		setupMonitors(m + 1, dimension, board, usedColumns);
+	}
 }
 
 void task4QueensBattle() {
@@ -625,24 +662,36 @@ void task4QueensBattle() {
 
 	printf("Please enter a %d*%d puzzle board:\n", dimension, dimension);
 
-	char zones[DIMENSION_MAX][DIMENSION_MAX];
-	readZones(zones, dimension);
+	char zones[dimension][dimension];
+	// char zones[dimension];
+	// char zones[DIMENSION_MAX][DIMENSION_MAX];
+	readZones(dimension, zones);
 	if (task == EXIT) {
 		// exit main
 		return;
 	}
+	int board[dimension];
+	// int board[DIMENSION_MAX] = {0};
 
-	int board[DIMENSION_MAX] = {0};
-	int usedColumns[DIMENSION_MAX] = {0};
+	int usedColumns[dimension];
+	// int usedColumns[DIMENSION_MAX] = {0};
+
+	setupMonitors(0, dimension, board, usedColumns);
+
 	// allow all ASCII characters as zone labels (not all are legal -- handled after input)
 	int usedZones[256] = {0};
 
 	if (solve(board, 0, dimension, usedColumns, usedZones, zones)) {
+	// if (solve(board, 0, dimension, usedColumns, usedZones, zones)) {
 		printf("Solution:\n");
 		for (int i = 0; i < dimension; i++) {
 			for (int j = 1; j <= dimension; j++) {
-				if (board[i] == j) printf(QUEEN);
-				else printf(EMPTY);
+				if (board[i] == j) {
+					printf(QUEEN);
+				}
+				else {
+					printf(EMPTY);
+				}
 			}
 			printf("\n");
 		}
