@@ -6,10 +6,7 @@ Assignment: 4
 #include <stdio.h>
 #include <string.h>
 
-// globally trigger exit main while loop to gracefully terminate the program
-#define EXIT 6
-
-// task 1 macros -- overflow protection
+// task 1 macro: overflow protection: factorial
 #define FACTORIAL_MAX 171
 
 /*
@@ -46,73 +43,109 @@ Assignment: 4
 */
 #define LEVEL_B_COORDINATE_MAX 170
 
-// more task 1 overflow protection
+// task 1 macro: overflow protection
 #define CACHE_MAX 0x8000
+// task 1 macro: overflow protection: large prime modulus 
 #define M 1000000007
 
-// task 3 macro
-// placeholder (consider 64)
+// task 2 macro
+#define TOTAL_PYRAMID_LEVELS 5
+
+// task 3 macro: overflow protection -- placeholder (consider 64)
 #define MAX_DEPTH 128
+// task 3 macro: (), [], {}, <>
+#define AMOUNT_LEGAL_PARENTHESES 8
 
-// task 4 macros
-#define PRINTABLE_MIN 33
-#define PRINTABLE_MAX 126
-#define PRINTABLE_RANGE (PRINTABLE_MAX - PRINTABLE_MIN + 1)
-#define DIMENSION_MIN 1
-#define DIMENSION_MAX 20
+
+// task 4 macro: valid queen cell
 #define QUEEN "X "
+// task 4 macro: valid empty cell
 #define EMPTY "* "
+// task 4 macro: MIN ASCII for zone identity
+#define PRINTABLE_MIN 33
+// task 4 macro: MAX ASCII for zone identity
+#define PRINTABLE_MAX 126
+// task 4 macro: tool for checking zone identity
+#define PRINTABLE_RANGE (PRINTABLE_MAX - PRINTABLE_MIN + 1)
+// task 4 macro: MIN cells for queen board grid
+#define DIMENSION_MIN 1
+// task 4 macro: MAX cells for queen board grid
+#define DIMENSION_MAX 20
+// task 4 macro: zone bitmasking used in queen placement validation
+#define ZONES_PER_MASK 64
+// task 4 macro: 7 * 64 = 448 zones (20x20 sets maximum zones to 400)
+#define NUM_ZONES_MASKS 7
 
-// task 5 macros
+
+// task 5 macro: MAX cells for word grid
 #define MAX_GRID_SIZE 30
+// task 5 macro: MAX slots for word in grid
 #define MAX_SLOTS 100
+// task 5 macro: MAX number of words accepted
 #define MAX_WORDS 100
+// task 5 macro: MAX word length accepted
 #define MAX_WORD_LENGTH 15
 
+
 // task 1 helpers
-long long x1(int *valid);
-long long y1(int *valid);
+
 unsigned long long factorial(long long n);
 unsigned long long modMult(unsigned long long a, unsigned long long b);
+// task 1: get and validate initial position y-coordinate
+long long x1(int *valid);
+// task 1: get and validate initial position y-coordinate
+long long y1(int *valid);
+// task 1: compute total paths from some point to origin
 unsigned long long computePaths(long long goLeft, long long goDown);
-void task1(long long goLeft, long long goDown);
+
 
 // task 2 helpers
+
 void setupPyramid();
 int getWeight();
 
+
 // task 3 helpers
+
 // locate symbol among those valid
 int findIndex(char symbol);
 int processSymbol(int position, int* globalBalance, char expected);
-void task3ParenthesisValidator();
+
 
 // task 4 helpers
-int abs(int x);
-int isValidRec(int *board, int row, int col, int dimension, char zones[dimension][dimension],
-					int *usedZones, int i);
-int isValid(int *board,  int row, int col, int dimension,
-				char zones[dimension][dimension], int *usedZones);
-int solveRec(int *board, int row, int dimension, int *usedColumns, int *usedZones,
-					char zones[dimension][dimension], int col);
-int solve(int *board, int row, int dimension, int *usedColumns, int *usedZones,
-				char zones[dimension][dimension]);
-void readZonesRec(int dimension, char zones[dimension][dimension], int filled);
-void readZones(int dimension, char zones[dimension][dimension]);
-void setupMonitors(int m, int dimension, int *board, int *usedColumns);
-// int abs(int x);
-// int isValidRec(int *board, int row, int col, char zones[DIMENSION_MAX][DIMENSION_MAX],
-// 					int *usedZones, int i);
-// int isValid(int *board,  int row, int col,
-// 				char zones[DIMENSION_MAX][DIMENSION_MAX], int *usedZones);
-// int solveRec(int *board, int row, int dimension, int *usedColumns, int *usedZones,
-// 					char zones[DIMENSION_MAX][DIMENSION_MAX], int col);
-// int solve(int *board, int row, int dimension, int *usedColumns, int *usedZones,
-// 				char zones[DIMENSION_MAX][DIMENSION_MAX]);
-// void readZonesRec(char zones[DIMENSION_MAX][DIMENSION_MAX], int dimension, int filled);
-// void readZones(char zones[DIMENSION_MAX][DIMENSION_MAX], int dimension);
 
-// task 5 helpers
+// task 4: generic absolute value function
+int abs_val(int x);
+// task 4: print valid board solution
+void displayBoard(int *board, int dimension);
+// task 4: check if zone is already used
+int isZoneUsed(int zone_id, unsigned long long *usedZonesMasks);
+// task 4: set zone as used
+void setZoneUsed(int zone_id, unsigned long long *usedZonesMasks);
+// task 4: function to unset zone (used during backtracking)
+void unsetZoneUsed(int zone_id, unsigned long long *usedZonesMasks);
+/*
+task 4:
+locate legal queen placements (if possible) using bitmask tracking and adjacency constraints;
+prevCol: track the previous row's queen column
+*/
+int solveRec(int *board, int row, int dimension, 
+			unsigned long long usedColumnsMask,
+			unsigned long long usedMainDiagonalsMask,
+			unsigned long long usedAntiDiagonalsMask,
+			unsigned long long *usedZonesMasks,
+			char zones[][dimension],
+			int prevCol);
+// task 4: wrapper for solve function
+int solve(int *board, int dimension, 
+		  unsigned long long usedColumnsMask,
+		  unsigned long long usedMainDiagonalsMask,
+		  unsigned long long usedAntiDiagonalsMask,
+		  unsigned long long *usedZonesMasks,
+		  char zones[][dimension]);
+
+
+// task 5 helpers and initializations
 typedef struct {
 	int row, col, length;
 	char direction;
@@ -126,26 +159,38 @@ int numWords;
 int usedWords[MAX_WORDS];
 void initializeGrid();
 void displayGrid();
+// task 5: word can be accepted into the grid
 int validPlaceWord(int slotIndex, const char* word);
+// task 5: place word in grid
 void placeWord(int slotIndex, const char* word);
 void removeWord(int slotIndex);
 int solveCrossword(int slotIndex);
 
+
 // task entry points
+
 void task1RobotPaths();
 void task2HumanPyramid();
 void task3ParenthesisValidator();
 void task4QueensBattle();
 void task5CrosswordGenerator();
 
-// global initializations
-int task = 0;
-char nextMainTask = 0;
 
- // exit main, 'EXIT' for global clarity, main: task = 6 = EXIT
+// macro used to trigger exit of main while loop from outside of main to gracefully terminate program
+#define EXIT 6
+
+ // set task to EXIT (6) outside of main to gracefully exit main 
 void fullTerminate() {
+	// EXIT = 6
 	task = EXIT;
 }
+
+// global initialization of main task;
+int task = 0;
+
+// global initialization of nextMainTask used in main task input;
+char nextMainTask = 0;
+
 
 int main() {
 	setupPyramid();
@@ -169,7 +214,6 @@ int main() {
 			printf("Please choose a task number from the list.\n");
 			continue;
 		}
-		// scanf("%*c");
 		switch (task) {
 			case 1:
 				task1RobotPaths();
@@ -201,8 +245,13 @@ int main() {
 	return 0;
 }
 
-// TASK 1 ROBOT PATHS
-// TASK 1: VALIDATE: X COORDINATE
+/*
+Task 1
+ROBOT PATHS
+How many paths could a robot take from (x, y) to (0, 0)?
+*/
+
+// task 1: get and validate initial position X-coordinate
 long long x1(int *valid) {
 	long long x;
 	int result = scanf(" %lld", &x);
@@ -214,7 +263,7 @@ long long x1(int *valid) {
 	return x;
 }
 
-// TASK 1: VALIDATE: Y COORDINATE
+// task 1: get and validate initial position X-coordinate
 long long y1(int *valid) {
 	long long y;
 	int result = scanf(" %lld", &y);
@@ -226,30 +275,11 @@ long long y1(int *valid) {
 	return y;
 }
 
-// TASK 1: ENTRY
-void task1RobotPaths() {
-	int valid = 0;
-	printf("Please enter the coordinates of the robot (column, row):\n");
-	long long x = x1(&valid);
-	if (!valid) {
-		scanf("%*[^\n]");
-		scanf("%*c");
-		return;
-	}
-	long long y = y1(&valid);
-	if (!valid) {
-		scanf("%*[^\n]");
-		scanf("%*c");
-		return;
-	}
-	task1(x, y);
-}
-
 unsigned long long modMult(unsigned long long a, unsigned long long b) {
 	return (a % M) * (b % M) % M;
 }
 
-unsigned long long cacheFactorial[FACTORIAL_MAX] = {0};
+unsigned long long cacheFactorial[FACTORIAL_MAX] = {0ULL};
 
 unsigned long long factorial(long long n) {
 	if (n < 0 || n >= FACTORIAL_MAX) {
@@ -261,14 +291,12 @@ unsigned long long factorial(long long n) {
 	if (cacheFactorial[n] != 0) {
 		return cacheFactorial[n];
 	}
-	return cacheFactorial[n] = modMult(n, factorial(n - 1));
+	return cacheFactorial[n] = modMult((unsigned long long)n, factorial(n - 1));
 }
 
-/*
-CACHE_MAX: overflow protection
-3: {goLeft, goDown, result}
-*/
-unsigned long long cachePaths[CACHE_MAX][3] = {0};
+
+// 3: {goLeft, goDown, result}
+unsigned long long cachePaths[CACHE_MAX][3] = {0ULL};
 
 unsigned long long findInCache(unsigned long long goLeft, unsigned long long goDown, int index) {
 	if (index >= CACHE_MAX) {
@@ -286,8 +314,8 @@ void saveToCache(unsigned long long goLeft, unsigned long long goDown,
 	if (index >= CACHE_MAX) {
 		return;
 	}
-	if (cachePaths[index][0] == 0
-	&& cachePaths[index][1] == 0)
+	if (cachePaths[index][0] == 0ULL
+	&& cachePaths[index][1] == 0ULL)
 	{
 		cachePaths[index][0] = goLeft;
 		cachePaths[index][1] = goDown;
@@ -343,19 +371,42 @@ unsigned long long computePaths(long long goLeft, long long goDown) {
 	return 0;
 }
 
-void task1(long long goLeft, long long goDown) {
-	unsigned long long totalDistinctPaths = computePaths(goLeft, goDown);
+// How many paths could a robot take from (x, y) to (0, 0)?
+void task1RobotPaths() {
+	int valid = 0;
+	printf("Please enter the coordinates of the robot (column, row):\n");
+	long long x = x1(&valid);
+	if (!valid) {
+		scanf("%*[^\n]");
+		scanf("%*c");
+		return;
+	}
+	long long y = y1(&valid);
+	if (!valid) {
+		scanf("%*[^\n]");
+		scanf("%*c");
+		return;
+	}
+	unsigned long long totalDistinctPaths = computePaths(x, y);
 	printf("The total number of paths the robot can take to reach home is: %llu\n", totalDistinctPaths);
 }
 
-// TASK 2 HUMAN PYRAMID
-double *dataPyramid[5];
+
+/*
+Task 2
+HUMAN PYRAMID
+What is the total weight load of each cheerleader in a pyramid formation?
+*/
+
+// task 2: pyramid has 5 levels
+double *dataPyramid[TOTAL_PYRAMID_LEVELS];
 double level1[1];
 double level2[2];
 double level3[3];
 double level4[4];
 double level5[5];
 
+// task 2: initialize empty pyramid
 void setupPyramid() {
 	dataPyramid[0] = level1;
 	dataPyramid[1] = level2;
@@ -363,7 +414,7 @@ void setupPyramid() {
 	dataPyramid[3] = level4;
 	dataPyramid[4] = level5;
 
-	// grid initialization/reset
+	// pyramid initialization/reset
 	for (int i = 0; i < 5; i++) {
 		for (int j = 0; j <= i; j++) {
 			dataPyramid[i][j] = 0.00;
@@ -371,6 +422,7 @@ void setupPyramid() {
 	}   
 }
 
+// task 2: input and validate weight of cheerleaders
 int getWeight() {
 	printf("Please enter the weights of the cheerleaders:\n");
 
@@ -405,11 +457,13 @@ int getWeight() {
 	return 1;
 }
 
+// What is the total weight load of each cheerleader in a pyramid formation?
 void task2HumanPyramid() {
 	int fullData = getWeight();
 	if (!fullData) {
 		return;
 	}
+
 	printf("The total weight on each cheerleader is:\n");
 	for (int i = 0; i < 5; i++) {
 		for (int j = 0; j <= i; j++) {
@@ -420,6 +474,8 @@ void task2HumanPyramid() {
 				weightLoad += weightUpLeft + weightUpRight;
 			}
 			dataPyramid[i][j] = weightLoad;
+
+			// print result rounded to the hundredth place
 			printf("%.2f ", weightLoad);
 		}
 		printf("\n");
@@ -427,22 +483,29 @@ void task2HumanPyramid() {
 	return;
 }
 
-// TASK 3 PARENTHESIS VALIDATION
 /*
-8 valid symbols, 4 valid pairs
-'(', ')' (2, 1)
-'[', ']' (4, 2)
-'{', '}' (6, 3)
-'<', '>' (8, 4)
+Task 3
+PARENTHESIS VALIDATION
+Has every opening parenthesis been properly closed?
+Legal: (), [], {}, <>
 */
-char validSymbols[8] = {
+
+/*
+8 legal symbols
+4 valid pairs
+( ... )
+[ ... ]
+{ ... }
+< ... >
+*/
+char validSymbols[AMOUNT_LEGAL_PARENTHESES] = {
 	'(', ')',
 	'[', ']',
 	'{', '}',
 	'<', '>'
 };
 
-// locate symbol among those valid
+// task 3: locate symbol among those valid
 int findIndex(char symbol) { 
 	for (int i = 0; i < 8; i++) {
 		if (validSymbols[i] == symbol) {
@@ -453,7 +516,7 @@ int findIndex(char symbol) {
 }
 
 /*
-extract parentheses
+task 3: extract parentheses
 0: unbalanced
 1: balanced
 */
@@ -499,6 +562,7 @@ int processSymbol(int position, int* globalBalance, char expected) {
 	return 1;
 }
 
+// Has every opening parenthesis been properly closed? (), [], {}, <>
 void task3ParenthesisValidator() {
 	int globalBalance = 0;
 	char expected = '\0';
@@ -519,127 +583,157 @@ void task3ParenthesisValidator() {
 }
 
 
-// TASK 4 QUEEN BATTLE
-// compute absolute value
-int abs(int x) {
+/*Task 4
+QUEEN BATTLE
+For a square grid of dimensions N x N and exactly N queens,
+is there a legal configuration of queens such that
+there exists exactly one queen in every row and every column
+as well as only empty cells for every of the 8 cells
+immediately contiguous to that of every queen?
+*/ 
+
+// task 4: compute absolute value
+int abs_val(int x) {
 	return x < 0 ? -x : x;
 }
 
-// check current cell's zone and adjacent cells for existing queens
-int isValidRec(int *board, int row, int col, int dimension,
-					char zones[dimension][dimension], int *usedZones, int i) {
-// int isValidRec(int *board, int row, int col,
-// 					char zones[DIMENSION_MAX][DIMENSION_MAX], int *usedZones, int i) {
-	if (i >= row) {
-		unsigned char zone = (unsigned char)zones[row][col];
-		// zone uniqueness
-		return !(usedZones[zone]);
-	}
-
-	int x1 = i + 1, y1 = board[i];
-	int x2 = row + 1, y2 = col + 1;
-
-	// check adjacency
-	if (abs(x2 - x1) <= 1 && abs(y2 - y1) <= 1) {
-		return 0;
-	}
-
-	// check row/column exclusivity
-	if (y1 == y2) {
-		return 0;
-	}
-
-	// check diagonal validity
-	if ((x2 - x1 == y2 - y1 || x2 - x1 == -(y2 - y1)) &&
-		(abs(x2 - x1) == 1 && abs(y2 - y1) == 1)) {
-			return 0;
+// task 4: display completed board
+void displayBoard(int *board, int dimension) {
+	for (int i = 0; i < dimension; i++) {
+		for (int j = 0; j < dimension; j++) {
+			if (board[i] == (j + 1)) {
+				printf("Q ");
+			} else {
+				printf(". ");
+			}
 		}
-
-	return isValidRec(board, row, col, dimension, zones, usedZones, i + 1);
+		printf("\n");
+	}
+	printf("\n");
 }
 
-// wrapper function for validation
-int isValid(int *board, int row, int col, int dimension, char zones[dimension][dimension], int *usedZones) {
-// int isValid(int *board, int row, int col, char zones[DIMENSION_MAX][DIMENSION_MAX], int *usedZones) {
-	return isValidRec(board, row, col, dimension, zones, usedZones, 0);
+// task 4: check if a zone is already used
+int isZoneUsed(int zone_id, unsigned long long *usedZonesMasks) {
+	int index = zone_id / ZONES_PER_MASK;
+	int bit = zone_id % ZONES_PER_MASK;
+
+	if (index >= NUM_ZONES_MASKS) {
+		// out of range zones treated as used to prevent placement
+		return 1;
+	}
+
+	return (usedZonesMasks[index] & (1ULL << bit)) != 0;
 }
 
-int solveRec(int *board, int row, int dimension, int *usedColumns,
-					int *usedZones, char zones[dimension][dimension], int col) {
-// int solveRec(int *board, int row, int dimension, int *usedColumns,
-// 					int *usedZones, char zones[DIMENSION_MAX][DIMENSION_MAX], int col) {
+// task 4: set zone as used
+void setZoneUsed(int zone_id, unsigned long long *usedZonesMasks) {
+	int index = zone_id / ZONES_PER_MASK;
+	int bit = zone_id % ZONES_PER_MASK;
+
+	if (index < NUM_ZONES_MASKS) {
+		usedZonesMasks[index] |= (1ULL << bit);
+	}
+}
+
+// task 4: unset zone (used during backtracking)
+void unsetZoneUsed(int zone_id, unsigned long long *usedZonesMasks) {
+	int index = zone_id / ZONES_PER_MASK;
+	int bit = zone_id % ZONES_PER_MASK;
+
+	if (index < NUM_ZONES_MASKS) {
+		usedZonesMasks[index] &= ~(1ULL << bit);
+	}
+}
+
+/*
+task 4:
+locate legal queen placements (if possible) using bitmask tracking and adjacency constraints;
+prevCol: track the previous row's queen column
+*/
+int solveRec(int *board, int row, int dimension, 
+			unsigned long long usedColumnsMask,
+			unsigned long long usedMainDiagonalsMask,
+			unsigned long long usedAntiDiagonalsMask,
+			unsigned long long *usedZonesMasks,
+			char zones[][dimension],
+			int prevCol) {
+
 	// all rows filled
 	if (row == dimension) {
 		return 1;
 	}
-	// no columns left
-	if (col >= dimension) {
-		return 0;
-	}
 
-	if (!usedColumns[col] && isValid(board, row, col, dimension, zones, usedZones)) {
-		board[row] = col + 1;
-		usedColumns[col] = 1;
-		unsigned char zone = (unsigned char)zones[row][col];
-		usedZones[zone] = 1;
-		if (solveRec(board, row + 1, dimension, usedColumns, usedZones, zones, 0)) {
-			return 1;
+	for (int col = 0; col < dimension; col++) {
+		// calculate the indices for diagonals
+		int mainDiagonal = row - col + dimension - 1;
+		int antiDiagonal = row + col;
+
+		// check if column and diagonals are not used
+		if (!(usedColumnsMask & (1ULL << col)) &&
+			!(usedMainDiagonalsMask & (1ULL << mainDiagonal)) &&
+			!(usedAntiDiagonalsMask & (1ULL << antiDiagonal))) {
+
+			// check adjacency with the previous row
+			if (row > 0) {
+				if (abs_val(col - prevCol) <= 1) {
+					// adjacent to a queen in the previous row
+					continue;
+				}
+			}
+
+			// check if the zone is already used
+			int zone_id = zones[row][col];
+			if (isZoneUsed(zone_id, usedZonesMasks)) {
+				// zone already occupied
+				continue;
+			}
+
+			// place queen
+			// store as 1-based index
+			board[row] = col + 1; 
+
+			// update masks
+			unsigned long long newUsedColumnsMask = usedColumnsMask | (1ULL << col);
+			unsigned long long newUsedMainDiagonalsMask = usedMainDiagonalsMask | (1ULL << mainDiagonal);
+			unsigned long long newUsedAntiDiagonalsMask = usedAntiDiagonalsMask | (1ULL << antiDiagonal);
+
+			// update usedZonesMasks
+			setZoneUsed(zone_id, usedZonesMasks);
+
+			// recurse for next row with updated masks and current column as prevCol
+			if (solveRec(board, row + 1, dimension,
+								newUsedColumnsMask, newUsedMainDiagonalsMask,
+								newUsedAntiDiagonalsMask, usedZonesMasks, zones, col)) {
+				// valid thusfar
+				return 1;
+			}
+
+			// backtrack: remove queen / vacate zone
+			board[row] = 0;
+			unsetZoneUsed(zone_id, usedZonesMasks);
 		}
-		usedColumns[col] = 0;
-		usedZones[zone] = 0;
 	}
-
-	return solveRec(board, row, dimension, usedColumns, usedZones, zones, col + 1);
+	// no solution in this path
+	return 0; 
 }
 
-// wrapper for solve function
-int solve(int *board, int row, int dimension, int *usedColumns,
-			int *usedZones, char zones[dimension][dimension]) {
-// int solve(int *board, int row, int dimension, int *usedColumns,
-// 			int *usedZones, char zones[DIMENSION_MAX][DIMENSION_MAX]) {
-	return solveRec(board, row, dimension, usedColumns, usedZones, zones, 0);
+// task 4: wrapper for solve function
+int solve(int *board, int dimension, 
+		  unsigned long long usedColumnsMask,
+		  unsigned long long usedMainDiagonalsMask,
+		  unsigned long long usedAntiDiagonalsMask,
+		  unsigned long long *usedZonesMasks,
+		  char zones[][dimension]) {
+	// initialize prevCol with -2 to avoid adjacency in the first row
+	return solveRec(board, 0, dimension, usedColumnsMask, usedMainDiagonalsMask, usedAntiDiagonalsMask, usedZonesMasks, zones, -2);
 }
 
-// recursive function to read zones
-void readZonesRec(int dimension, char zones[dimension][dimension], int filled) {
-// void readZonesRec(char zones[DIMENSION_MAX][DIMENSION_MAX], int dimension, int filled) {
-	// Base case: all cells filled
-	if (filled >= dimension * dimension) {
-		return;
-	}
-	char c;
-	int input = scanf("%c", &c);
-	if (input != 1) {
-		if (input == EOF) {
-			// exit main
-			fullTerminate();
-		}
-		return;
-	}
-	if (c == ' ' || c == '\n') {
-		// skip spaces and newlines
-		readZonesRec(dimension, zones, filled);
-	} else {
-		// fill zones
-		zones[filled / dimension][filled % dimension] = c;
-		readZonesRec(dimension, zones, filled + 1);
-	}
-}
-
-// wrapper for zone reader
-void readZones(int dimension, char zones[dimension][dimension]) {
-// void readZones(int dimension, char zones[DIMENSION_MAX][DIMENSION_MAX]) {
-	readZonesRec(dimension, zones, 0);
-}
-
-void setupMonitors(int m, int dimension, int *board, int *usedColumns) {
-	if (m < dimension) {
-		board[m] = 0;
-		usedColumns[m] = 0;
-		setupMonitors(m + 1, dimension, board, usedColumns);
-	}
-}
-
+/* For a square grid of dimensions N x N and exactly N queens,
+is there a legal configuration of queens such that
+there exists exactly one queen in every row and every column
+as well as only empty cells for every of the 8 cells
+immediately contiguous to that of every queen?
+*/
 void task4QueensBattle() {
 	int dimension;
 	printf("Please enter the board dimensions:\n");
@@ -657,57 +751,315 @@ void task4QueensBattle() {
 		return;
 	}
 
-	// consume newline from input buffer
+	// declare the board array (1-based indexing for columns)
+	int board[dimension];
+	for (int i = 0; i < dimension; i++) {
+		board[i] = 0;
+	}
+
+	// clear newline from input buffer
 	scanf("%*c");
+
+	// declare and initialize zones
+	int inputZone = 0;
+	char zones[dimension][dimension];
 
 	printf("Please enter a %d*%d puzzle board:\n", dimension, dimension);
 
-	char zones[dimension][dimension];
-	// char zones[dimension];
-	// char zones[DIMENSION_MAX][DIMENSION_MAX];
-	readZones(dimension, zones);
-	if (task == EXIT) {
+	for (int i = 0; i < dimension; i++) {
+		for (int j = 0; j < dimension; j++) {
+			inputZone = scanf(" %hhu", &zones[i][j]);
+			if (inputZone != 1) {
+				if (inputZone == EOF) {
+					// exit main
+					fullTerminate();
+				} else {
+					// early output
+					printf("This puzzle cannot be solved.\n");
+				}
+				return;
+			}
+		}
+	}
+
+	// initialize bitmask variables
+	unsigned long long usedColumnsMask = 0;
+	unsigned long long usedMainDiagonalsMask = 0;
+	unsigned long long usedAntiDiagonalsMask = 0;
+	
+	// initialize usedZonesMasks array to track zone occupancy
+	unsigned long long usedZonesMasks[NUM_ZONES_MASKS];
+	for (int i = 0; i < NUM_ZONES_MASKS; i++) {
+		usedZonesMasks[i] = 0;
+	}
+
+	// final output / result
+	if (solve(board, dimension, usedColumnsMask, usedMainDiagonalsMask, usedAntiDiagonalsMask, usedZonesMasks, zones)) {
+		printf("Solution:\n");
+		displayBoard(board, dimension);
+	} else if (task == EXIT) {
 		// exit main
 		return;
-	}
-	int board[dimension];
-	// int board[DIMENSION_MAX] = {0};
-
-	int usedColumns[dimension];
-	// int usedColumns[DIMENSION_MAX] = {0};
-
-	setupMonitors(0, dimension, board, usedColumns);
-
-	// allow all ASCII characters as zone labels (not all are legal -- handled after input)
-	int usedZones[256] = {0};
-
-	if (solve(board, 0, dimension, usedColumns, usedZones, zones)) {
-	// if (solve(board, 0, dimension, usedColumns, usedZones, zones)) {
-		printf("Solution:\n");
-		for (int i = 0; i < dimension; i++) {
-			for (int j = 1; j <= dimension; j++) {
-				if (board[i] == j) {
-					printf(QUEEN);
-				}
-				else {
-					printf(EMPTY);
-				}
-			}
-			printf("\n");
-		}
 	} else {
 		printf("This puzzle cannot be solved.\n");
-	}
-	if (task == EXIT) {
-		// exit main
-		return;
 	}
 	scanf("%*[^\n]");
 	scanf("%*c");
 }
 
 
-// TASK 5 CROSSWORD
+		
+// 		clock();
+
+// 		// exit main
+// 		return;
+// 	}
+
+
+
+// // compute absolute value
+// int abs(int x) {
+// 	return x < 0 ? -x : x;
+// }
+
+// // check current cell's zone and adjacent cells for existing queens
+// int isValidRec(int *board, int row, int col, int dimension,
+// 					char zones[dimension][dimension], int *usedZones, int i) {
+// // int isValidRec(int *board, int row, int col,
+// // 					char zones[DIMENSION_MAX][DIMENSION_MAX], int *usedZones, int i) {
+// 	if (i >= row) {
+// 		unsigned char zone = (unsigned char)zones[row][col];
+// 		// zone uniqueness
+// 		return !(usedZones[zone]);
+// 	}
+
+// 	// Check if the i-th bit is set
+// 	if (((tracker >> i) & 1U) == 1U) {
+// 		// Bit i is on
+// 	}
+
+// 	// Initialize new forbidden columns for the next row
+// 	unsigned int newForbiddenColumns = 0;
+
+// 	// Set the bit for the left adjacent column if not in the first column
+// 	if (col > 0) {
+// 		newForbiddenColumns |= (1U << (col - 1));
+// 	}
+
+// 	// Set the bit for the right adjacent column if not in the last column
+// 	if (col < dimension - 1) {
+// 		newForbiddenColumns |= (1U << (col + 1));
+// 	}
+
+// 	// Update the forbiddenColumnsMask for the next recursion
+// 	unsigned int updatedForbiddenColumns = forbiddenColumnsMask | newForbiddenColumns;
+
+
+
+
+// 	int x1 = i + 1, y1 = board[i];
+// 	int x2 = row + 1, y2 = col + 1;
+
+// 	// check adjacency
+// 	if (abs(x2 - x1) <= 1 && abs(y2 - y1) <= 1) {
+// 		return 0;
+// 	}
+
+// 	// check row/column exclusivity
+// 	if (y1 == y2) {
+// 		return 0;
+// 	}
+
+// 	// check diagonal validity
+// 	if ((x2 - x1 == y2 - y1 || x2 - x1 == -(y2 - y1)) &&
+// 		(abs(x2 - x1) == 1 && abs(y2 - y1) == 1)) {
+// 			return 0;
+// 		}
+
+// 	return isValidRec(board, row, col, dimension, zones, usedZones, i + 1);
+// }
+
+// // wrapper function for validation
+// int isValid(int *board, int row, int col, int dimension, char zones[dimension][dimension], int *usedZones) {
+// // int isValid(int *board, int row, int col, char zones[DIMENSION_MAX][DIMENSION_MAX], int *usedZones) {
+// 	return isValidRec(board, row, col, dimension, zones, usedZones, 0);
+// }
+
+// int solveRec(int *board, int row, int dimension, int *usedColumns,
+// 					int *usedZones, char zones[dimension][dimension], int col) {
+// // int solveRec(int *board, int row, int dimension, int *usedColumns,
+// // 					int *usedZones, char zones[DIMENSION_MAX][DIMENSION_MAX], int col) {
+// 	// all rows filled
+// 	if (row == dimension) {
+// 		return 1;
+// 	}
+// 	// no columns left
+// 	if (col >= dimension) {
+// 		return 0;
+// 	}
+
+// 	// Check if the column is not used, not forbidden, and its zone is not used
+// 	if (   !(usedColumnsMask & (1U << col))
+// 		&& !(forbiddenColumnsMask & (1U << col))
+// 		&& !(usedZonesMask & (1U << zone))) {
+// 		// Column is available for placing a queen
+// 			// Mark the zone as used
+// 			usedZonesMask |= (1U << zone);
+// 	}
+
+// 	if (!usedColumns[col] && isValid(board, row, col, dimension, zones, usedZones)) {
+// 		board[row] = col + 1;
+// 		usedColumns[col] = 1;
+// 		unsigned char zone = (unsigned char)zones[row][col];
+// 		usedZones[zone] = 1;
+// 		if (solveRec(board, row + 1, dimension, usedColumns, usedZones, zones, 0)) {
+// 			return 1;
+// 		}
+// 		usedColumns[col] = 0;
+// 		usedZones[zone] = 0;
+// 	}
+// 	// Mark column 'col' as used
+// 	usedColumnsMask |= (1U << col);
+
+// 	// Mark zone 'zone' as used
+// 	usedZonesMask |= (1U << zone);
+// 	return solveRec(board, row, dimension, usedColumns, usedZones, zones, col + 1);
+// }
+
+// // wrapper for solve function
+// int solve(int *board, int row, int dimension, int *usedColumns,
+// 			int *usedZones, char zones[dimension][dimension]) {
+// // int solve(int *board, int row, int dimension, int *usedColumns,
+// // 			int *usedZones, char zones[DIMENSION_MAX][DIMENSION_MAX]) {
+// 	// track used columns
+// 	unsigned int usedColumnsMask = 0;
+// 	// track illegal columns due to adjacency
+// 	unsigned int forbiddenColumnsMask = 0;
+// 	// tracks used zones
+// 	unsigned int usedZonesMask = 0;
+// 	return solveRec(board, row, dimension, usedColumns, usedZones, zones, 0);
+// }
+
+// // recursive function to read zones
+// void readZonesRec(int dimension, char zones[dimension][dimension], int filled) {
+// // void readZonesRec(char zones[DIMENSION_MAX][DIMENSION_MAX], int dimension, int filled) {
+// 	// all cells filled
+// 	if (filled >= dimension * dimension) {
+// 		return;
+// 	}
+// 	char c;
+// 	int input = scanf("%c", &c);
+// 	if (input != 1) {
+// 		if (input == EOF) {
+// 			// exit main
+// 			fullTerminate();
+// 		}
+// 		return;
+// 	}
+// 	if (c == ' ' || c == '\n') {
+// 		// skip spaces and newlines
+// 		readZonesRec(dimension, zones, filled);
+// 	} else {
+// 		// fill zones
+// 		zones[filled / dimension][filled % dimension] = c;
+// 		readZonesRec(dimension, zones, filled + 1);
+// 	}
+// }
+
+// // wrapper for zone reader
+// void readZones(int dimension, char zones[dimension][dimension]) {
+// // void readZones(int dimension, char zones[DIMENSION_MAX][DIMENSION_MAX]) {
+// 	readZonesRec(dimension, zones, 0);
+// }
+
+// void setupMonitors(int m, int dimension, int *board, int *usedColumns) {
+// 	if (m < dimension) {
+// 		board[m] = 0;
+// 		usedColumns[m] = 0;
+// 		setupMonitors(m + 1, dimension, board, usedColumns);
+// 	}
+// }
+
+
+// void task4QueensBattle() {
+// 	int dimension;
+// 	printf("Please enter the board dimensions:\n");
+// 	int getSize = scanf(" %d", &dimension);
+
+// 	if (getSize != 1 || dimension < DIMENSION_MIN || dimension > DIMENSION_MAX) {
+// 		if (getSize == EOF) {
+// 			// exit main
+// 			fullTerminate();
+// 		} else {
+// 			scanf("%*[^\n]");
+// 			scanf("%*c");
+// 			printf("This puzzle cannot be solved.\n");
+// 		}
+// 		return;
+// 	}
+
+// 	scanf("%*c");
+// 	printf("Please enter a %d*%d puzzle board:\n", dimension, dimension);
+
+// 	clock_t start = clock();
+
+// 	char zones[dimension][dimension];
+// 	// char zones[dimension];
+// 	// char zones[DIMENSION_MAX][DIMENSION_MAX];
+// 	readZones(dimension, zones);
+// 	if (task == EXIT) {
+// 		// exit main
+// 		return;
+// 	}
+// 	int board[dimension];
+// 	// int board[DIMENSION_MAX] = {0};
+
+// 	int usedColumns[dimension];
+// 	// int usedColumns[DIMENSION_MAX] = {0};
+
+// 	setupMonitors(0, dimension, board, usedColumns);
+
+// 	// allow all ASCII characters as zone labels (not all are legal -- handled after input)
+// 	int usedZones[256] = {0};
+
+// 	if (solve(board, 0, dimension, usedColumns, usedZones, zones)) {
+// 	// if (solve(board, 0, dimension, usedColumns, usedZones, zones)) {
+// 		printf("Solution:\n");
+// 		for (int i = 0; i < dimension; i++) {
+// 			for (int j = 1; j <= dimension; j++) {
+// 				if (board[i] == j) {
+// 					printf(QUEEN);
+// 				}
+// 				else {
+// 					printf(EMPTY);
+// 				}
+// 			}
+// 			printf("\n");
+// 		}
+// 	} else {
+// 		printf("This puzzle cannot be solved.\n");
+// 	}
+// 	if (task == EXIT) {
+		
+// 		clock();
+
+// 		// exit main
+// 		return;
+// 	}
+// 	scanf("%*[^\n]");
+// 	scanf("%*c");
+// 	clock_t end = clock();
+//     double time_spent = (double)(end - start) / CLOCKS_PER_SEC;
+//     printf("Time taken: %.2f seconds\n", time_spent);
+// }
+
+
+/*
+Task 5
+CROSSWORD
+?
+*/ 
+
 void initializeGrid() {
 	for (int i = 0; i < gridSize; i++) {
 		for (int j = 0; j < gridSize; j++) {
@@ -783,6 +1135,9 @@ int solveCrossword(int slotIndex) {
 	return 0;
 }
 
+/*
+?
+*/
 void task5CrosswordGenerator() {
 	int input = 0;
 
