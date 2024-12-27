@@ -764,6 +764,7 @@ void task4QueensBattle() {
 		} else {
 			scanf("%*[^\n]");
 			scanf("%*c");
+			// early output
 			printf("This puzzle cannot be solved.\n");
 		}
 		return;
