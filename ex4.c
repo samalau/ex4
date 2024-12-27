@@ -132,7 +132,7 @@ task 4:
 locate legal queen placements (if possible) using bitmask tracking and adjacency constraints;
 prevCol: track the previous row's queen column
 */
-int solveRec(int *board, int row, int dimension, 
+int solveRec(int *board, int row, int col, int dimension, 
 			unsigned long long usedColumnsMask,
 			unsigned long long usedMainDiagonalsMask,
 			unsigned long long usedAntiDiagonalsMask,
@@ -661,7 +661,7 @@ task 4:
 locate legal queen placements (if possible) using bitmask tracking and adjacency constraints;
 prevCol: track the previous row's queen column
 */
-int solveRec(int *board, int row, int dimension, 
+int solveRec(int *board, int row, int col, int dimension, 
 			unsigned long long usedColumnsMask,
 			unsigned long long usedMainDiagonalsMask,
 			unsigned long long usedAntiDiagonalsMask,
@@ -674,61 +674,68 @@ int solveRec(int *board, int row, int dimension,
 		return 1;
 	}
 
-	for (int col = 0; col < dimension; col++) {
-		// calculate the indices for diagonals
-		int mainDiagonal = row - col + dimension - 1;
-		int antiDiagonal = row + col;
+	// end of columns
+	if (col >= dimension) {
+        return 0;
+    }
 
-		// check if column and diagonals are not used
-		if (!(usedColumnsMask & (1ULL << col)) &&
-			!(usedMainDiagonalsMask & (1ULL << mainDiagonal)) &&
-			!(usedAntiDiagonalsMask & (1ULL << antiDiagonal))) {
+	// calculate the indices for diagonals
+	int mainDiagonal = row - col + dimension - 1;
+	int antiDiagonal = row + col;
 
-			// check adjacency with the previous row
-			if (row > 0) {
-				if (abs_val(col - prevCol) <= 1) {
-					// adjacent to a queen in the previous row
-					continue;
-				}
-			}
+	// check if column and diagonals are not used
+	if (!(usedColumnsMask & (1ULL << col)) &&
+		!(usedMainDiagonalsMask & (1ULL << mainDiagonal)) &&
+		!(usedAntiDiagonalsMask & (1ULL << antiDiagonal))) {
 
-			// check if the zone is already used
-			int zone_id = zones[row][col];
-			if (isZoneUsed(zone_id, usedZonesMasks)) {
-				// zone already occupied
-				continue;
-			}
-
-			// place queen
-			// store as 1-based index
-			board[row] = col + 1; 
-
-			// update masks
-			unsigned long long newUsedColumnsMask = usedColumnsMask | (1ULL << col);
-			unsigned long long newUsedMainDiagonalsMask = usedMainDiagonalsMask | (1ULL << mainDiagonal);
-			unsigned long long newUsedAntiDiagonalsMask = usedAntiDiagonalsMask | (1ULL << antiDiagonal);
-
-			// update usedZonesMasks
-			setZoneUsed(zone_id, usedZonesMasks);
-
-			// recurse for next row with updated masks and current column as prevCol
-			if (solveRec(board, row + 1, dimension,
-								newUsedColumnsMask, newUsedMainDiagonalsMask,
-								newUsedAntiDiagonalsMask, usedZonesMasks, zones, col)) {
-				// valid thusfar
-				return 1;
-			}
-
-			// backtrack: remove queen / vacate zone
-			board[row] = 0;
-			unsetZoneUsed(zone_id, usedZonesMasks);
-		}
+		// check adjacency with the previous row
+		if (row > 0 && abs_val(col - prevCol) <= 1) {
+			// adjacent to a queen in the previous row
+			return solveRec(board, row, col + 1, dimension, 
+									usedColumnsMask, usedMainDiagonalsMask,
+									usedAntiDiagonalsMask, usedZonesMasks, zones, prevCol);
 	}
-	// no solution in this path
-	return 0; 
+
+		// check if the zone is already used
+		int zone_id = zones[row][col] - PRINTABLE_MIN;
+		if (zone_id < 0 || zone_id >= PRINTABLE_RANGE || isZoneUsed(zone_id, usedZonesMasks)) {
+			// zone unavailable
+			return solveRec(board, row, col + 1, dimension, 
+									usedColumnsMask, usedMainDiagonalsMask,
+									usedAntiDiagonalsMask, usedZonesMasks, zones, prevCol);
+	}
+
+		// place queen
+		// store as 1-based index
+		board[row] = col + 1; 
+
+		// update masks
+		unsigned long long newUsedColumnsMask = usedColumnsMask | (1ULL << col);
+		unsigned long long newUsedMainDiagonalsMask = usedMainDiagonalsMask | (1ULL << mainDiagonal);
+		unsigned long long newUsedAntiDiagonalsMask = usedAntiDiagonalsMask | (1ULL << antiDiagonal);
+
+		// update usedZonesMasks
+		setZoneUsed(zone_id, usedZonesMasks);
+
+		// recurse for next row with updated masks and current column as prevCol
+		if (solveRec(board, row + 1, 0, dimension,
+							newUsedColumnsMask, newUsedMainDiagonalsMask,
+							newUsedAntiDiagonalsMask, usedZonesMasks, zones, col)) {
+			// valid
+			return 1;
+		}
+
+		// backtrack: remove queen / vacate zone
+		board[row] = 0;
+		unsetZoneUsed(zone_id, usedZonesMasks);
+	}
+	// no solution here, go to next column
+    return solveRec(board, row, col + 1, dimension, 
+                    usedColumnsMask, usedMainDiagonalsMask,
+                    usedAntiDiagonalsMask, usedZonesMasks, zones, prevCol);
 }
 
-// task 4: wrapper for solve function
+// task 4: wrapper for solveRec
 int solve(int *board, int dimension, 
 		  unsigned long long usedColumnsMask,
 		  unsigned long long usedMainDiagonalsMask,
@@ -736,7 +743,7 @@ int solve(int *board, int dimension,
 		  unsigned long long *usedZonesMasks,
 		  char zones[][dimension]) {
 	// prevCol is initialized as -2 to avoid adjacency in the first row
-	return solveRec(board, 0, dimension,
+	return solveRec(board, 0, 0, dimension,
 							usedColumnsMask,
 							usedMainDiagonalsMask,
 							usedAntiDiagonalsMask,
@@ -783,9 +790,11 @@ void task4QueensBattle() {
 
 	printf("Please enter a %d*%d puzzle board:\n", dimension, dimension);
 
+	char zone = '\0';
 	for (int i = 0; i < dimension; i++) {
 		for (int j = 0; j < dimension; j++) {
-			inputZone = scanf(" %c", &zones[i][j]);
+			inputZone = scanf("%c", &zone);
+
 			if (inputZone != 1) {
 				if (inputZone == EOF) {
 					// exit main
@@ -796,6 +805,11 @@ void task4QueensBattle() {
 				}
 				return;
 			}
+			if (zone == ' ' || zone == '\n' || zone == '\t') {
+				--j;
+				continue;
+			}
+			zones[i][j] = zone;
 		}
 	}
 
