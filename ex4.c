@@ -608,7 +608,7 @@ void task4QueensBattle() {
 	printf("Please enter the board dimensions:\n");
 	int getSize = scanf(" %d", &dimension);
 
-	if (!getSize || dimension < DIMENSION_MIN || dimension > DIMENSION_MAX) {
+	if (getSize != 1 || dimension < DIMENSION_MIN || dimension > DIMENSION_MAX) {
 		if (getSize == EOF) {
 			// exit main
 			fullTerminate();
