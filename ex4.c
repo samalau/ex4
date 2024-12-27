@@ -601,14 +601,13 @@ void displayBoard(int *board, int dimension) {
 	for (int i = 0; i < dimension; i++) {
 		for (int j = 0; j < dimension; j++) {
 			if (board[i] == (j + 1)) {
-				printf("Q ");
+				printf(QUEEN);
 			} else {
-				printf(". ");
+				printf(EMPTY);
 			}
 		}
 		printf("\n");
 	}
-	printf("\n");
 }
 
 // task 4: check if a zone is already used
@@ -767,7 +766,7 @@ void task4QueensBattle() {
 
 	for (int i = 0; i < dimension; i++) {
 		for (int j = 0; j < dimension; j++) {
-			inputZone = scanf(" %hhu", &zones[i][j]);
+			inputZone = scanf(" %c", &zones[i][j]);
 			if (inputZone != 1) {
 				if (inputZone == EOF) {
 					// exit main
