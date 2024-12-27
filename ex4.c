@@ -244,10 +244,11 @@ int main() {
 	return 0;
 }
 
+
 /*
 Task 1
 ROBOT PATHS
-How many paths could a robot take from (x, y) to (0, 0)?
+// Restricted to traveling only left and/or down, how many paths could a robot take from some (x, y) to (0, 0)?
 */
 
 // task 1: get and validate initial position X-coordinate
@@ -255,8 +256,11 @@ long long x1(int *valid) {
 	long long x;
 	int result = scanf(" %lld", &x);
 	if (result != 1) {
-		*valid = 0;
-		return 0;
+		if (result == EOF) {
+			// exit main
+			fullTerminate();
+		}
+		return (*valid = 0);
 	}
 	*valid = 1;
 	return x;
@@ -271,8 +275,7 @@ long long y1(int *valid) {
 			// exit main
 			fullTerminate();
 		}
-		*valid = 0;
-		return 0;
+		return (*valid = 0);
 	}
 	*valid = 1;
 	return y;
@@ -373,7 +376,7 @@ unsigned long long computePaths(long long goLeft, long long goDown) {
 	return 0;
 }
 
-// How many paths could a robot take from (x, y) to (0, 0)?
+// Restricted to traveling only left and/or down, how many paths could a robot take from some (x, y) to (0, 0)?
 void task1RobotPaths() {
 	int valid = 0;
 	printf("Please enter the coordinates of the robot (column, row):\n");
@@ -389,7 +392,11 @@ void task1RobotPaths() {
 		scanf("%*c");
 		return;
 	}
+
+	// determine paths
 	unsigned long long totalDistinctPaths = computePaths(x, y);
+
+	// result
 	printf("The total number of paths the robot can take to reach home is: %llu\n", totalDistinctPaths);
 }
 
@@ -466,6 +473,7 @@ void task2HumanPyramid() {
 		return;
 	}
 
+	// compute and output result
 	printf("The total weight on each cheerleader is:\n");
 	for (int i = 0; i < 5; i++) {
 		for (int j = 0; j <= i; j++) {
@@ -572,6 +580,7 @@ void task3ParenthesisValidator() {
 	scanf("%*c");
 	printf("Please enter a term for validation:\n");
 	
+	// process and result
 	if (!processSymbol(0, &globalBalance, expected)) {
 		if (task == EXIT) {
 			return;
@@ -725,8 +734,13 @@ int solve(int *board, int dimension,
 		  unsigned long long usedAntiDiagonalsMask,
 		  unsigned long long *usedZonesMasks,
 		  char zones[][dimension]) {
-	// initialize prevCol with -2 to avoid adjacency in the first row
-	return solveRec(board, 0, dimension, usedColumnsMask, usedMainDiagonalsMask, usedAntiDiagonalsMask, usedZonesMasks, zones, -2);
+	// prevCol is initialized as -2 to avoid adjacency in the first row
+	return solveRec(board, 0, dimension,
+							usedColumnsMask,
+							usedMainDiagonalsMask,
+							usedAntiDiagonalsMask,
+							usedZonesMasks,
+							zones, -2);
 }
 
 /* For a square grid of dimensions N x N and exactly N queens,
@@ -795,7 +809,9 @@ void task4QueensBattle() {
 	}
 
 	// final output / result
-	if (solve(board, dimension, usedColumnsMask, usedMainDiagonalsMask, usedAntiDiagonalsMask, usedZonesMasks, zones)) {
+	if (solve(board, dimension, usedColumnsMask,
+				usedMainDiagonalsMask, usedAntiDiagonalsMask,
+				usedZonesMasks, zones)) {
 		printf("Solution:\n");
 		displayBoard(board, dimension);
 	} else if (task == EXIT) {
@@ -953,6 +969,7 @@ void task5CrosswordGenerator() {
 		}
 	}
 
+	// final output / result
 	if (solveCrossword(0)) {
 		displayGrid();
 	} else {
